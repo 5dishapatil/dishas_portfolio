@@ -8,7 +8,7 @@
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion';
 import { EXPLORATION_ITEMS, ExplorationItem } from '@/data/ideas/explorations';
 
 // --- 1. Dynamic Interactive Canvas Background ---
@@ -164,18 +164,20 @@ const DynamicBackground: React.FC = () => {
 // --- 2. Main Page Component ---
 export default function VisualPlaygroundPage() {
   const [selectedItem, setSelectedItem] = useState<ExplorationItem | null>(null);
-  const [activeTab, setActiveTab] = useState<'Home' | 'Work' | 'Resume'>('Work');
-  const [isSayHiOpen, setIsSayHiOpen] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [scrollY, setScrollY] = useState(0);
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // Framer Motion smooth scroll tracking for buttery parallax on side cards
+  const { scrollYProgress } = useScroll();
+
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 80,
+    damping: 25,
+    mass: 0.5,
+    restDelta: 0.001,
+  });
+
+  // Independent vertical parallax transforms for left and right columns
+  const leftParallaxY = useTransform(smoothProgress, [0, 1], [0, -180]);
+  const rightParallaxY = useTransform(smoothProgress, [0, 1], [100, -320]);
 
   const leftColItems = useMemo(
     () => [EXPLORATION_ITEMS[0], EXPLORATION_ITEMS[2], EXPLORATION_ITEMS[4]].filter(Boolean),
@@ -186,15 +188,9 @@ export default function VisualPlaygroundPage() {
     []
   );
 
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText('hello@michaelsmith.com');
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
   return (
     <div
-      className="relative min-h-[220vh] bg-[#0a0a0a] text-[#f5f5f5] selection:bg-[#4E85BF]/30 selection:text-white overflow-x-hidden"
+      className="relative min-h-[230vh] bg-[#0a0a0a] text-[#f5f5f5] selection:bg-[#4E85BF]/30 selection:text-white overflow-x-hidden"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* Inline styles for Instrument Serif and Inter fonts */}
@@ -208,221 +204,139 @@ export default function VisualPlaygroundPage() {
       {/* Dynamic Animated Canvas Background */}
       <DynamicBackground />
 
-      {/* Floating Pill Navbar */}
-      <header className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-5 sm:pt-6 px-4 pointer-events-none">
-        <nav
-          aria-label="Navigation"
-          className="pointer-events-auto inline-flex items-center rounded-full backdrop-blur-xl border border-white/10 bg-[#141414]/90 px-2 py-2 shadow-xl shadow-black/40 transition-all duration-300"
+      {/* Top Left Navigation: Go back to my worlds */}
+      <header className="fixed top-5 left-5 sm:top-7 sm:left-8 z-50">
+        <Link
+          href="/#worlds"
+          aria-label="Go back to my worlds"
+          className="group inline-flex items-center gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-mono tracking-[0.2em] uppercase bg-[#141414]/85 hover:bg-[#1f1f1f] border border-white/15 hover:border-white/40 text-[#EAE0D0] hover:text-white backdrop-blur-xl shadow-2xl transition-all duration-300 hover:scale-[1.03]"
         >
-          {/* Logo Circle: JA with gradient border (links back to Home) */}
-          <Link
-            href="/"
-            aria-label="Return to Disha Home"
-            className="group relative w-9 h-9 rounded-full flex items-center justify-center p-[1.5px] cursor-pointer hover:scale-105 transition-transform"
-          >
-            <div
-              className="absolute inset-0 rounded-full transition-transform duration-500 group-hover:rotate-180"
-              style={{ background: 'linear-gradient(90deg, #89AACC 0%, #4E85BF 100%)' }}
-            />
-            <div className="relative w-full h-full rounded-full bg-[#0a0a0a] flex items-center justify-center">
-              <span className="font-instrument text-[14px] text-white tracking-tighter">
-                JA
-              </span>
-            </div>
-          </Link>
-
-          <div className="w-px h-5 bg-white/10 mx-1.5 hidden sm:block" />
-
-          {/* Navigation Links */}
-          <div className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm">
-            <Link
-              href="/#worlds"
-              onClick={() => setActiveTab('Home')}
-              className={`rounded-full px-3.5 sm:px-4 py-1.5 transition-all cursor-pointer ${
-                activeTab === 'Home'
-                  ? 'text-white bg-white/15 font-medium'
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              Home
-            </Link>
-
-            <button
-              onClick={() => {
-                setActiveTab('Work');
-                window.scrollTo({ top: window.innerHeight * 0.8, behavior: 'smooth' });
-              }}
-              className={`rounded-full px-3.5 sm:px-4 py-1.5 transition-all cursor-pointer ${
-                activeTab === 'Work'
-                  ? 'text-white bg-white/15 font-medium'
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              Work
-            </button>
-
-            <button
-              onClick={() => setActiveTab('Resume')}
-              className={`rounded-full px-3.5 sm:px-4 py-1.5 transition-all cursor-pointer ${
-                activeTab === 'Resume'
-                  ? 'text-white bg-white/15 font-medium'
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
-              }`}
-            >
-              Resume
-            </button>
-          </div>
-
-          <div className="w-px h-5 bg-white/10 mx-1.5" />
-
-          {/* "Say hi" button with hover gradient glow */}
-          <button
-            onClick={() => setIsSayHiOpen(true)}
-            className="group relative inline-flex items-center text-xs sm:text-sm rounded-full px-3.5 sm:px-4 py-1.5 transition-all cursor-pointer"
-          >
-            <span
-              className="absolute -inset-[1px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-              style={{ background: 'linear-gradient(90deg, #89AACC 0%, #4E85BF 100%)' }}
-            />
-            <span className="relative z-10 inline-flex items-center gap-1.5 bg-[#141414] rounded-full px-2.5 py-0.5 text-white font-medium">
-              Say hi <span className="text-[13px] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform">↗</span>
-            </span>
-          </button>
-        </nav>
+          <span className="text-sm transition-transform duration-300 group-hover:-translate-x-1">
+            ←
+          </span>
+          <span className="font-medium">Go back to my worlds</span>
+        </Link>
       </header>
 
-      {/* Center Pinned Header ("EXPLORATIONS", "Visual playground", subtext, Dribbble CTA) */}
-      <section className="sticky top-0 h-screen w-full flex flex-col items-center justify-center text-center px-6 pointer-events-none z-10">
+      {/* Fixed Center Title: "EXPLORATIONS", "Visual playground", subtext (Completely stationary, never scrolls) */}
+      <section className="fixed inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none z-10 select-none">
         <div className="max-w-xl mx-auto flex flex-col items-center">
           <span className="text-xs text-white/50 uppercase tracking-[0.3em] font-mono mb-4">
             EXPLORATIONS
           </span>
 
-          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white font-light mb-4">
+          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white font-light mb-4 leading-none">
             Visual <span className="font-instrument font-normal">playground</span>
           </h1>
 
-          <p className="text-sm sm:text-base text-white/60 max-w-md mb-8 leading-relaxed font-light">
+          <p className="text-sm sm:text-base text-white/60 max-w-md leading-relaxed font-light">
             Unconstrained lab experiments in generative shaders, kinetic letterforms, and procedural physics.
           </p>
-
-          <a
-            href="https://dribbble.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Follow on Dribbble"
-            className="pointer-events-auto group relative inline-flex items-center rounded-full text-xs font-medium px-6 py-3 transition-transform duration-300 hover:scale-105"
-          >
-            <span
-              className="absolute -inset-[1.5px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-              style={{ background: 'linear-gradient(90deg, #89AACC 0%, #4E85BF 100%)' }}
-            />
-            <span className="relative z-10 inline-flex items-center gap-2 bg-[#121212]/90 backdrop-blur-md border border-white/10 group-hover:border-transparent rounded-full px-6 py-3 -mx-6 -my-3 text-white transition-colors">
-              <span>Follow on Dribbble</span>
-              <span className="text-sm group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform duration-200">
-                ↗
-              </span>
-            </span>
-          </a>
         </div>
       </section>
 
-      {/* Parallax Cards Grid */}
-      <div className="relative z-20 pointer-events-none -mt-[100vh]">
-        <div className="max-w-[1400px] mx-auto px-6 pt-24 pb-48">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-16 md:gap-36 w-full">
-            
-            {/* Left Column */}
-            <div
-              className="flex flex-col gap-28 sm:gap-48 items-center sm:items-start transition-transform duration-300 ease-out"
-              style={{ transform: `translateY(${-scrollY * 0.12}px)` }}
-            >
-              {leftColItems.map((item) => (
-                <article
-                  key={item.id}
-                  onClick={() => setSelectedItem(item)}
-                  className="pointer-events-auto group relative aspect-square w-full max-w-[280px] sm:max-w-[340px] rounded-3xl overflow-hidden border border-white/10 bg-[#121212] cursor-pointer shadow-2xl transition-all duration-500 hover:scale-105 hover:border-white/30"
-                  style={{
-                    transform: `rotate(${item.rotation}deg)`,
-                  }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
+      {/* Scrolling Side Cards with Framer Motion Parallax */}
+      <div className="relative z-20 max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 pt-[14vh] pb-[28vh]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-16 md:gap-32 lg:gap-56 w-full">
+          
+          {/* Left Column: smoothly moves up as user scrolls */}
+          <motion.div
+            style={{ y: leftParallaxY }}
+            className="flex flex-col gap-28 sm:gap-44 items-center sm:items-start"
+          >
+            {leftColItems.map((item, index) => (
+              <motion.article
+                key={item.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.12 }}
+                whileHover={{ scale: 1.035, rotate: item.rotation * 0.6 }}
+                onClick={() => setSelectedItem(item)}
+                className="group relative aspect-square w-full max-w-[280px] sm:max-w-[330px] lg:max-w-[360px] rounded-3xl overflow-hidden border border-white/10 hover:border-white/35 bg-[#121212]/95 backdrop-blur-md cursor-pointer shadow-2xl transition-all duration-300 hover:shadow-[0_20px_50px_rgba(78,133,191,0.2)]"
+                style={{
+                  transform: `rotate(${item.rotation}deg)`,
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-transparent to-transparent opacity-85 group-hover:opacity-100 transition-opacity" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-transparent to-transparent opacity-80 group-hover:opacity-95 transition-opacity duration-300" />
 
-                  <div className="absolute top-4 left-4 right-4 z-10">
-                    <span className="text-[9px] font-mono text-white/60 uppercase tracking-widest block drop-shadow-md">
-                      {item.medium}
-                    </span>
+                <div className="absolute top-4 left-4 right-4 z-10">
+                  <span className="text-[9px] font-mono text-white/70 uppercase tracking-widest block drop-shadow-md">
+                    {item.medium}
+                  </span>
+                </div>
+
+                <div className="absolute bottom-5 left-5 right-5 z-10">
+                  <h2 className="text-2xl sm:text-3xl font-instrument text-white tracking-tight">
+                    {item.title}
+                  </h2>
+                </div>
+
+                <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/25 flex items-center justify-center text-white text-xs">
+                    ↗
                   </div>
+                </div>
+              </motion.article>
+            ))}
+          </motion.div>
 
-                  <div className="absolute bottom-5 left-5 right-5 z-10">
-                    <h2 className="text-2xl font-instrument text-white tracking-tight">
-                      {item.title}
-                    </h2>
+          {/* Right Column: smoothly moves up with offset as user scrolls */}
+          <motion.div
+            style={{ y: rightParallaxY }}
+            className="flex flex-col gap-28 sm:gap-44 items-center sm:items-end pt-20 sm:pt-48"
+          >
+            {rightColItems.map((item, index) => (
+              <motion.article
+                key={item.id}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.15 + index * 0.12 }}
+                whileHover={{ scale: 1.035, rotate: item.rotation * 0.6 }}
+                onClick={() => setSelectedItem(item)}
+                className="group relative aspect-square w-full max-w-[280px] sm:max-w-[330px] lg:max-w-[360px] rounded-3xl overflow-hidden border border-white/10 hover:border-white/35 bg-[#121212]/95 backdrop-blur-md cursor-pointer shadow-2xl transition-all duration-300 hover:shadow-[0_20px_50px_rgba(78,133,191,0.2)]"
+                style={{
+                  transform: `rotate(${item.rotation}deg)`,
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-transparent to-transparent opacity-80 group-hover:opacity-95 transition-opacity duration-300" />
+
+                <div className="absolute top-4 left-4 right-4 z-10">
+                  <span className="text-[9px] font-mono text-white/70 uppercase tracking-widest block drop-shadow-md">
+                    {item.medium}
+                  </span>
+                </div>
+
+                <div className="absolute bottom-5 left-5 right-5 z-10">
+                  <h2 className="text-2xl sm:text-3xl font-instrument text-white tracking-tight">
+                    {item.title}
+                  </h2>
+                </div>
+
+                <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/25 flex items-center justify-center text-white text-xs">
+                    ↗
                   </div>
+                </div>
+              </motion.article>
+            ))}
+          </motion.div>
 
-                  <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-xs">
-                      ↗
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            {/* Right Column */}
-            <div
-              className="flex flex-col gap-28 sm:gap-48 items-center sm:items-end sm:pt-40 transition-transform duration-300 ease-out"
-              style={{ transform: `translateY(${-scrollY * 0.22}px)` }}
-            >
-              {rightColItems.map((item) => (
-                <article
-                  key={item.id}
-                  onClick={() => setSelectedItem(item)}
-                  className="pointer-events-auto group relative aspect-square w-full max-w-[280px] sm:max-w-[340px] rounded-3xl overflow-hidden border border-white/10 bg-[#121212] cursor-pointer shadow-2xl transition-all duration-500 hover:scale-105 hover:border-white/30"
-                  style={{
-                    transform: `rotate(${item.rotation}deg)`,
-                  }}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/95 via-transparent to-transparent opacity-85 group-hover:opacity-100 transition-opacity" />
-
-                  <div className="absolute top-4 left-4 right-4 z-10">
-                    <span className="text-[9px] font-mono text-white/60 uppercase tracking-widest block drop-shadow-md">
-                      {item.medium}
-                    </span>
-                  </div>
-
-                  <div className="absolute bottom-5 left-5 right-5 z-10">
-                    <h2 className="text-2xl font-instrument text-white tracking-tight">
-                      {item.title}
-                    </h2>
-                  </div>
-
-                  <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white text-xs">
-                      ↗
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-          </div>
         </div>
       </div>
 
@@ -447,6 +361,7 @@ export default function VisualPlaygroundPage() {
             >
               <button
                 onClick={() => setSelectedItem(null)}
+                aria-label="Close lightbox"
                 className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
               >
                 ✕
@@ -493,65 +408,6 @@ export default function VisualPlaygroundPage() {
                     Done
                   </button>
                 </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* Say Hi Direct Contact Modal */}
-      <AnimatePresence>
-        {isSayHiOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsSayHiOpen(false)}
-              className="fixed inset-0 bg-black/85 backdrop-blur-md"
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-md bg-[#121212] border border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl z-10 my-auto space-y-6"
-            >
-              <div className="flex items-center justify-between">
-                <h3 className="text-2xl font-instrument text-white">
-                  Say Hello
-                </h3>
-                <button
-                  onClick={() => setIsSayHiOpen(false)}
-                  className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/60 hover:text-white cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <p className="text-xs sm:text-sm text-white/60 leading-relaxed font-light">
-                Interested in working together or discussing generative design systems? Drop a note directly to:
-              </p>
-
-              <div className="p-4 rounded-2xl bg-white/5 border border-white/10 text-center space-y-2">
-                <span className="font-mono text-sm sm:text-base text-white block">
-                  hello@michaelsmith.com
-                </span>
-                <button
-                  onClick={handleCopyEmail}
-                  className="text-xs text-[#89AACC] hover:underline cursor-pointer"
-                >
-                  {copied ? '✓ Copied to clipboard' : 'Click to copy email address'}
-                </button>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-2">
-                <a
-                  href="mailto:hello@michaelsmith.com"
-                  className="rounded-full bg-white text-black px-6 py-2.5 text-xs font-semibold hover:bg-white/90 transition-colors"
-                >
-                  Open Email Client ↗
-                </a>
               </div>
             </motion.div>
           </div>
