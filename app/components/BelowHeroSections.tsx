@@ -160,6 +160,7 @@ const BENTO_WORLDS: BentoWorldItem[] = [
     title: "Tech",
     icon: "tech",
     image: "/assets/bento-3.png",
+    href: "/tech",
     lines: ["THINGS I BUILD", "THINGS I LEARN", "THINGS I'M EXCITED ABOUT."],
   },
   {

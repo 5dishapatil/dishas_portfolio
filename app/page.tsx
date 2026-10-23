@@ -16,7 +16,7 @@ const NAV_ITEMS = [
   { label: "About", href: "#about", active: false },
   { label: "Music", href: "/music", active: false },
   { label: "Books", href: "/books", active: false },
-  { label: "Tech", href: "#tech", active: false },
+  { label: "Tech", href: "/tech", active: false },
   { label: "Ideas", href: "/ideas", active: false },
   { label: "Playground", href: "#playground", active: false },
   { label: "More", href: "#worlds", active: false, hasDropdown: true },
