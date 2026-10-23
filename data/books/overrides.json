@@ -1,0 +1,30 @@
+{
+  "$comment": "EASY AUTHOR & BOOK OVERRIDES — Just type the author name inside the quotes for any book below, save this file, and run `npm run books:build` in your terminal to automatically fetch the cover from Open Library!",
+  "overrides": {
+    "book-003": {
+      "_bookTitle": "Surrogate Mother (House #03)",
+      "author": "Freida McFadden",
+      "isbn": "9781464227306"
+    },
+    "book-005": {
+      "_bookTitle": "Atmamun: The Path to Achieving Bliss and Spiritual Freedom (House #05)",
+      "author": "Kapil Gupta",
+      "isbn": "9781532762727"
+    },
+    "book-011": {
+      "_bookTitle": "The Housemaid's Wedding (House #11)",
+      "author": "Freida McFadden",
+      "isbn": "9781628866254"
+    },
+    "book-048": {
+      "_bookTitle": "Good Girl, Bad Blood (House #48)",
+      "author": "Holly Jackson",
+      "isbn": "9781405297752 "
+    },
+    "book-058": {
+      "_bookTitle": "Ikigai (House #58 — Raw listing had 'Keira Miki'; change below if you want Héctor García & Francesc Miralles)",
+      "author": "Hector García & Francesc Miralles",
+      "isbn": "9781786330895"
+    }
+  }
+}

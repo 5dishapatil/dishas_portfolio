@@ -1,0 +1,780 @@
+{
+  "$comment": "Curated, spoiler-free, original paraphrased synopses and architectural theme cues for the Book Street catalogue. Keyed by book ID. Open Library Work URLs are automatically merged into synopsisSources by scripts/books/resolve-covers.mjs when a verified Open Library work is matched.",
+  "synopses": {
+    "book-001": {
+      "status": "verified",
+      "genre": "Literary Domestic Suspense",
+      "themes": ["Moral Responsibility", "Autonomous Technology", "Family Secrets"],
+      "synopsis": "When a family holiday drive ends in a sudden, devastating collision involving their autonomous vehicle, the Cassidy-Shaw household is thrust into a high-stakes investigation where human choices and algorithmic decisions blur. Retreating to a quiet rental along the Chesapeake Bay while authorities reconstruct the crash, husband and wife confront fractures in their marriage, protective instincts toward their children, and the uncomfortable question of who truly bears blame when technology and private secrets collide.",
+      "sources": [
+        { "label": "Open Library Search — Culpability (Bruce Holsinger)", "url": "https://openlibrary.org/search?q=Culpability+Bruce+Holsinger" }
+      ]
+    },
+    "book-002": {
+      "status": "verified",
+      "genre": "Crime Thriller",
+      "themes": ["Undercover Investigation", "Past Ties", "High-Stakes Suspense"],
+      "synopsis": "In Macon, Georgia, Georgia Bureau of Investigation agent Will Trent takes on a perilous undercover assignment inside a violent local criminal network. The operation becomes deeply personal when Will discovers that Detective Lena Adams—whose history with the people closest to Will is already fraught with grief and distrust—is entangled near the heart of the case, forcing Will and medical examiner Sara Linton into a tense race for the truth.",
+      "sources": [
+        { "label": "Open Library — Unseen by Karin Slaughter", "url": "https://openlibrary.org/search?q=Unseen+Karin+Slaughter" }
+      ]
+    },
+    "book-003": {
+      "status": "verified",
+      "genre": "Domestic Psychological Thriller",
+      "themes": ["Motherhood", "Dark Secrets", "Deception & Suspense"],
+      "synopsis": "Abby and Sam seem to have everything: a loving marriage, successful careers, and a beautiful home—everything except the child they desperately want. When Abby meets Monica, an eager and seemingly warm young woman who offers to be their surrogate, it feels like a miracle. But as Monica moves into their guest room, small unsettling discoveries accumulate, and Abby begins to realize that Monica's past harbors chilling secrets that threaten everything Abby cherishes.",
+      "sources": [
+        { "label": "Open Library — The Surrogate Mother by Freida McFadden", "url": "https://openlibrary.org/works/OL21934181W" }
+      ]
+    },
+    "book-004": {
+      "status": "verified",
+      "genre": "YA Psychological Thriller",
+      "themes": ["Identity", "Memory Loss", "Missing Persons"],
+      "synopsis": "Shivering and bruised beside a rural highway in the Pacific Northwest, a teenage girl wakes with no memory of who she is or how she got there. When a man arrives at the sheriff's station claiming to be her father and calls her Mary, she returns to a quiet home that feels unsettlingly unfamiliar—while miles away, a boyfriend refuses to believe that his missing girlfriend Lola is gone for good.",
+      "sources": [
+        { "label": "Open Library — That's Not My Name by Megan Lally", "url": "https://openlibrary.org/search?q=That%27s+Not+My+Name+Megan+Lally" }
+      ]
+    },
+    "book-005": {
+      "status": "verified",
+      "genre": "Spiritual Philosophy / Contemplative Nonfiction",
+      "themes": ["Freedom from Mind", "Self-Discovery", "Ultimate Truth"],
+      "synopsis": "In this profound contemplative inquiry, Dr. Kapil Gupta explores the elusive journey to inner stillness, transcending prescriptive self-help dogmas to address the root nature of human suffering. Examining how relentless involuntary thought binds the human spirit, Atmamun presents a direct, uncompromising inquiry into discovering authentic peace and living beyond the anxieties of the manufactured self.",
+      "sources": [
+        { "label": "Open Library — Atmamun by Kapil Gupta", "url": "https://openlibrary.org/works/OL36507920W" }
+      ]
+    },
+    "book-006": {
+      "status": "verified",
+      "genre": "Historical /Imperial Fantasy",
+      "themes": ["Poetry Magic", "Court Intrigue", "Rebellion"],
+      "synopsis": "In the famine-stricken Azalea Dynasty, where spoken verse carries lethal imperial power and women are forbidden to read or compose poetry, a village girl is forced into the capital's brutal palace competition to survive. Navigating ruthless court factions and a dangerous prince who embodies the dynasty's darkest literary magic, she discovers that mastering forbidden words may be the only way to rewrite her fate.",
+      "sources": [
+        { "label": "Open Library — The Poet Empress by Shen Tao", "url": "https://openlibrary.org/search?q=The+Poet+Empress+Shen+Tao" }
+      ]
+    },
+    "book-007": {
+      "status": "verified",
+      "genre": "Gothic Historical Fantasy",
+      "themes": ["19th-Century London", "Royal Court", "Science vs. Immortality"],
+      "synopsis": "Following the events in Edinburgh, brilliant young surgeon Hazel Sinnett is summoned to the glittering court of King George IV in London after saving the life of Princess Charlotte. Welcomed into a circle of eccentric aristocrats, artists, and scientists known as the Companions to the Death, Hazel is drawn into a web of courtly secrets while searching for answers about the fate of Jack Currer.",
+      "sources": [
+        { "label": "Open Library — Immortality: A Love Story by Dana Schwartz", "url": "https://openlibrary.org/search?q=Immortality+Dana+Schwartz" }
+      ]
+    },
+    "book-008": {
+      "status": "verified",
+      "genre": "Gothic Historical Mystery",
+      "themes": ["1817 Edinburgh", "Early Surgery", "Resurrectionists"],
+      "synopsis": "In 1817 Edinburgh, aristocratic Hazel Sinnett dreams of becoming a surgeon rather than marrying for society's convenience. Excluded from medical lectures because of her gender, she strikes a deal to pass the Royal Edinburgh Anatomists' exam on her own—requiring anatomical specimens supplied by Jack Currer, a sharp-witted resurrectionist working the city's moonlit graveyards just as mysterious disappearances unsettle the streets.",
+      "sources": [
+        { "label": "Open Library — Anatomy: A Love Story by Dana Schwartz", "url": "https://openlibrary.org/search?q=Anatomy+A+Love+Story+Dana+Schwartz" }
+      ]
+    },
+    "book-009": {
+      "status": "verified",
+      "genre": "Psychological Thriller",
+      "themes": ["Snowbound Manor", "Hidden Tapes", "Unreliable Truths"],
+      "synopsis": "Caught in a fierce winter blizzard while touring a secluded upstate estate, newlyweds Tricia and Ethan take shelter inside the former home of Dr. Adrienne Hale, a renowned psychiatrist who vanished without a trace years earlier. When Tricia discovers a hidden room lined with audio transcripts of every patient Dr. Hale ever interviewed, playing the cassettes unravels a chilling chain of deceptions.",
+      "sources": [
+        { "label": "Open Library — Never Lie by Freida McFadden", "url": "https://openlibrary.org/search?q=Never+Lie+Freida+McFadden" }
+      ]
+    },
+    "book-010": {
+      "status": "verified",
+      "genre": "Dark Academia Fantasy",
+      "themes": ["Secret Society", "Arcane Knowledge", "Moral Ambition"],
+      "synopsis": "Once every decade, six uniquely gifted magicians—known as medians—are invited by the enigmatic Atlas Blakely to compete for five places in the Alexandrian Society, caretakers of the world's lost arcane libraries. Given one year inside a secretive London sanctuary to master physics, nature, mind, and time, the six initiates must decide which alliances to forge and who among them will not survive the selection.",
+      "sources": [
+        { "label": "Open Library — The Atlas Six by Olivie Blake", "url": "https://openlibrary.org/search?q=The+Atlas+Six+Olivie+Blake" }
+      ]
+    },
+    "book-011": {
+      "status": "verified",
+      "genre": "Psychological Suspense Novella",
+      "themes": ["Housemaid Series", "Nuptials & Danger", "Hidden Agendas"],
+      "synopsis": "In this thrilling novella following the events of The Housemaid series, Millie Calloway is finally preparing for her wedding day, hoping to leave dangerous mysteries and eccentric employers behind. But as the celebration approaches, an unexpected visitor and an ominous request pull Millie right back into a dangerous web where surviving the ceremony may be the ultimate challenge.",
+      "sources": [
+        { "label": "Open Library — The Housemaid's Wedding by Freida McFadden", "url": "https://openlibrary.org/works/OL42487395W" }
+      ]
+    },
+    "book-012": {
+      "status": "verified",
+      "genre": "Dark Romantasy",
+      "themes": ["Epic Finale", "Divided Realms", "Sovereignty"],
+      "synopsis": "In the sixth and concluding volume of the Plated Prisoner series, Auren and Slade face the full convergence of Orea's warring monarchs after the shattering events across the realm Bridge. With ancient magic awakened and alliances tested across kingdoms of ice, rot, and gold, Auren must claim the full measure of her power to fight for freedom and those she loves.",
+      "sources": [
+        { "label": "Open Library — Goldfinch by Raven Kennedy", "url": "https://openlibrary.org/search?q=Goldfinch+Raven+Kennedy" }
+      ]
+    },
+    "book-013": {
+      "status": "verified",
+      "genre": "Dark Romantasy",
+      "themes": ["Otherworldly Realm", "Separation", "Self-Forged Power"],
+      "synopsis": "Cast into a perilous realm beyond Orea's borders in the fifth book of the Plated Prisoner series, Auren must navigate unfamiliar courts and ancient fae politics without the protections she once knew. While Slade wages a relentless campaign across the kingdoms to find a way back to her, both confront truths that reshape the war for the continent.",
+      "sources": [
+        { "label": "Open Library — Gold by Raven Kennedy", "url": "https://openlibrary.org/search?q=Gold+Raven+Kennedy" }
+      ]
+    },
+    "book-014": {
+      "status": "verified",
+      "genre": "Dark Romantasy",
+      "themes": ["Reclaimed Agency", "Magic Awakening", "Royal Betrayal"],
+      "synopsis": "In the fourth installment of the Plated Prisoner series, the gilded illusions of King Midas's court have fallen away, leaving Auren to reckon with who she is beyond the cage she once called safety. As monarchs mobilize across Orea and Slade stands beside her not as a captor but an equal, Auren begins learning how to wield the magic pulsing beneath her skin.",
+      "sources": [
+        { "label": "Open Library — Glow by Raven Kennedy", "url": "https://openlibrary.org/search?q=Glow+Raven+Kennedy" }
+      ]
+    },
+    "book-015": {
+      "status": "verified",
+      "genre": "Dark Romantasy",
+      "themes": ["Gilded Illusions", "Court Intrigue", "Slow-Burn Tension"],
+      "synopsis": "Book three of the Plated Prisoner saga follows Auren into the formidable Fifth Kingdom alongside Commander Rip, whose true identity and motives unsettle everything she was taught to believe about Orea's rulers. Within snow-swept fortress walls, long-held loyalties fracture as Auren uncovers the cost of Midas's golden promises.",
+      "sources": [
+        { "label": "Open Library — Gleam by Raven Kennedy", "url": "https://openlibrary.org/search?q=Gleam+Raven+Kennedy" }
+      ]
+    },
+    "book-016": {
+      "status": "verified",
+      "genre": "Historical / Contemporary Fantasy",
+      "themes": ["Memory & Art", "Faustian Bargain", "Three Centuries"],
+      "synopsis": "In 1714 France, a young woman desperate to escape an arranged marriage bargains with a deity of the dark for boundless time and freedom—only to discover she has been cursed to be forgotten by everyone she meets the moment she leaves their sight. Across three centuries of art and history, Addie LaRue leaves hidden traces on the world until, in a Manhattan bookshop, she meets a young man who remembers her name.",
+      "sources": [
+        { "label": "Open Library — The Invisible Life of Addie LaRue by V.E. Schwab", "url": "https://openlibrary.org/search?q=The+Invisible+Life+of+Addie+LaRue+Schwab" }
+      ]
+    },
+    "book-017": {
+      "status": "verified",
+      "genre": "Historical Magical Realism",
+      "themes": ["Le Cirque des Rêves", "Illusionists' Duel", "Star-Crossed Fate"],
+      "synopsis": "Arriving without warning and open only from dusk until dawn, Le Cirque des Rêves enchants Victorian audiences with its black-and-white tents of impossible wonders. Behind the scenes, however, the circus serves as the arena for a lifelong duel between two young magicians, Celia and Marco, trained since childhood by rival masters—unaware that the game binds their fates and the lives of everyone inside the tents.",
+      "sources": [
+        { "label": "Open Library — The Night Circus by Erin Morgenstern", "url": "https://openlibrary.org/search?q=The+Night+Circus+Erin+Morgenstern" }
+      ]
+    },
+    "book-018": {
+      "status": "verified",
+      "genre": "Dark Romantasy",
+      "themes": ["Captivity & Survival", "Enemy Army", "Hidden Strength"],
+      "synopsis": "In the second book of the Plated Prisoner series, Auren has been torn from the golden palace of Highbell and marches as a prisoner of the feared Fourth Kingdom army and its enigmatic commander, Rip. Stripped of her familiar gilded sanctuary, she is forced to question the stories King Midas told her about the world—and about herself.",
+      "sources": [
+        { "label": "Open Library — Glint by Raven Kennedy", "url": "https://openlibrary.org/search?q=Glint+Raven+Kennedy" }
+      ]
+    },
+    "book-019": {
+      "status": "verified",
+      "genre": "Philosophical Fable",
+      "themes": ["Freedom", "Mastery of Flight", "Nonconformity"],
+      "synopsis": "Unlike the rest of the Breakfast Flock, who fly only to scavenge food along the fishing boats, Jonathan Livingston Seagull cares above all else for the pure art and speed of flight. Cast out by his flock for his reckless devotion to soaring higher, Jonathan discovers a wider horizon of kindred spirits where perfection and freedom transcend ordinary limits.",
+      "sources": [
+        { "label": "Open Library — Jonathan Livingston Seagull by Richard Bach", "url": "https://openlibrary.org/search?q=Jonathan+Livingston+Seagull+Richard+Bach" }
+      ]
+    },
+    "book-020": {
+      "status": "verified",
+      "genre": "Gothic Fantasy",
+      "themes": ["Providence Cards", "Mist-Shrouded Kingdom", "Dual Alliances"],
+      "synopsis": "In the conclusion to the Shepherd King duology, Elspeth and the Nightmare share a fractured mind as Ravyn Yew, Prince Renelm, and their allies race to gather the final Twin Alders card before the Solstice. Traveling through the perilous mist beyond Blunder's borders, both pairs must confront ancient bargains to lift the curse haunting the kingdom.",
+      "sources": [
+        { "label": "Open Library — Two Twisted Crowns by Rachel Gillig", "url": "https://openlibrary.org/search?q=Two+Twisted+Crowns+Rachel+Gillig" }
+      ]
+    },
+    "book-021": {
+      "status": "verified",
+      "genre": "Gothic Fantasy",
+      "themes": ["Tarot-Like Magic", "Monster in the Mind", "Mist-Cursed Realm"],
+      "synopsis": "In the mist-locked kingdom of Blunder, Elspeth Spindle conceals both an infection of magic and an ancient, centuries-old spirit she calls the Nightmare who speaks inside her head. When a highway ambush brings her into the orbit of Captain Ravyn Yew—the king's nephew, who is secretly hunting the twelve Providence Cards to cure the realm—Elspeth joins a dangerous quest where every card demands a price.",
+      "sources": [
+        { "label": "Open Library — One Dark Window by Rachel Gillig", "url": "https://openlibrary.org/search?q=One+Dark+Window+Rachel+Gillig" }
+      ]
+    },
+    "book-022": {
+      "status": "verified",
+      "genre": "YA Contemporary Fiction",
+      "themes": ["Childhood Friends", "Unspoken Love", "Growing Up"],
+      "synopsis": "Autumn and Finny grew up next door to each other, bound since infancy by their mothers' close friendship until middle school cliques and quiet misunderstandings pushed them into separate social worlds. Across their high school years, even as both date other people, Autumn cannot shake the feeling that the life they were meant to share is slipping past unspoken.",
+      "sources": [
+        { "label": "Open Library — If He Had Been with Me by Laura Nowlin", "url": "https://openlibrary.org/search?q=If+He+Had+Been+with+Me+Laura+Nowlin" }
+      ]
+    },
+    "book-023": {
+      "status": "verified",
+      "genre": "Romantasy",
+      "themes": ["Kingdom of Ilya", "Final Trials", "Loyalties Tested"],
+      "synopsis": "In the third and final volume of the Powerless Trilogy, Paedyn Gray returns to the Kingdom of Ilya to face a court transformed by betrayal, rebellion, and impossible choices. Caught between the crown's demands and her fractured bond with Enforcer Kai Azer, Paedyn must navigate one last crucible that will decide the future of both Ordinaries and Elites.",
+      "sources": [
+        { "label": "Open Library — Fearless by Lauren Roberts", "url": "https://openlibrary.org/search?q=Fearless+Lauren+Roberts" }
+      ]
+    },
+    "book-024": {
+      "status": "verified",
+      "genre": "YA Fantasy Romance",
+      "themes": ["Underworld Court", "Sisterly Rivalry", "Ambition"],
+      "synopsis": "Chrysantha Stathos has spent her life playing the part of a vain, harmless noblewoman while her sister Alessandra conquered a kingdom. When her estranged grandfather, the Duke of Pelusis, offers Chrysantha his duchy if she can prove her cunning, her carefully laid plans collide with Eryx—a mysterious, masked heir with secrets extending to the Underworld itself.",
+      "sources": [
+        { "label": "Open Library — The Darkness Within Us by Tricia Levenseller", "url": "https://openlibrary.org/search?q=The+Darkness+Within+Us+Tricia+Levenseller" }
+      ]
+    },
+    "book-025": {
+      "status": "verified",
+      "genre": "YA Fae Fantasy",
+      "themes": ["High Court of Elfhame", "Mortal Ambition", "Courtly Intrigue"],
+      "synopsis": "Stolen away to the perilous High Court of Faerie at age seven after her parents' murder, mortal Jude Duarte grows up alongside her sisters in the household of the general who killed them. Determined to win a place of power among immortals who despise humans, Jude must outmaneuver the wickedly sharp Prince Cardan and his circle as a royal succession crisis erupts in Elfhame.",
+      "sources": [
+        { "label": "Open Library — The Cruel Prince by Holly Black", "url": "https://openlibrary.org/search?q=The+Cruel+Prince+Holly+Black" }
+      ]
+    },
+    "book-026": {
+      "status": "verified",
+      "genre": "YA Fantasy Romance",
+      "themes": ["Sly Heroine", "Shadow King", "Court Conspiracy"],
+      "synopsis": "Alessandra Stathos is tired of being overlooked as a second daughter and hatches an audacious plan: woo the newly crowned Shadow King, wed him, and claim the kingdom for herself. Yet when someone else attempts to assassinate Kallas first, the guarded monarch hires Alessandra to help unmask the conspirators inside his court—Provided she can keep both of them alive.",
+      "sources": [
+        { "label": "Open Library — The Shadows Between Us by Tricia Levenseller", "url": "https://openlibrary.org/search?q=The+Shadows+Between+Us+Tricia+Levenseller" }
+      ]
+    },
+    "book-027": {
+      "status": "verified",
+      "genre": "Fairytale Fantasy",
+      "themes": ["Lost Memories", "Magnificent North", "Cursed Hearts"],
+      "synopsis": "In the concluding installment of the Once Upon a Broken Heart trilogy, Evangeline Fox awakens in the glittering Magnificent North with her recent memories stolen away. As Prince Apollo tries to rewrite her past to keep her at his side, the Prince of Hearts, Jacks, refuses to let her go—setting off a final struggle against ancient Northern curses.",
+      "sources": [
+        { "label": "Open Library — A Curse for True Love by Stephanie Garber", "url": "https://openlibrary.org/search?q=A+Curse+for+True+Love+Stephanie+Garber" }
+      ]
+    },
+    "book-028": {
+      "status": "verified",
+      "genre": "Fairytale Fantasy",
+      "themes": ["Valenda Arch", "FatalBargains", "Happily Ever After"],
+      "synopsis": "After betrayal in the Magnificent North leaves Prince Apollo under a deadly curse, Evangeline Fox is forced once again into an uneasy alliance with Jacks, the volatile Prince of Hearts. Together they must unlock the mythical Valory Arch using a trail of enchanted stones before the magic hunting them claims everything Evangeline holds dear.",
+      "sources": [
+        { "label": "Open Library — The Ballad of Never After by Stephanie Garber", "url": "https://openlibrary.org/search?q=The+Ballad+of+Never+After+Stephanie+Garber" }
+      ]
+    },
+    "book-029": {
+      "status": "verified",
+      "genre": "Small-Town Romantic Comedy",
+      "themes": ["Fake Dating Coach", "Flower Shop", "Opposites Attract"],
+      "synopsis": "In charming Rome, Kentucky, quiet florist Annie Walker decides she is tired of being deemed too sweet and predictable by her dates. She enlists Will Griffin—her brother's tattooed, stoic bodyguard who happens to be staying in town—to coach her through the art of modern dating, only for their practice lessons to blur into genuine feelings.",
+      "sources": [
+        { "label": "Open Library — Practice Makes Perfect by Sarah Adams", "url": "https://openlibrary.org/search?q=Practice+Makes+Perfect+Sarah+Adams" }
+      ]
+    },
+    "book-030": {
+      "status": "verified",
+      "genre": "Fairytale Fantasy",
+      "themes": ["Prince of Hearts", "Three Kisses", "Magnificent North"],
+      "synopsis": "Raised in her father's curiosity shop to believe in legends and Immortal Fates, Evangeline Fox is devastated when the boy she loves announces his marriage to her stepsister. Desperate to stop the wedding, she strikes a bargain with the charismatic and dangerous Prince of Hearts, Jacks—promising him three kisses at times of his choosing, a debt that pulls her into the enchanted Magnificent North.",
+      "sources": [
+        { "label": "Open Library — Once Upon a Broken Heart by Stephanie Garber", "url": "https://openlibrary.org/search?q=Once+Upon+a+Broken+Heart+Stephanie+Garber" }
+      ]
+    },
+    "book-031": {
+      "status": "verified",
+      "genre": "Contemporary Romantic Comedy",
+      "themes": ["Wingman Pact", "Wedding Dates", "Witty Banter"],
+      "synopsis": "After crossing paths at a mutual friend's wedding and realizing neither wants a serious relationship just yet—or Wait, both want to find 'the one' on their own terms—Hallie Piper and Jack Marshall strike a friendly wager inside a dating app. Acting as each other's wingman and fake wedding date, they soon find their scoreboard undermined by undeniable chemistry.",
+      "sources": [
+        { "label": "Open Library — The Love Wager by Lynn Painter", "url": "https://openlibrary.org/search?q=The+Love+Wager+Lynn+Painter" }
+      ]
+    },
+    "book-032": {
+      "status": "verified",
+      "genre": "Contemporary Romance",
+      "themes": ["Childhood Crush", "Second Chances", "Family Bonds"],
+      "synopsis": "From the moment she was young, Harper's heart belonged to her best friend's older brother, the charming and guarded Mason. Spanning years of growing up, heartbreak, and the messy realities of adulthood, the opening novel of the Dark Love series follows two people whose lives keep pulling them back into each other's orbit.",
+      "sources": [
+        { "label": "Open Library — Chasing Love by Kat T. Masen", "url": "https://openlibrary.org/search?q=Chasing+Love+Kat+Masen" }
+      ]
+    },
+    "book-033": {
+      "status": "verified",
+      "genre": "Romantasy",
+      "themes": ["Cat-and-Mouse Pursuit", "Scorched Desert", "Duty vs. Heart"],
+      "synopsis": "In the second book of the Powerless Trilogy, Paedyn Gray is a fugitive fleeing across the Scorches after the explosive finale of the Purging Trials. Bound by royal oath to bring her back to Ilya in chains, newly appointed Enforcer Kai Azer tracks her across hostile territory—forcing hunter and hunted into a tense battle of wills where every step tests their loyalties.",
+      "sources": [
+        { "label": "Open Library — Reckless by Lauren Roberts", "url": "https://openlibrary.org/search?q=Reckless+Lauren+Roberts" }
+      ]
+    },
+    "book-034": {
+      "status": "verified",
+      "genre": "Historical Fantasy Romance",
+      "themes": ["Enchanted Typewriters", "War of Gods", "Memory & Devotion"],
+      "synopsis": "Picking up two weeks after the cliffhanger of Divine Rivals, Iris Winnow has returned to Oath bruised and heartbroken while Roman Kitt wakes behind enemy lines in Dacre's subterranean realm with his memories fractured. When a mysterious letter slips beneath a wardrobe door once again, their enchanted typewriters rekindle a lifeline across the front lines of a divine war.",
+      "sources": [
+        { "label": "Open Library — Ruthless Vows by Rebecca Ross", "url": "https://openlibrary.org/search?q=Ruthless+Vows+Rebecca+Ross" }
+      ]
+    },
+    "book-035": {
+      "status": "verified",
+      "genre": "Historical Fantasy Romance",
+      "themes": ["Rival Journalists", "Magical Letters", "War Front"],
+      "synopsis": "As two ancient gods awaken from centuries of slumber to wage war, eighteen-year-old Iris Winnow competes against her coldly brilliant newsroom rival, Roman Kitt, for the columnist promotion at the Oath Gazette. At night, Iris pours her worries into letters for her missing brother and slides them under her wardrobe door—unaware that enchantment is delivering them straight into Roman's hands.",
+      "sources": [
+        { "label": "Open Library — Divine Rivals by Rebecca Ross", "url": "https://openlibrary.org/search?q=Divine+Rivals+Rebecca+Ross" }
+      ]
+    },
+    "book-036": {
+      "status": "verified",
+      "genre": "YA Dystopian Fantasy",
+      "themes": ["Captivity in the Palace", "Scarlet Guard", "Silver Politics"],
+      "synopsis": "In the third volume of the Red Queen series, lightning-wielding Mare Barrow has traded her freedom to save her comrades, becoming a powerless prisoner inside King Maven's glittering Silver court. While Mare endures psychological games inside the palace walls, Cal and the Scarlet Guard prepare for a rebellion that will test every alliance.",
+      "sources": [
+        { "label": "Open Library — King's Cage by Victoria Aveyard", "url": "https://openlibrary.org/search?q=King%27s+Cage+Victoria+Aveyard" }
+      ]
+    },
+    "book-037": {
+      "status": "verified",
+      "genre": "YA Dystopian Fantasy",
+      "themes": ["Newbloods", "Rebellion", "Fugitive Prince"],
+      "synopsis": "In the sequel to Red Queen, Mare Barrow's blood is red, yet she commands the lightning power of the ruling Silver elite. Branded an impossibility and hunted by the newly crowned King Maven, Mare sets out with exiled Prince Cal and the Scarlet Guard to track down other hidden Red-and-Silver 'newbloods' before the regime can eliminate them.",
+      "sources": [
+        { "label": "Open Library — Glass Sword by Victoria Aveyard", "url": "https://openlibrary.org/search?q=Glass+Sword+Victoria+Aveyard" }
+      ]
+    },
+    "book-038": {
+      "status": "verified",
+      "genre": "YA Contemporary Romance",
+      "themes": ["Childhood Sweethearts", "Cherry Blossoms", "Enduring Love"],
+      "synopsis": "When Rune Kristiansen moves from Norway to the small town of Blossom Grove, Georgia, as a child, he forms an inseparable bond with his spirited neighbor Poppy Litchfield, who sets out on a mission passed down by her grandmother: to collect one thousand boy kisses that make her heart race. Years later, after a sudden move separates them, Rune returns home determined to learn why Poppy cut him out of her life.",
+      "sources": [
+        { "label": "Open Library — A Thousand Boy Kisses by Tillie Cole", "url": "https://openlibrary.org/search?q=A+Thousand+Boy+Kisses+Tillie+Cole" }
+      ]
+    },
+    "book-039": {
+      "status": "verified",
+      "genre": "Contemporary Romance",
+      "themes": ["Lake Michigan Summer", "Writer's Block", "Genre Swap"],
+      "synopsis": "Romance novelist January Andrews, whose belief in happily-ever-afters has been shaken by family upheaval, spends the summer clearing out her late father's Lake Michigan beach house—only to find her college rival, acclaimed literary fiction author Augustus Everett, living next door. Both facing looming deadlines and dry pages, they strike a summer pact to swap genres and see who gets published first.",
+      "sources": [
+        { "label": "Open Library — Beach Read by Emily Henry", "url": "https://openlibrary.org/search?q=Beach+Read+Emily+Henry" }
+      ]
+    },
+    "book-040": {
+      "status": "verified",
+      "genre": "YA Mystery / Suspense",
+      "themes": ["Private Island", "Privileged Family", "Summer Fifteen"],
+      "synopsis": "Every summer, the wealthy Sinclair family gathers on their private New England island, Beechwood, where Cadence, her cousins Johnny and Mirren, and outsider Gat call themselves 'the Liars.' During their fifteenth summer, a terrible accident leaves Cadence with debilitating migraines and a blank space in her memory—until she returns to the island two years later determined to piece together what really happened.",
+      "sources": [
+        { "label": "Open Library — We Were Liars by E. Lockhart", "url": "https://openlibrary.org/search?q=We+Were+Liars+Lockhart" }
+      ]
+    },
+    "book-041": {
+      "status": "verified",
+      "genre": "Motorsports Romance",
+      "themes": ["Formula 1", "Redemption Arc", "Fake Relationship"],
+      "synopsis": "In the fourth and final novel of the Dirty Air series, disgraced Formula 1 driver Santiago Alatorre seeks a path back to the track and reconciliation with the biological daughter he never knew he had. When he crosses paths with Chloe Carter, a spirited young woman searching for her own family answers, a mutually beneficial arrangement turns into a journey of second chances.",
+      "sources": [
+        { "label": "Open Library — Redeemed by Lauren Asher", "url": "https://openlibrary.org/search?q=Redeemed+Lauren+Asher" }
+      ]
+    },
+    "book-042": {
+      "status": "verified",
+      "genre": "Motorsports Romance",
+      "themes": ["Formula 1", "Grumpy Teammate", "Touring Calendar"],
+      "synopsis": "In the third Dirty Air novel, Formula 1 prodigy Jax Kingston is fighting to hold his composure under intense media scrutiny and personal turbulence. To repair his public image, his team hires Elena—whose sister races on the circuit—as his travel PR manager across the global Grand Prix calendar, sparking friction and unexpected vulnerability at two hundred miles per hour.",
+      "sources": [
+        { "label": "Open Library — Wrecked by Lauren Asher", "url": "https://openlibrary.org/search?q=Wrecked+Lauren+Asher" }
+      ]
+    },
+    "book-043": {
+      "status": "verified",
+      "genre": "Motorsports Romance",
+      "themes": ["Formula 1", "Summer Bucket List", "Rival's Sister"],
+      "synopsis": "Book two of the Dirty Air series pairs free-spirited Formula 1 driver Liam Zander with Sophie Mitchell, the guarded daughter of his team principal. Looking to break out of her safe routine after heartbreak, Sophie asks Liam to help her check off a secret bucket list between race weekends—So long as neither of them breaks the one rule: falling in love.",
+      "sources": [
+        { "label": "Open Library — Collided by Lauren Asher", "url": "https://openlibrary.org/search?q=Collided+Lauren+Asher" }
+      ]
+    },
+    "book-044": {
+      "status": "verified",
+      "genre": "STEM Romantic Comedy Novella",
+      "themes": ["Elevator Breakdown", "Rival Engineers", "Second Impression"],
+      "synopsis": "Civil engineer Sadie and her professional rival Erik find themselves trapped together inside a stalled New York City elevator after weeks of icy workplace silence. As the hours tick by in close quarters, old misunderstandings surface behind their brief, unforgettable first meeting over a shared croissant.",
+      "sources": [
+        { "label": "Open Library — Stuck with You by Ali Hazelwood", "url": "https://openlibrary.org/search?q=Stuck+with+You+Ali+Hazelwood" }
+      ]
+    },
+    "book-045": {
+      "status": "verified",
+      "genre": "STEM Romantic Comedy Novella",
+      "themes": ["Forced Proximity", "Environmental Scientist", "Big Oil Lawyer"],
+      "synopsis": "When environmental engineer Mara inherits half of her late mentor Helena's sprawling Washington, D.C. house, she discovers the other half belongs to Liam—Helena's nephew and a corporate lawyer for a major energy firm. Determined not to budge from the home she promised to care for, Mara enters a domestic standoff with a roommate who proves far more thoughtful than his job title suggests.",
+      "sources": [
+        { "label": "Open Library — Under One Roof by Ali Hazelwood", "url": "https://openlibrary.org/search?q=Under+One+Roof+Ali+Hazelwood" }
+      ]
+    },
+    "book-046": {
+      "status": "verified",
+      "genre": "Contemporary Emotional Drama",
+      "themes": ["Forgiveness", "Motherhood", "Grief & Healing"],
+      "synopsis": "After serving five years in prison for a tragic mistake, Kenna Rowan returns to the town where everything went wrong, hoping for a chance to meet her four-year-old daughter. Shut out by everyone in her late boyfriend's circle except Ledger Ward—a local bar owner who has helped raise her child—Kenna and Ledger risk the trust of their entire community as they grow closer.",
+      "sources": [
+        { "label": "Open Library — Reminders of Him by Colleen Hoover", "url": "https://openlibrary.org/search?q=Reminders+of+Him+Colleen+Hoover" }
+      ]
+    },
+    "book-047": {
+      "status": "verified",
+      "genre": "Motorsports Romance",
+      "themes": ["Formula 1 Circuit", "Brother's Rival", "Vlogger Heroine"],
+      "synopsis": "In the opening novel of the Dirty Air series, travel vlogger Maya Alatorre joins her brother Santiago for a full Formula 1 season just as arrogant world champion Noah Slade signs onto the same racing team as his fiercest teammate-rival. Traveling together from Melbourne to Abu Dhabi, Maya and Noah's sharp banter gives way to an off-limits attraction.",
+      "sources": [
+        { "label": "Open Library — Throttled by Lauren Asher", "url": "https://openlibrary.org/search?q=Throttled+Lauren+Asher" }
+      ]
+    },
+    "book-048": {
+      "status": "verified",
+      "genre": "YA Mystery / Crime Thriller",
+      "themes": ["Missing Person", "Podcasting Detective", "Small-Town Secrets"],
+      "synopsis": "Following the explosive viral success of her true-crime podcast investigating Andie Bell's case, high school detective Pip Fitz-Amobi vows she is done playing investigator. But when her close friend Connor Reynolds's older brother Jamie disappears on the night of the town's memorial and police refuse to search, Pip breaks her promise, launching a breathless investigation where every clue uncovers deeper rot in Little Kilton.",
+      "sources": [
+        { "label": "Open Library — Good Girl, Bad Blood by Holly Jackson", "url": "https://openlibrary.org/works/OL21084352W" }
+      ]
+    },
+    "book-049": {
+      "status": "verified",
+      "genre": "Romantasy Novella",
+      "themes": ["Loot Alley", "Found Family", "Kingdom of Ilya"],
+      "synopsis": "Set in the Kingdom of Ilya alongside the events of Powerless, this companion story follows Adena—Paedyn Gray's fiercely loyal best friend and gifted seamstress—after she is left on her own in Loot Alley. When she crosses paths with Makoto, an Elite fighting in the underground pits with secrets of his own, the two forge an unforgettable bond amid the kingdom's mounting danger.",
+      "sources": [
+        { "label": "Open Library — Powerful by Lauren Roberts", "url": "https://openlibrary.org/search?q=Powerful+Lauren+Roberts" }
+      ]
+    },
+    "book-050": {
+      "status": "verified",
+      "genre": "Billionaire / Second-Chance Romance",
+      "themes": ["Lake Wisteria", "Inheritance Clause", "Single Mother"],
+      "synopsis": "In the concluding book of the Dreamland Billionaires trilogy, Callahan Kane must fulfill his late grandfather's will by spending a summer at the family's Lake Wisteria cottage before selling it. The catch: the house is occupied by Lana Castillo—the childhood love whose heart he broke six years ago—and her young daughter, who holds the final vote on the property's sale.",
+      "sources": [
+        { "label": "Open Library — Final Offer by Lauren Asher", "url": "https://openlibrary.org/search?q=Final+Offer+Lauren+Asher" }
+      ]
+    },
+    "book-051": {
+      "status": "verified",
+      "genre": "Workplace / Marriage-of-Convenience Romance",
+      "themes": ["Media Empire", "Executive Assistant", "Inheritance Contract"],
+      "synopsis": "In the second Dreamland Billionaires novel, workaholic CEO Declan Kane must marry and present an heir to satisfy his grandfather's ironclad inheritance clause. When his planned match falls through, his loyal, sharp-tongued executive assistant Irisavel stepped forward with a temporary contract marriage—putting Declan's guarded heart to the test.",
+      "sources": [
+        { "label": "Open Library — Terms and Conditions by Lauren Asher", "url": "https://openlibrary.org/search?q=Terms+and+Conditions+Lauren+Asher" }
+      ]
+    },
+    "book-052": {
+      "status": "verified",
+      "genre": "YA Mystery & Puzzle Thriller",
+      "themes": ["Dual Quests", "Secret Societies", "Brotherhood"],
+      "synopsis": "Set in the world of The Inheritance Games, this novel follows Grayson and Jameson Hawthorne across two continents on separate high-stakes missions. While Grayson travels to the sun-drenched Bahamas to rescue his half-sisters from dangerous trouble, Jameson infiltrates an ultra-exclusive underground London gambling club to win an impossible wager for his father.",
+      "sources": [
+        { "label": "Open Library — The Brothers Hawthorne by Jennifer Lynn Barnes", "url": "https://openlibrary.org/search?q=The+Brothers+Hawthorne+Jennifer+Lynn+Barnes" }
+      ]
+    },
+    "book-053": {
+      "status": "verified",
+      "genre": "Grumpy-Sunshine Contemporary Romance",
+      "themes": ["Theme Park Creative", "Billionaire Director", "Secret Correspondence"],
+      "synopsis": "In the first book of the Dreamland Billionaires series, cynical theme-park director Rowan Kane is tasked with revitalizing Dreamland's flagship resort to earn his inheritance. His biggest creative challenge—and unexpected spark—comes in the form of Zahra Gulian, an optimistic attraction creator whose candid feedback and anonymous late-night messages begin to thaw his armor.",
+      "sources": [
+        { "label": "Open Library — The Fine Print by Lauren Asher", "url": "https://openlibrary.org/search?q=The+Fine+Print+Lauren+Asher" }
+      ]
+    },
+    "book-054": {
+      "status": "verified",
+      "genre": "Royal Contemporary Romance",
+      "themes": ["Oxford Summer", "Concert Rapper", "British Prince"],
+      "synopsis": "Seeking to expand her global brand beyond her provocative stage persona, chart-topping American rapper Danielle 'Duchess' Nelson agrees to perform at a prestigious royal charity concert in England. When she is housed at Oxford alongside bookish, privacy-loving Prince Jameson—a philosophy professor reluctant to step into the royal spotlight—their worlds collide in full view of the palace press.",
+      "sources": [
+        { "label": "Open Library — American Royalty by Tracey Livesay", "url": "https://openlibrary.org/search?q=American+Royalty+Tracey+Livesay" }
+      ]
+    },
+    "book-055": {
+      "status": "verified",
+      "genre": "Romantasy",
+      "themes": ["Purging Trials", "Forbidden Ordinary", "Enforcer Prince"],
+      "synopsis": "In the Kingdom of Ilya, citizens born without magical powers—Ordinaries—have been banished or executed by royal decree. Eighteen-year-old street thief Paedyn Gray survives in the slums by using her sharp observational skills to pose as a Psychic, until she inadvertently saves Prince Kai Azer, the kingdom's future Enforcer, and is selected to compete in the lethal Purging Trials.",
+      "sources": [
+        { "label": "Open Library — Powerless by Lauren Roberts", "url": "https://openlibrary.org/search?q=Powerless+Lauren+Roberts" }
+      ]
+    },
+    "book-056": {
+      "status": "verified",
+      "genre": "Psychological Thriller",
+      "themes": ["Forensic Psychotherapy", "Unspoken Secret", "Art & Obsession"],
+      "synopsis": "Acclaimed painter Alicia Berenson appears to lead an enviable London life with her fashion-photographer husband Gabriel—until the evening he is found murdered and Alicia never speaks another word. Six years later, criminal psychotherapist Theo Faber takes a post at the secure forensic unit known as the Grove, determined to unravel the mystery behind her silence.",
+      "sources": [
+        { "label": "Open Library — The Silent Patient by Alex Michaelides", "url": "https://openlibrary.org/search?q=The+Silent+Patient+Alex+Michaelides" }
+      ]
+    },
+    "book-057": {
+      "status": "verified",
+      "genre": "Inspirational Fable",
+      "themes": ["Mindfulness", "Purposeful Living", "Himalayan Sages"],
+      "synopsis": "After a sudden health crisis in the middle of a packed courtroom forces high-powered litigation attorney Julian Mantle to confront the emptiness of his relentless ambition, he sells his prized possessions and travels to India. Returning years later transformed in spirit, he shares the seven timeless virtues taught by the Sages of Sivana with his former colleague.",
+      "sources": [
+        { "label": "Open Library — The Monk Who Sold His Ferrari by Robin Sharma", "url": "https://openlibrary.org/search?q=The+Monk+Who+Sold+His+Ferrari+Robin+Sharma" }
+      ]
+    },
+    "book-058": {
+      "status": "verified",
+      "genre": "Japanese Philosophy & Longevity",
+      "themes": ["Purpose in Life", "Okinawan Centenarians", "Daily Mindfulness"],
+      "synopsis": "Drawing on in-depth interviews with the centenarians of Ogimi in Okinawa—the village with the highest longevity in the world—Héctor García and Francesc Miralles unpack the transformative philosophy of ikigai: the intersection of what you love, what you are good at, what the world needs, and what gives each morning purpose. Blending mindfulness, community habits, and nutrition science, this guide reveals timeless principles for cultivating daily joy and living well.",
+      "sources": [
+        { "label": "Open Library — Ikigai by Héctor García & Francesc Miralles", "url": "https://openlibrary.org/works/OL19714233W" }
+      ]
+    },
+    "book-059": {
+      "status": "verified",
+      "genre": "Mystery Thriller",
+      "themes": ["Unlovestory", "Campus Investigation", "Obsession & Truth"],
+      "synopsis": "Four years after his breakup with Zara Lone, IIT coaching tutor Keshav Rajpurohit receives a late-night message asking him to visit her hostel room—Room 105—on her birthday. What he discovers that night launches him and his best friend Saurabh on a breathless investigation across India into Zara's life, her marriage, and the secrets surrounding her fate.",
+      "sources": [
+        { "label": "Open Library — The Girl in Room 105 by Chetan Bhagat", "url": "https://openlibrary.org/search?q=The+Girl+in+Room+105+Chetan+Bhagat" }
+      ]
+    },
+    "book-060": {
+      "status": "verified",
+      "genre": "Contemporary Indian Romance",
+      "themes": ["Language & Class Divide", "Basketball", "Delhi to Bihar to New York"],
+      "synopsis": "Madhav Jha, a small-town student from Bihar with a gift for basketball and hesitant spoken English, arrives at Delhi's elite St. Stephen's College and falls for Riya Somani, an affluent Delhi girl with dreams of her own. Navigating cultural divides from campus courts to rural Bihar and snowy New York streets, Madhav pursues a love that defies easy labels.",
+      "sources": [
+        { "label": "Open Library — Half Girlfriend by Chetan Bhagat", "url": "https://openlibrary.org/search?q=Half+Girlfriend+Chetan+Bhagat" }
+      ]
+    },
+    "book-061": {
+      "status": "verified",
+      "genre": "Urban Fantasy",
+      "themes": ["Shadowhunters", "Dark Realm of Edom", "Final Stand"],
+      "synopsis": "In the sixth and concluding novel of the original Mortal Instruments saga, Sebastian Morgenstern launches his Endarkened army against the Shadowhunter citadels, forcing the Clave to retreat to Idris. To stop him, Clary, Jace, Alec, Isabelle, and Simon must journey beyond the world's borders into the demon dimension of Edom itself.",
+      "sources": [
+        { "label": "Open Library — City of Heavenly Fire by Cassandra Clare", "url": "https://openlibrary.org/search?q=City+of+Heavenly+Fire+Cassandra+Clare" }
+      ]
+    },
+    "book-062": {
+      "status": "verified",
+      "genre": "Urban Fantasy",
+      "themes": ["Bound Fates", "European Shadow Markets", "Loyalty"],
+      "synopsis": "In the fifth Mortal Instruments novel, Jace has vanished alongside the resurrected Sebastian—and every magical strike against Sebastian now harms Jace as well. While the Clave hesitates, Clary takes a daring risk by infiltrating Sebastian's nomadic inner circle across Europe as Simon, Alec, and Isabelle search for a weapon powerful enough to sever the bond.",
+      "sources": [
+        { "label": "Open Library — City of Lost Souls by Cassandra Clare", "url": "https://openlibrary.org/search?q=City+of+Lost+Souls+Cassandra+Clare" }
+      ]
+    },
+    "book-063": {
+      "status": "verified",
+      "genre": "Urban Fantasy",
+      "themes": ["Mark of Cain", "Shadowhunter New York", "Ancient Cult"],
+      "synopsis": "The Mortal War is over, and Clary Fray is back in New York training to use her rune powers while preparing for her mother's wedding. Yet peace proves fleeting: someone is murdering Shadowhunters and dumping their bodies in Downworlder territory, while Simon becomes the target of multiple factions seeking the ancient power of the Mark of Cain.",
+      "sources": [
+        { "label": "Open Library — City of Fallen Angels by Cassandra Clare", "url": "https://openlibrary.org/search?q=City+of+Fallen+Angels+Cassandra+Clare" }
+      ]
+    },
+    "book-064": {
+      "status": "verified",
+      "genre": "Urban Fantasy",
+      "themes": ["Alicante", "Mortal Glass Towers", "Shadowhunter Alliance"],
+      "synopsis": "To find the warlock who can wake her mother from an enchanted coma, Clary Fray portals without permission into Alicante, the glass-towered capital of the Shadowhunter homeland of Idris. With Valentine's demon armies massing outside the city wards, Clary must convince the centuries-old Clave and the Downworlders to stand united before Alicante falls.",
+      "sources": [
+        { "label": "Open Library — City of Glass by Cassandra Clare", "url": "https://openlibrary.org/search?q=City+of+Glass+Cassandra+Clare" }
+      ]
+    },
+    "book-065": {
+      "status": "verified",
+      "genre": "Urban Fantasy",
+      "themes": ["Mortal Sword", "Downworlder Disappearances", "Inquisitor"],
+      "synopsis": "In the second book of The Mortal Instruments, Clary Fray wishes her life could return to normal, yet her mother remains in a magical coma and her newfound family ties weigh heavily on her and Jace. As Valentine hunts the second Mortal Instrument—the Soul-Sword—through a series of Downworlder abductions, the ruthless Inquisitor arrives at the New York Institute with suspicions aimed squarely at Jace.",
+      "sources": [
+        { "label": "Open Library — City of Ashes by Cassandra Clare", "url": "https://openlibrary.org/search?q=City+of+Ashes+Cassandra+Clare" }
+      ]
+    },
+    "book-066": {
+      "status": "verified",
+      "genre": "New Adult Sports Romance",
+      "themes": ["College Hockey", "Second Chance", "Proving Worth"],
+      "synopsis": "In the second Off-Campus novel, Briar University hockey player John Logan is nursing secret heartache over his best friend's girlfriend when he meets upbeat freshman Grace Ivers. After a thoughtless mistake drives Grace away at the end of the school year, Logan spends the following autumn determined to earn back her trust—one creative challenge at a time.",
+      "sources": [
+        { "label": "Open Library — The Mistake by Elle Kennedy", "url": "https://openlibrary.org/search?q=The+Mistake+Elle+Kennedy" }
+      ]
+    },
+    "book-067": {
+      "status": "verified",
+      "genre": "New Adult Sports Romance",
+      "themes": ["Briar Hockey", "Tutoring Bargain", "Fake Date"],
+      "synopsis": "Music major Hannah Wells is confident in the classroom and on stage, yet needs a way to catch the eye of her longtime campus crush. When Briar University hockey captain Garrett Graham begs her to tutor him after failing an ethics exam that threatens his season, the two strike a deal: she saves his grade, he stages a fake date to boost her social standing.",
+      "sources": [
+        { "label": "Open Library — The Deal by Elle Kennedy", "url": "https://openlibrary.org/search?q=The+Deal+Elle+Kennedy" }
+      ]
+    },
+    "book-068": {
+      "status": "verified",
+      "genre": "Mythological Fantasy Romance",
+      "themes": ["New Athens", "Olympian Politics", "Goddess of the Underworld"],
+      "synopsis": "In the third installment of the Hades x Persephone saga, Persephone and Hades have made their relationship public, drawing the fury of Demeter and the calculating interference of the Olympian gods. As a supernatural storm batters New Athens and the Triad threatens the mortal realm, Persephone must claim her full authority as Queen of the Underworld.",
+      "sources": [
+        { "label": "Open Library — A Touch of Malice by Scarlett St. Clair", "url": "https://openlibrary.org/search?q=A+Touch+of+Malice+Scarlett+St+Clair" }
+      ]
+    },
+    "book-069": {
+      "status": "verified",
+      "genre": "Mythological Fantasy Romance",
+      "themes": ["Underworld Bargains", "Divine Jealousy", "Mortal Tragedy"],
+      "synopsis": "In the second book of the Hades x Persephone series, journalists and gods alike scrutinize Persephone's budding romance with the God of the Dead. When an unthinkable tragedy strikes her best friend and Hades refuses to bend the ancient laws of fate, Persephone makes a dangerous bargain of her own that tests the fragile trust between them.",
+      "sources": [
+        { "label": "Open Library — A Touch of Ruin by Scarlett St. Clair", "url": "https://openlibrary.org/search?q=A+Touch+of+Ruin+Scarlett+St+Clair" }
+      ]
+    },
+    "book-070": {
+      "status": "verified",
+      "genre": "Mythological Fantasy Romance",
+      "themes": ["Modern Greek Myth", "Nevernight Club", "Impossible Contract"],
+      "synopsis": "In the vibrant modern city of New Athens, Persephone lives disguised as an ordinary graduate student and aspiring investigative journalist to escape her mother Demeter's control. After losing a high-stakes game of poker to Hades at his glamorous nightclub Nevernight, she is bound by an impossible contract: create life inside the Underworld within six months or forfeit her freedom.",
+      "sources": [
+        { "label": "Open Library — A Touch of Darkness by Scarlett St. Clair", "url": "https://openlibrary.org/search?q=A+Touch+of+Darkness+Scarlett+St+Clair" }
+      ]
+    },
+    "book-071": {
+      "status": "verified",
+      "genre": "YA Romantic Comedy",
+      "themes": ["Rom-Com Tropes", "Boy Next Door", "Prom Season"],
+      "synopsis": "Hopeless romantic Liz Buxbaum has spent her senior year honoring her late mother's love of classic romantic comedies—and when her childhood crush Michael moves back to town, she is determined to win him as her prom date. Her reluctant ally is Wes Bennett, the teasing boy next door with whom she has battled over their shared driveway parking spot for years.",
+      "sources": [
+        { "label": "Open Library — Better Than the Movies by Lynn Painter", "url": "https://openlibrary.org/search?q=Better+Than+the+Movies+Lynn+Painter" }
+      ]
+    },
+    "book-072": {
+      "status": "verified",
+      "genre": "STEM Romantic Comedy",
+      "themes": ["Stanford Lab", "Fake Dating", "Grumpy Professor"],
+      "synopsis": "To convince her best friend Anh that she has happily moved on from an old crush, third-year Stanford biology Ph.D. candidate Olive Smith panics and kisses the first man she sees in the lab hallway at night. That man turns out to be Dr. Adam Carlsen, the department's notoriously exacting young faculty star—who unexpectedly agrees to act as her fake boyfriend.",
+      "sources": [
+        { "label": "Open Library — The Love Hypothesis by Ali Hazelwood", "url": "https://openlibrary.org/search?q=The+Love+Hypothesis+Ali+Hazelwood" }
+      ]
+    },
+    "book-073": {
+      "status": "verified",
+      "genre": "Romantic Comedy",
+      "themes": ["Maui Resort", "Sworn Enemies", "All-Inclusive Honeymoon"],
+      "synopsis": "When an entire wedding party—including the bride and groom—comes down with food poisoning from the buffet, the only two guests left unscathed are the bride's twin sister Olive Torres and the groom's best man Ethan Thomas, who cannot stand each other. Refusing to let a non-refundable ten-day Maui honeymoon go to waste, they fly to Hawaii posing as newlyweds.",
+      "sources": [
+        { "label": "Open Library — The Unhoneymooners by Christina Lauren", "url": "https://openlibrary.org/search?q=The+Unhoneymooners+Christina+Lauren" }
+      ]
+    },
+    "book-074": {
+      "status": "verified",
+      "genre": "YA Contemporary Romance",
+      "themes": ["Martha's Vineyard", "Family Assassin Game", "Healing from Loss"],
+      "synopsis": "Returning to her family's sprawling Martha's Vineyard estate for the first time since her sister Claire's passing, Meredith Fox joins a weeklong wedding celebration complete with their traditional island-wide game of Assassin. Determined to win the game in Claire's honor, she forms a secret alliance with Wit, a charming groomsman stepbrother who makes this summer unforgettable.",
+      "sources": [
+        { "label": "Open Library — The Summer of Broken Rules by K. L. Walther", "url": "https://openlibrary.org/search?q=The+Summer+of+Broken+Rules+Walther" }
+      ]
+    },
+    "book-075": {
+      "status": "verified",
+      "genre": "YA Contemporary Romance",
+      "themes": ["Colorado Ranch", "Large Boisterous Family", "New Beginnings"],
+      "synopsis": "After a tragic accident claims her family in New York City, perfectionist sixteen-year-old Jackie Howard is sent to live in rural Colorado with her mother's best friend, Katherine Walter—who is raising a chaotic household of noisy, athletic sons. Adjusting from Manhattan polish to ranch life, Jackie finds herself caught between two very different Walter brothers.",
+      "sources": [
+        { "label": "Open Library — My Life with the Walter Boys by Ali Novak", "url": "https://openlibrary.org/search?q=My+Life+with+the+Walter+Boys+Ali+Novak" }
+      ]
+    },
+    "book-076": {
+      "status": "verified",
+      "genre": "YA Dystopian Sci-Fi Romance",
+      "themes": ["Lethal Touch", "The Reestablishment", "Rebellion"],
+      "synopsis": "Locked in solitary confinement for 264 days because her skin is lethal to anyone who touches her, seventeen-year-old Juliette Ferrars is viewed by the totalitarian Reestablishment as either a monster or a weapon. When she is given a cellmate who remembers her from childhood and brought before the ruthless young commander Warner, Juliette discovers the strength to fight back.",
+      "sources": [
+        { "label": "Open Library — Shatter Me by Tahereh Mafi", "url": "https://openlibrary.org/search?q=Shatter+Me+Tahereh+Mafi" }
+      ]
+    },
+    "book-077": {
+      "status": "verified",
+      "genre": "Historical Fiction",
+      "themes": ["Old Hollywood", "Seven Marriages", "Hidden Devotion"],
+      "synopsis": "Reclusive Hollywood icon Evelyn Hugo chooses unknown magazine reporter Monique Grant to write her no-holds-barred biography—and no one is more puzzled by the choice than Monique herself. Summoned to Evelyn's Upper East Side apartment, Monique listens as the legendary actress recounts her rise from 1950s Los Angeles, the seven marriages that made headlines, and the true love she spent her life protecting.",
+      "sources": [
+        { "label": "Open Library — The Seven Husbands of Evelyn Hugo by Taylor Jenkins Reid", "url": "https://openlibrary.org/search?q=The+Seven+Husbands+of+Evelyn+Hugo+Taylor+Jenkins+Reid" }
+      ]
+    },
+    "book-078": {
+      "status": "verified",
+      "genre": "YA Mystery & Puzzle Thriller",
+      "themes": ["Hawthorne House", "Riddles & Secret Passages", "Sudden Fortune"],
+      "synopsis": "High school student Avery Grambs is scraping by until eccentric billionaire Tobias Hawthorne dies and leaves almost his entire fortune to her—a stranger he never met. To claim the inheritance, Avery must move into sprawling, secret-passage-filled Hawthorne House alongside the billionaire's disinherited family and his four brilliant, puzzle-obsessed grandsons.",
+      "sources": [
+        { "label": "Open Library — The Inheritance Games by Jennifer Lynn Barnes", "url": "https://openlibrary.org/search?q=The+Inheritance+Games+Jennifer+Lynn+Barnes" }
+      ]
+    },
+    "book-079": {
+      "status": "verified",
+      "genre": "Office Romantic Comedy",
+      "themes": ["Publishing Merger", "Shared Office", "Executive Promotion"],
+      "synopsis": "After their rival publishing houses merge, vibrant Lucy Hutton and buttoned-up Joshua Templeman sit across from each other every day as executive assistants to the co-CEOs, trading daily mind games from the Staring Game to the Mirror Game. When a single managing director promotion opens up, their rivalry escalates—Right until an elevator ride changes the rules.",
+      "sources": [
+        { "label": "Open Library — The Hating Game by Sally Thorne", "url": "https://openlibrary.org/search?q=The+Hating+Game+Sally+Thorne" }
+      ]
+    },
+    "book-080": {
+      "status": "verified",
+      "genre": "STEM Romantic Comedy",
+      "themes": ["NASA Neuroengineering", "Academic Rivals", "Anonymous Confidant"],
+      "synopsis": "Neuroscientist Bee Königswasser lands her dream opportunity leading a neuroengineering helmet project at NASA alongside the NIH—only to discover her co-lead is Levi Ward, her tall, brooding grad-school nemesis. When her lab equipment goes missing and she vents to her anonymous online friend @Shmac, Bee begins to see a very different side of Levi.",
+      "sources": [
+        { "label": "Open Library — Love on the Brain by Ali Hazelwood", "url": "https://openlibrary.org/search?q=Love+on+the+Brain+Ali+Hazelwood" }
+      ]
+    },
+    "book-081": {
+      "status": "verified",
+      "genre": "YA Time-Loop Drama",
+      "themes": ["Twenty-Seven Days", "Second Chance", "Compassion"],
+      "synopsis": "After quiet classmate Archer Morales dies following a school dance, seventeen-year-old Hadley Jamison is approached at his funeral by Death himself with an unprecedented offer: travel back twenty-seven days in time to stop Archer from ending his life. As Hadley gets to know the boy behind the quiet reputation, she realizes how much she never noticed.",
+      "sources": [
+        { "label": "Open Library — In 27 Days by Alison Gervais", "url": "https://openlibrary.org/search?q=In+27+Days+Alison+Gervais" }
+      ]
+    },
+    "book-082": {
+      "status": "verified",
+      "genre": "Psychological Romantic Thriller",
+      "themes": ["Ghostwriter", "Hidden Autobiography", "Unreliable Manuscript"],
+      "synopsis": "Struggling New York writer Lowen Ashleigh accepts the career-saving offer of a lifetime: finish the remaining novels in a hit series for bestselling thriller author Verity Crawford, who was severely injured in a car crash. Moving into the Crawford home to sort through Verity's office notes, Lowen uncovers an unfinished manuscript filled with chilling confessions about the family's past.",
+      "sources": [
+        { "label": "Open Library — Verity by Colleen Hoover", "url": "https://openlibrary.org/search?q=Verity+Colleen+Hoover" }
+      ]
+    },
+    "book-083": {
+      "status": "verified",
+      "genre": "Contemporary Romance",
+      "themes": ["Second-Chance First Love", "Co-Parenting", "Boston"],
+      "synopsis": "Picking up after It Ends with Us, floral shop owner Lily Bloom navigates life as a single mother in Boston while co-parenting her baby daughter with her ex-husband Ryle. When she unexpectedly crosses paths on a busy street with Atlas Corrigan—the boy who sheltered her in their youth and now runs two thriving restaurants—the two cautiously explore whether their timing has finally arrived.",
+      "sources": [
+        { "label": "Open Library — It Starts with Us by Colleen Hoover", "url": "https://openlibrary.org/search?q=It+Starts+with+Us+Colleen+Hoover" }
+      ]
+    },
+    "book-084": {
+      "status": "verified",
+      "genre": "Contemporary Romance",
+      "themes": ["Airline Pilot", "Guarded Heart", "Dual Timeline"],
+      "synopsis": "Moving into her brother's San Francisco apartment while finishing her nursing degree, Tate Collins meets airline pilot Miles Archer. Miles makes no secret that he wants neither love nor a future—only an arrangement with two rules: never ask about the past and never expect a tomorrow. Alternating between the present and Miles's history six years earlier, their bond tests every wall he built.",
+      "sources": [
+        { "label": "Open Library — Ugly Love by Colleen Hoover", "url": "https://openlibrary.org/search?q=Ugly+Love+Colleen+Hoover" }
+      ]
+    },
+    "book-085": {
+      "status": "verified",
+      "genre": "Contemporary Emotional Drama",
+      "themes": ["Duplicate Entry of #46", "Forgiveness", "Motherhood"],
+      "synopsis": "After serving five years in prison for a tragic mistake, Kenna Rowan returns to the town where everything went wrong, hoping for a chance to meet her four-year-old daughter. Shut out by everyone in her late boyfriend's circle except Ledger Ward—a local bar owner who has helped raise her child—Kenna and Ledger risk the trust of their entire community as they grow closer. (Note: Preserved duplicate listing of House No. 46.)",
+      "sources": [
+        { "label": "Open Library — Reminders of Him by Colleen Hoover", "url": "https://openlibrary.org/search?q=Reminders+of+Him+Colleen+Hoover" }
+      ]
+    },
+    "book-086": {
+      "status": "verified",
+      "genre": "Contemporary Fiction / Romance",
+      "themes": ["Resilience", "Boston Flower Shop", "Breaking the Cycle"],
+      "synopsis": "Fresh out of college, Lily Bloom moves to Boston to open her own unconventionally styled flower shop and meets charismatic neurosurgeon Ryle Kincaid. As their relationship deepens and old journals bring back memories of her first love, Atlas Corrigan, Lily is forced to confront painful truths about her childhood home and summon the courage to break a generational cycle.",
+      "sources": [
+        { "label": "Open Library — It Ends with Us by Colleen Hoover", "url": "https://openlibrary.org/search?q=It+Ends+with+Us+Colleen+Hoover" }
+      ]
+    }
+  }
+}
+

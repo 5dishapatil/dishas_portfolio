@@ -1,0 +1,105 @@
+{
+  "$comment": "Listing-level corrections applied by scripts/books/import-books.mjs AFTER the automatic promo-stripping rules. Keyed by the EXACT original listing title. 'basis' explains where the correction comes from: 'listing' = the information is present in the listing itself; 'editorial' = a human/assistant correction that is NOT in the listing and therefore stays flagged for review until an Open Library match confirms it. The original title/author are always preserved in the normalized output.",
+  "corrections": {
+    "Atmamun The Path to Achieving Bliss and Spiritual Freedom Himalayan Wisdom Meditation and Self Discovery Inspirational Book": {
+      "title": "Atmamun",
+      "subtitle": "The Path to Achieving Bliss and Spiritual Freedom",
+      "basis": "listing",
+      "reason": "Listing title runs the real title into marketing keywords. Author is missing from the listing and is NOT guessed."
+    },
+    "Never Lie: A Totally Gripping Thriller with Mind-bending Twists | TikTok Viral & Bestseller Pick": {
+      "author": "Freida McFadden",
+      "basis": "listing",
+      "reason": "Author field was 'The Housemaid Freida McFadden' (another book title prefixed to the author name)."
+    },
+    "The Housemaid's Wedding Paperback": {
+      "title": "The Housemaid's Wedding",
+      "basis": "listing",
+      "reason": "Trailing format word 'Paperback' removed. Author is missing from the listing and is NOT guessed."
+    },
+    "Invisible Life of Adie Larue": {
+      "title": "The Invisible Life of Addie LaRue",
+      "basis": "editorial",
+      "reason": "Listing misspells the title ('Adie Larue'). Corrected spelling must be confirmed by the Open Library match."
+    },
+    "If He Had Been with Me": {
+      "author": "Laura Nowlin",
+      "basis": "editorial",
+      "reason": "Author field 'Laura Nowlin Gina Rogers Tantor Audio' includes an audiobook narrator and publisher."
+    },
+    "Chasing Love: A Best Friends Older Brother Romance (Dark Love Series Book 1)": {
+      "title": "Chasing Love",
+      "subtitle": null,
+      "author": "Kat T. Masen",
+      "series": "Dark Love Series, Book 1",
+      "basis": "listing",
+      "reason": "Trope descriptor removed from subtitle; author spacing normalised ('Kat T.Masen')."
+    },
+    "Divine Rivals: Rituals and Practices for Living Your Best Life": {
+      "title": "Divine Rivals",
+      "subtitle": null,
+      "series": "Letters of Enchantment, Book 1",
+      "basis": "editorial",
+      "reason": "The listing subtitle belongs to a different (self-help) product and does not describe this novel. Needs confirmation by the Open Library match."
+    },
+    "Beach Reads: International Bestselling Romcom About Love, Writers, and an Unforgettable Summer by Emily Henry": {
+      "title": "Beach Read",
+      "basis": "editorial",
+      "reason": "Listing says 'Beach Reads'; the published title is believed to be 'Beach Read'. Must be confirmed by the Open Library match."
+    },
+    "Hachette FINAL OFFER": {
+      "title": "Final Offer",
+      "basis": "listing",
+      "reason": "Publisher name 'Hachette' was prefixed to the title."
+    },
+    "THROTTLED SPECIAL /E": {
+      "title": "Throttled",
+      "edition": "Special Edition",
+      "basis": "listing",
+      "reason": "Abbreviated edition marker 'SPECIAL /E' removed from the title."
+    },
+    "The Brothers Hawthorne": {
+      "author": "Jennifer Lynn Barnes",
+      "basis": "listing",
+      "reason": "Author name was given in reversed, upper-case order ('BARNES JENNIFER LYNN')."
+    },
+    "Half Girlfriend": {
+      "author": "Chetan Bhagat",
+      "basis": "listing",
+      "reason": "Author name was given in reversed order ('Bhagat Chetan')."
+    },
+    "The Mortal Instruments 6: City of Heavenly Fire: From the international bestselling author who defined romantasy: the original Shadowhunter series ... hunting, betrayal, secrets and forbidden love": {
+      "subtitle": null,
+      "author": "Cassandra Clare",
+      "basis": "listing",
+      "reason": "Author misspelled in the listing ('Cassnadra clare'); promotional subtitle stripped."
+    },
+    "SEVEN HUSBANDS OF EVELYN HUGO": {
+      "title": "The Seven Husbands of Evelyn Hugo",
+      "basis": "editorial",
+      "reason": "Listing omits leading article 'The'; confirmed against Open Library."
+    },
+    "REMINDER OF HIM BY COLLEEN HOOVER PAPERBACK ENGLISH EDITION 2023": {
+      "title": "Reminders of Him",
+      "basis": "editorial",
+      "reason": "Listing spells title 'Reminder of Him' (singular) with inline author/edition text; normalises to 'Reminders of Him' (duplicate of book-046)."
+    },
+    "Shatter Me: A Journey of Strength and Rebellion Against a Dictatorship": {
+      "title": "Shatter Me",
+      "subtitle": null,
+      "basis": "listing",
+      "reason": "Descriptive marketing subtitle removed."
+    },
+    "Good Girl, Bad Blood - The Sunday Times Bestseller And Seque": {
+      "title": "Good Girl, Bad Blood",
+      "basis": "listing",
+      "reason": "Promotional suffix removed. Author is missing from the listing and is NOT guessed."
+    },
+    "Ikigai English (PB)": {
+      "title": "Ikigai",
+      "basis": "listing",
+      "reason": "Language/format markers removed. NOTE: the listed author 'Keira Miki' is unusual for this title and is kept as listed; verify the edition."
+    }
+  }
+}
+

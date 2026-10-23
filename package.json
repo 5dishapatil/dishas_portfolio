@@ -6,12 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "books:import": "node scripts/books/import-books.mjs",
+    "books:resolve": "node scripts/books/resolve-covers.mjs",
+    "books:build": "node scripts/books/import-books.mjs && node scripts/books/resolve-covers.mjs"
   },
   "dependencies": {
+    "@types/three": "^0.186.0",
     "next": "16.4.2",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
