@@ -11,3 +11,4 @@ import FinanceViewer from "@/app/components/mind/FinanceViewer";
 export default function FinancePage() {
   return <FinanceViewer />;
 }
+
