@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface CarouselCard {
   src: string;
@@ -288,6 +289,7 @@ export default function BelowHeroSections() {
   const router = useRouter();
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
+  const [isEndJourneyOpen, setIsEndJourneyOpen] = useState<boolean>(false);
 
   const filterDropdownRef = useRef<HTMLDivElement | null>(null);
   const row1TrackRef = useRef<HTMLDivElement | null>(null);
@@ -977,6 +979,113 @@ export default function BelowHeroSections() {
             );
           })}
         </div>
+
+        {/* -------------------------------------------------------------------
+            END OF JOURNEY THRESHOLD BUTTON
+           ------------------------------------------------------------------- */}
+        <div className="mt-16 sm:mt-20 flex flex-col items-center justify-center">
+          <div className="mb-6 flex items-center gap-4 opacity-70">
+            <span className="h-[1px] w-16 sm:w-28 bg-gradient-to-r from-transparent to-[#D8B77E]/60" />
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              className="w-3 h-3 text-[#E5C68E]"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 0C8.5 5 10 7.2 16 8C10 8.8 8.5 11 8 16C7.5 11 6 8.8 0 8C6 7.2 7.5 5 8 0Z"
+                fill="currentColor"
+              />
+            </svg>
+            <span className="h-[1px] w-16 sm:w-28 bg-gradient-to-l from-transparent to-[#D8B77E]/60" />
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsEndJourneyOpen(true)}
+            className="group relative inline-flex items-center gap-3.5 rounded-full border border-[#D8B77E]/55 bg-gradient-to-b from-[#1E150C]/90 to-[#0F0A06]/95 px-8 sm:px-10 py-3.5 sm:py-4 font-serif text-[16px] sm:text-[18px] tracking-[0.14em] text-[#F5EFE6] backdrop-blur-xl shadow-[0_12px_36px_rgba(0,0,0,0.65),0_0_24px_rgba(216,183,126,0.12)] transition-all duration-500 hover:scale-105 hover:border-[#F0D7A7] hover:text-white hover:shadow-[0_16px_48px_rgba(216,183,126,0.28),0_0_32px_rgba(216,183,126,0.22)] cursor-pointer"
+          >
+            <span className="h-1.5 w-1.5 rounded-full bg-[#E6C994] shadow-[0_0_8px_#E6C994] transition-transform duration-300 group-hover:scale-125" />
+            <span>End of Journey.</span>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#E6C994] shadow-[0_0_8px_#E6C994] transition-transform duration-300 group-hover:scale-125" />
+          </button>
+        </div>
+
+        {/* -------------------------------------------------------------------
+            END OF JOURNEY CONFIRMATION MODAL
+           ------------------------------------------------------------------- */}
+        <AnimatePresence>
+          {isEndJourneyOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsEndJourneyOpen(false)}
+                className="fixed inset-0 bg-black/85 backdrop-blur-md"
+              />
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.93, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.93, y: 20 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="relative z-10 w-full max-w-lg rounded-2xl border border-[#D8B77E]/45 bg-gradient-to-b from-[#17100A] via-[#0F0A06] to-[#090604] p-7 sm:p-10 text-center shadow-[0_28px_80px_rgba(0,0,0,0.9),0_0_45px_rgba(216,183,126,0.16)] overflow-hidden"
+              >
+                {/* Ambient Golden Glow */}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-48 w-72 rounded-full bg-[#D8B77E]/15 blur-3xl"
+                />
+
+                {/* Star Ornament */}
+                <div className="relative z-10 mx-auto mb-5 flex items-center justify-center gap-3">
+                  <span className="h-[1px] w-10 bg-gradient-to-r from-transparent to-[#D8B77E]/70" />
+                  <svg
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    className="w-3.5 h-3.5 text-[#E8CFA0]"
+                  >
+                    <path
+                      d="M8 0C8.5 5 10 7.2 16 8C10 8.8 8.5 11 8 16C7.5 11 6 8.8 0 8C6 7.2 7.5 5 8 0Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <span className="h-[1px] w-10 bg-gradient-to-l from-transparent to-[#D8B77E]/70" />
+                </div>
+
+                <h3 className="relative z-10 font-display text-2xl sm:text-3xl font-normal tracking-[0.04em] text-[#FAF6F0]">
+                  Before You Leave
+                </h3>
+
+                <p className="relative z-10 mt-4 font-serif italic text-lg sm:text-xl leading-relaxed text-[#E6D5B8]">
+                  Are you sure you want to end your journey through Disha&apos;s beautifully complex mind?
+                </p>
+
+                <div className="relative z-10 mt-8 flex flex-col sm:flex-row items-center justify-center gap-3.5">
+                  <button
+                    type="button"
+                    onClick={() => setIsEndJourneyOpen(false)}
+                    className="w-full sm:w-auto rounded-full border border-[#D8B77E]/35 bg-white/[0.04] px-6 py-2.5 font-sans text-xs uppercase tracking-[0.18em] text-[#D8C7AE] transition-all hover:border-[#E8CFA0]/75 hover:bg-white/[0.09] hover:text-white cursor-pointer"
+                  >
+                    No, Keep Exploring
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEndJourneyOpen(false);
+                      router.push("/end-of-journey");
+                    }}
+                    className="w-full sm:w-auto rounded-full border border-[#E8CFA0]/80 bg-gradient-to-r from-[#D8B77E]/30 via-[#E8CFA0]/40 to-[#D8B77E]/30 px-7 py-2.5 font-sans text-xs font-medium uppercase tracking-[0.18em] text-[#FFFDF9] shadow-[0_0_24px_rgba(216,183,126,0.28)] transition-all hover:scale-105 hover:border-[#FFF8EE] hover:shadow-[0_0_32px_rgba(216,183,126,0.45)] cursor-pointer"
+                  >
+                    Yes, End Journey
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </section>
     </div>
   );
