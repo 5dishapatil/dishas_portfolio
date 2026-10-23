@@ -81,7 +81,7 @@ export default function ArchetypeRoofCrown({
     case "fantasy":
       // Style 02: Towering gothic emerald turrets, pointed spires, gargoyles & glowing rose window
       return (
-        <div className="relative w-full h-[115px] -mt-[19px] overflow-visible select-none pointer-events-none">
+        <div className="relative w-full h-[108px] overflow-visible select-none pointer-events-none">
           <svg viewBox="0 0 380 115" className="w-full h-full overflow-visible" preserveAspectRatio="none">
             {/* Left Tower & Steep Spire */}
             <polygon points="12,115 12,54 36,4 60,54 60,115" fill={roofSlateColor} stroke={trimColor} strokeWidth="1.5" />
@@ -118,7 +118,7 @@ export default function ArchetypeRoofCrown({
     case "mystery":
       // Style 03: Steep charcoal slate gables, brick chimneys, autumn red/orange maple foliage
       return (
-        <div className="relative w-full h-[102px] -mt-[6px] overflow-visible select-none pointer-events-none">
+        <div className="relative w-full h-[98px] overflow-visible select-none pointer-events-none">
           <svg viewBox="0 0 380 102" className="w-full h-full overflow-visible" preserveAspectRatio="none">
             {/* Left tall weathered chimney stack */}
             <rect x="52" y="10" width="28" height="65" fill="#201C1B" stroke={trimColor} strokeWidth="1.2" />
@@ -196,7 +196,7 @@ export default function ArchetypeRoofCrown({
     case "self-help":
       // Style 05: Classical arched sunburst pediment with radiating golden sunbeams & stone urns
       return (
-        <div className="relative w-full h-[98px] -mt-[2px] overflow-visible select-none pointer-events-none">
+        <div className="relative w-full h-[96px] overflow-visible select-none pointer-events-none">
           <svg viewBox="0 0 380 98" className="w-full h-full overflow-visible" preserveAspectRatio="none">
             {/* Corner sculpted classical urns on balustrade */}
             <path d="M26 98 V62 H46 V98 Z M36 52 C42 52 44 62 44 62 H28 C28 62 30 52 36 52 Z" fill="#D6C5AD" stroke={trimColor} strokeWidth="1" />
@@ -280,7 +280,7 @@ export default function ArchetypeRoofCrown({
     case "sci-fi":
       // Style 07: Spectacular glass astrolabe observatory dome glowing with cyan constellations & orbital rings
       return (
-        <div className="relative w-full h-[106px] -mt-[10px] overflow-visible select-none pointer-events-none">
+        <div className="relative w-full h-[102px] overflow-visible select-none pointer-events-none">
           <svg viewBox="0 0 380 106" className="w-full h-full overflow-visible" preserveAspectRatio="none">
             {/* Outer Rotating Brass Armillary Ring */}
             <ellipse cx="190" cy="56" rx="98" ry="34" fill="none" stroke={trimColor} strokeWidth="2.2" strokeDasharray="6 3" opacity="0.85" />
@@ -324,7 +324,7 @@ export default function ArchetypeRoofCrown({
     case "dark-academia":
       // Style 08: Stepped Flemish collegiate gothic gables, clustered chimneys, dark ivy vines
       return (
-        <div className="relative w-full h-[106px] -mt-[10px] overflow-visible select-none pointer-events-none">
+        <div className="relative w-full h-[102px] overflow-visible select-none pointer-events-none">
           <svg viewBox="0 0 380 106" className="w-full h-full overflow-visible" preserveAspectRatio="none">
             {/* Clustered historic masonry chimneys on left */}
             <rect x="56" y="8" width="16" height="68" fill="#1E1917" stroke={trimColor} strokeWidth="1.2" />
@@ -373,7 +373,7 @@ export default function ArchetypeRoofCrown({
     case "adventure-exploration":
       // Style 09: Nautical maritime roof with ship's lookout mast, rigging, pennant & brass compass rose
       return (
-        <div className="relative w-full h-[112px] -mt-[16px] overflow-visible select-none pointer-events-none">
+        <div className="relative w-full h-[106px] overflow-visible select-none pointer-events-none">
           <svg viewBox="0 0 380 112" className="w-full h-full overflow-visible" preserveAspectRatio="none">
             {/* Steep shipwright-inspired timber shingle roof */}
             <polygon points="16,112 190,32 364,112" fill={roofSlateColor} stroke={trimColor} strokeWidth="2.2" />
@@ -403,7 +403,7 @@ export default function ArchetypeRoofCrown({
     case "fairytale-whimsical":
       // Style 10: Whimsical lilac/pink fairytale turrets, spiral spires, golden crescent moon & wisteria blossoms
       return (
-        <div className="relative w-full h-[115px] -mt-[19px] overflow-visible select-none pointer-events-none">
+        <div className="relative w-full h-[108px] overflow-visible select-none pointer-events-none">
           <svg viewBox="0 0 380 115" className="w-full h-full overflow-visible" preserveAspectRatio="none">
             {/* Left Fairytale Conical Turret with Crescent Moon */}
             <polygon points="16,115 16,60 36,6 56,60 56,115" fill={roofSlateColor} stroke={trimColor} strokeWidth="1.6" />
@@ -453,3 +453,4 @@ export default function ArchetypeRoofCrown({
       );
   }
 }
+

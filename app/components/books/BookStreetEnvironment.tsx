@@ -112,7 +112,7 @@ export default function BookStreetEnvironment({
           LAYER 2: DRAMATIC CLIFF CASTLE & DISTANT WATERFALL (Parallax 0.06x)
          =================================================================== */}
       <div
-        className="absolute bottom-[130px] left-0 h-[380px] flex items-end opacity-75"
+        className="absolute bottom-[66px] left-0 h-[380px] flex items-end opacity-75"
         style={{
           width: `${totalStreetWidth * 0.2 + 2400}px`,
           transform: `translate3d(${-worldX * 0.06}px, 0, 0)`,
@@ -165,7 +165,7 @@ export default function BookStreetEnvironment({
           LAYER 3: DISTANT SILHOUETTED ROOFTOPS & SPIRES (Parallax 0.16x)
          =================================================================== */}
       <div
-        className="absolute bottom-[114px] left-0 h-[310px] flex items-end opacity-60"
+        className="absolute bottom-[58px] left-0 h-[310px] flex items-end opacity-60"
         style={{
           width: `${totalStreetWidth * 0.35 + 2400}px`,
           transform: `translate3d(${-worldX * 0.16}px, 0, 0)`,
@@ -195,7 +195,7 @@ export default function BookStreetEnvironment({
           LAYER 4: STONE CANAL BALUSTRADE RUNNING PARALLEL (Parallax 0.45x)
          =================================================================== */}
       <div
-        className="absolute bottom-[98px] left-0 h-[48px] flex items-end opacity-40 z-0"
+        className="absolute bottom-[48px] left-0 h-[48px] flex items-end opacity-40 z-0"
         style={{
           width: `${totalStreetWidth * 0.6 + 2000}px`,
           transform: `translate3d(${-worldX * 0.45}px, 0, 0)`,
@@ -216,10 +216,10 @@ export default function BookStreetEnvironment({
       {/* ===================================================================
           LAYER 5: COBBLESTONE PROMENADE & WATER REFLECTIONS
          =================================================================== */}
-      <div className="absolute inset-x-0 bottom-0 h-[106px] z-0 overflow-hidden">
+      <div className="absolute inset-x-0 bottom-0 h-[50px] z-0 overflow-hidden">
         {/* Sidewalk Curbstone with bevel and golden highlight */}
         <div
-          className="w-full h-[14px] border-t border-b"
+          className="w-full h-[12px] border-t border-b"
           style={{
             background:
               "linear-gradient(180deg, #3A364E 0%, #262436 60%, #171624 100%)",
@@ -230,7 +230,7 @@ export default function BookStreetEnvironment({
 
         {/* Main Roadway with Golden Reflections & Wet Sheen */}
         <div
-          className="relative w-full h-[92px]"
+          className="relative w-full h-[38px]"
           style={{
             background:
               "linear-gradient(180deg, #181726 0%, #11111E 45%, #0A0A13 100%)",
@@ -260,7 +260,7 @@ export default function BookStreetEnvironment({
           />
 
           {/* Soft Bottom Vignette */}
-          <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-black/60 to-transparent" />
+          <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-black/60 to-transparent" />
         </div>
       </div>
     </div>

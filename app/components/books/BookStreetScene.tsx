@@ -30,37 +30,37 @@ type EntryState =
   | "interior"
   | "closing";
 
-const HOUSE_GAP_PX = 40;
 const STREET_LEAD_IN_PX = 320;
 const STREET_TRAIL_OUT_PX = 480;
 
 /** Vintage wrought-iron streetlamp placed every 3 houses along the boulevard */
-function StreetLamp({ x }: { x: number }) {
+function StreetLamp({ x, scale }: { x: number; scale: number }) {
   return (
     <div
       className="pointer-events-none absolute bottom-0 flex flex-col items-center z-20"
       style={{
         left: `${x}px`,
-        transform: "translateX(-50%)",
+        transform: `translateX(-50%) scale(${scale})`,
+        transformOrigin: "bottom center",
       }}
       aria-hidden="true"
     >
       {/* Warm Atmospheric Halo */}
       <div
-        className="w-28 h-28 rounded-full -mb-16 blur-xl opacity-75"
+        className="w-24 h-24 rounded-full -mb-14 blur-xl opacity-75"
         style={{
           background:
             "radial-gradient(circle, rgba(255, 224, 142, 0.72) 0%, rgba(235, 152, 62, 0.25) 55%, transparent 75%)",
         }}
       />
       {/* Lantern Glass Head */}
-      <div className="relative w-5 h-7 rounded-t-full border border-[#E6C387] bg-gradient-to-b from-[#FFF8DC] via-[#FFD885] to-[#D9822B] shadow-[0_0_20px_rgba(255,219,130,0.9)]" />
+      <div className="relative w-4 h-6 rounded-t-full border border-[#E6C387] bg-gradient-to-b from-[#FFF8DC] via-[#FFD885] to-[#D9822B] shadow-[0_0_18px_rgba(255,219,130,0.9)]" />
       {/* Crossbar */}
-      <div className="w-7 h-1 bg-[#232538] border-t border-[#D8AE68]/50 rounded-full" />
+      <div className="w-6 h-1 bg-[#232538] border-t border-[#D8AE68]/50 rounded-full" />
       {/* Cast-iron Fluted Post */}
-      <div className="w-1.5 h-[175px] bg-gradient-to-r from-[#141624] via-[#2B2F47] to-[#121320]" />
+      <div className="w-1.5 h-[142px] bg-gradient-to-r from-[#141624] via-[#2B2F47] to-[#121320]" />
       {/* Base Pedestal */}
-      <div className="w-4 h-6 rounded-t-sm bg-[#191B2C] border-t border-[#D8AE68]/40" />
+      <div className="w-3.5 h-4.5 rounded-t-sm bg-[#191B2C] border-t border-[#D8AE68]/40" />
     </div>
   );
 }
@@ -73,6 +73,7 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const [viewportWidth, setViewportWidth] = useState(1280);
+  const [stageHeight, setStageHeight] = useState(700);
   const [worldX, setWorldX] = useState(0);
   const [progress, setProgress] = useState(0);
   const [walkPhase, setWalkPhase] = useState(0);
@@ -122,9 +123,21 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
       .slice(0, 15);
   }, [visibleBooks, searchQuery]);
 
+  // Base unscaled height of house (506px) + curb (48px) + sky headroom (36px) = 590px
+  const baseStreetHeight = 590;
+  const streetScale = useMemo(() => {
+    if (stageHeight >= baseStreetHeight) return 1;
+    // Smoothly scale down for smaller screen heights, clamped between 0.55 and 1
+    return Math.min(1, Math.max(0.55, stageHeight / baseStreetHeight));
+  }, [stageHeight]);
+
+  const houseWidth = Math.round(380 * streetScale);
+  const houseGap = Math.round(40 * streetScale);
+  const houseHeight = Math.round(506 * streetScale);
+
   // Compute horizontal X layout for every book-house along the street
   const houseLayout = useMemo(() => {
-    let cursorX = STREET_LEAD_IN_PX;
+    let cursorX = Math.round(STREET_LEAD_IN_PX * streetScale);
     const placements: {
       book: BookCatalogItem;
       startX: number;
@@ -135,26 +148,26 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
     const lampPositions: number[] = [];
 
     visibleBooks.forEach((book, idx) => {
-      const w = book.architecture.widthPx;
+      const w = houseWidth;
       const startX = cursorX;
       const centerX = startX + w / 2;
       const endX = startX + w;
       placements.push({ book, startX, centerX, endX, width: w });
 
       if (idx % 3 === 0) {
-        lampPositions.push(startX - HOUSE_GAP_PX / 2);
+        lampPositions.push(startX - houseGap / 2);
       }
 
-      cursorX = endX + HOUSE_GAP_PX;
+      cursorX = endX + houseGap;
     });
 
     const totalStreetWidth = Math.max(
       viewportWidth + 400,
-      cursorX + STREET_TRAIL_OUT_PX
+      cursorX + Math.round(STREET_TRAIL_OUT_PX * streetScale)
     );
 
     return { placements, lampPositions, totalStreetWidth };
-  }, [visibleBooks, viewportWidth]);
+  }, [visibleBooks, viewportWidth, houseWidth, houseGap, streetScale]);
 
   const maxWorldTravel = Math.max(
     1,
@@ -166,10 +179,12 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
     return Math.round(maxWorldTravel * 0.92 + 1000);
   }, [maxWorldTravel]);
 
-  // Measure viewport width
+  // Measure viewport width and available stage height (minus header & footer)
   useEffect(() => {
     const updateSize = () => {
       setViewportWidth(window.innerWidth);
+      const h = window.innerHeight - 98;
+      setStageHeight(Math.max(300, h));
     };
     updateSize();
     window.addEventListener("resize", updateSize);
@@ -624,7 +639,7 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
 
           {/* MAIN BOOK-HOUSE TOWNHOUSE ROW (Moves Right -> Left on Scroll) */}
           <div
-            className="absolute bottom-[104px] left-0 z-10"
+            className="absolute bottom-[48px] left-0 z-10"
             style={{
               width: `${houseLayout.totalStreetWidth}px`,
               transform: `translate3d(${-worldX}px, 0, 0)`,
@@ -647,23 +662,36 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
                 <div
                   key={book.id}
                   className="absolute bottom-0"
-                  style={{ left: `${startX}px` }}
+                  style={{
+                    left: `${startX}px`,
+                    width: `${houseWidth}px`,
+                    height: `${houseHeight}px`,
+                  }}
                 >
-                  <BookHouseFacade
-                    book={book}
-                    isSelected={isSelected}
-                    isDoorOpen={isDoorOpen}
-                    isEntering={isEntering}
-                    isNearestToTraveller={isNearest}
-                    onSelect={handleSelectHouse}
-                  />
+                  <div
+                    style={{
+                      width: "380px",
+                      height: "506px",
+                      transform: `scale(${streetScale})`,
+                      transformOrigin: "bottom left",
+                    }}
+                  >
+                    <BookHouseFacade
+                      book={book}
+                      isSelected={isSelected}
+                      isDoorOpen={isDoorOpen}
+                      isEntering={isEntering}
+                      isNearestToTraveller={isNearest}
+                      onSelect={handleSelectHouse}
+                    />
+                  </div>
                 </div>
               );
             })}
 
             {/* Vintage Cast-Iron Streetlamps along the sidewalk */}
             {visibleLamps.map((lx) => (
-              <StreetLamp key={lx} x={lx} />
+              <StreetLamp key={lx} x={lx} scale={streetScale} />
             ))}
           </div>
 
@@ -680,6 +708,7 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
                 ? "idle"
                 : entryState
             }
+            scale={streetScale}
           />
         </div>
 

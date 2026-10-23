@@ -1,6 +1,7 @@
 "use client";
 
 import * as THREE from "three";
+import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 
 type ForestControls = {
@@ -15,6 +16,13 @@ type Firefly = {
   phase: number;
   material: THREE.MeshStandardMaterial;
   halo: THREE.MeshBasicMaterial;
+};
+
+type CanopyInstance = {
+  position: THREE.Vector3;
+  scale: THREE.Vector3;
+  color: string;
+  rotation: number;
 };
 
 type ForestObjects = {
@@ -37,8 +45,10 @@ type ForestObjects = {
   flowers: THREE.Group[];
   ripples: THREE.Mesh[];
   water: THREE.Mesh;
+  waterTexture: THREE.Texture | null;
   waterBaseY: Float32Array;
   mushrooms: THREE.Group[];
+  obstacles: [number, number, number][];
   hitTargets: THREE.Object3D[];
   held: Set<string>;
   magic: () => void;
@@ -109,20 +119,24 @@ function addBeam(
 
 function createRibbon(points: THREE.Vector3[], width: number) {
   const curve = new THREE.CatmullRomCurve3(points);
-  const samples = curve.getPoints(96);
+  const samples = curve.getPoints(128);
   const vertices: number[] = [];
   const indices: number[] = [];
+  const uvs: number[] = [];
 
   for (let i = 0; i < samples.length; i += 1) {
     const before = samples[Math.max(0, i - 1)];
     const after = samples[Math.min(samples.length - 1, i + 1)];
     const tangent = after.clone().sub(before).setY(0).normalize();
-    const side = new THREE.Vector3(tangent.z, 0, -tangent.x).multiplyScalar(width / 2);
+    const progress = i / (samples.length - 1);
+    const widthVariation = 1 + Math.sin(progress * Math.PI * 8) * 0.055 + Math.sin(progress * Math.PI * 19) * 0.025;
+    const side = new THREE.Vector3(tangent.z, 0, -tangent.x).multiplyScalar((width * widthVariation) / 2);
     const center = samples[i].clone();
-    center.y += groundHeight(center.x, center.z);
+    center.y = groundHeight(center.x, center.z) + 0.025;
     const left = center.clone().add(side);
     const right = center.clone().sub(side);
     vertices.push(left.x, left.y, left.z, right.x, right.y, right.z);
+    uvs.push(progress, 0, progress, 1);
   }
 
   for (let i = 0; i < samples.length - 1; i += 1) {
@@ -132,6 +146,7 @@ function createRibbon(points: THREE.Vector3[], width: number) {
 
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.Float32BufferAttribute(vertices, 3));
+  geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
   geometry.setIndex(indices);
   geometry.computeVertexNormals();
   return geometry;
@@ -139,12 +154,12 @@ function createRibbon(points: THREE.Vector3[], width: number) {
 
 function makeGroundTexture() {
   const canvas = document.createElement("canvas");
-  canvas.width = 256;
-  canvas.height = 256;
+  canvas.width = 512;
+  canvas.height = 512;
   const context = canvas.getContext("2d");
   if (!context) return null;
 
-  context.fillStyle = "#506344";
+  context.fillStyle = "#5d694a";
   context.fillRect(0, 0, canvas.width, canvas.height);
   let seed = 29;
   const random = () => {
@@ -152,16 +167,32 @@ function makeGroundTexture() {
     return seed / 4294967296;
   };
 
-  for (let i = 0; i < 1800; i += 1) {
-    const shade = random() > 0.53 ? "#77815b" : "#354c38";
-    context.globalAlpha = 0.12 + random() * 0.2;
+  const patches = ["#899064", "#40583d", "#83714d", "#334836", "#63724d"];
+  for (let i = 0; i < 1150; i += 1) {
+    context.globalAlpha = 0.08 + random() * 0.2;
+    context.fillStyle = patches[Math.floor(random() * patches.length)];
+    context.beginPath();
+    context.ellipse(
+      random() * 512,
+      random() * 512,
+      2 + random() * 18,
+      1 + random() * 11,
+      random() * Math.PI,
+      0,
+      Math.PI * 2,
+    );
+    context.fill();
+  }
+  for (let i = 0; i < 4200; i += 1) {
+    const shade = random() > 0.58 ? "#a49a70" : "#283d2c";
+    context.globalAlpha = 0.16 + random() * 0.25;
     context.fillStyle = shade;
     context.beginPath();
     context.ellipse(
-      random() * 256,
-      random() * 256,
+      random() * 512,
+      random() * 512,
       0.5 + random() * 2.2,
-      0.5 + random() * 1.8,
+      0.35 + random() * 1.3,
       random() * Math.PI,
       0,
       Math.PI * 2,
@@ -173,9 +204,357 @@ function makeGroundTexture() {
   const texture = new THREE.CanvasTexture(canvas);
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(15, 15);
+  texture.repeat.set(8, 8);
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
+}
+
+function makeBarkTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 512;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+  const base = context.createLinearGradient(0, 0, 256, 0);
+  base.addColorStop(0, "#49372c");
+  base.addColorStop(0.23, "#72543c");
+  base.addColorStop(0.5, "#594333");
+  base.addColorStop(0.77, "#806044");
+  base.addColorStop(1, "#49372c");
+  context.fillStyle = base;
+  context.fillRect(0, 0, 256, 512);
+
+  let seed = 831;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+  for (let i = 0; i < 86; i += 1) {
+    const x = random() * 256;
+    const drift = (random() - 0.5) * 34;
+    context.beginPath();
+    context.moveTo(x, 0);
+    context.bezierCurveTo(x + drift, 160, x - drift * 0.7, 350, x + drift * 0.35, 512);
+    context.strokeStyle = i % 3 === 0 ? "rgba(28,19,14,0.48)" : "rgba(190,151,106,0.22)";
+    context.lineWidth = 0.6 + random() * 2.6;
+    context.stroke();
+  }
+  for (let i = 0; i < 10; i += 1) {
+    const x = random() * 256;
+    const y = random() * 512;
+    context.beginPath();
+    context.ellipse(x, y, 3 + random() * 5, 7 + random() * 13, random() * 0.2, 0, Math.PI * 2);
+    context.strokeStyle = "rgba(32,22,15,0.28)";
+    context.lineWidth = 1.5;
+    context.stroke();
+    context.beginPath();
+    context.ellipse(x + 1, y, 1 + random() * 2, 4 + random() * 7, 0, 0, Math.PI * 2);
+    context.strokeStyle = "rgba(190,151,106,0.18)";
+    context.stroke();
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(1, 1);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+function makeTrailTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+  context.fillStyle = "#67543c";
+  context.fillRect(0, 0, 512, 512);
+  let seed = 173;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+  for (let i = 0; i < 3200; i += 1) {
+    const isStone = random() > 0.84;
+    context.globalAlpha = isStone ? 0.42 : 0.2;
+    context.fillStyle = isStone
+      ? (random() > 0.5 ? "#a09275" : "#342f27")
+      : (random() > 0.55 ? "#816a4e" : "#4d483a");
+    context.beginPath();
+    context.ellipse(
+      random() * 512,
+      random() * 512,
+      isStone ? 1 + random() * 4 : 0.6 + random() * 2.1,
+      isStone ? 1 + random() * 2.8 : 0.5 + random() * 1.7,
+      random() * Math.PI,
+      0,
+      Math.PI * 2,
+    );
+    context.fill();
+  }
+  context.globalAlpha = 1;
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(3, 12);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+function makeSunPatchTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 256;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+  const glow = context.createRadialGradient(128, 128, 6, 128, 128, 124);
+  glow.addColorStop(0, "rgba(255,230,177,0.26)");
+  glow.addColorStop(0.32, "rgba(255,225,164,0.16)");
+  glow.addColorStop(0.68, "rgba(250,221,163,0.045)");
+  glow.addColorStop(1, "rgba(250,221,163,0)");
+  context.fillStyle = glow;
+  context.fillRect(0, 0, 256, 256);
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+function makeWaterTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 512;
+  canvas.height = 512;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+  const base = context.createLinearGradient(0, 0, 512, 0);
+  base.addColorStop(0, "#6a948b");
+  base.addColorStop(0.5, "#91b1a2");
+  base.addColorStop(1, "#6a948b");
+  context.fillStyle = base;
+  context.fillRect(0, 0, 512, 512);
+  let seed = 611;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+  for (let i = 0; i < 155; i += 1) {
+    const x = random() * 512;
+    const y = random() * 512;
+    const length = 12 + random() * 68;
+    context.beginPath();
+    context.moveTo(x, y);
+    context.bezierCurveTo(
+      x + length * 0.28,
+      y - 5 + random() * 10,
+      x + length * 0.66,
+      y - 5 + random() * 10,
+      x + length,
+      y - 2 + random() * 4,
+    );
+    context.strokeStyle = i % 4 === 0 ? "rgba(234,244,220,0.32)" : "rgba(222,239,218,0.13)";
+    context.lineWidth = 0.7 + random() * 2.4;
+    context.stroke();
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(2, 9);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+function makeTaperedTube(points: THREE.Vector3[], baseRadius: number, tipRadius: number, sides = 10) {
+  const curve = new THREE.CatmullRomCurve3(points);
+  const samples = curve.getPoints(18);
+  const positions: number[] = [];
+  const uvs: number[] = [];
+  const indices: number[] = [];
+  const up = new THREE.Vector3(0, 1, 0);
+  const ring = sides + 1;
+  for (let i = 0; i < samples.length; i += 1) {
+    const t = i / (samples.length - 1);
+    const tangent = curve.getTangent(t).normalize();
+    let axisA = new THREE.Vector3().crossVectors(tangent, up).normalize();
+    if (axisA.lengthSq() < 0.01) axisA.set(1, 0, 0);
+    const axisB = new THREE.Vector3().crossVectors(tangent, axisA).normalize();
+    const radius = THREE.MathUtils.lerp(baseRadius, tipRadius, t) * (1 + Math.sin(t * 28) * 0.035);
+    for (let j = 0; j <= sides; j += 1) {
+      const angle = (j / sides) * Math.PI * 2;
+      const point = samples[i]
+        .clone()
+        .addScaledVector(axisA, Math.cos(angle) * radius)
+        .addScaledVector(axisB, Math.sin(angle) * radius);
+      positions.push(point.x, point.y, point.z);
+      uvs.push(j / sides, t * 2.4);
+      if (i < samples.length - 1 && j < sides) {
+        const a = i * ring + j;
+        const b = a + 1;
+        const c = a + ring;
+        const d = c + 1;
+        indices.push(a, b, c, b, d, c);
+      }
+    }
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute("uv", new THREE.Float32BufferAttribute(uvs, 2));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+function makeCanopyGeometry(seed: number) {
+  const geometry = new THREE.SphereGeometry(1, 24, 18);
+  const positions = geometry.attributes.position as THREE.BufferAttribute;
+  const colors: number[] = [];
+  for (let i = 0; i < positions.count; i += 1) {
+    const x = positions.getX(i);
+    const y = positions.getY(i);
+    const z = positions.getZ(i);
+    const ripple =
+      Math.sin((x + seed) * 9.1) * Math.sin((y - seed * 0.7) * 7.8) *
+      Math.cos((z + seed * 0.4) * 8.6);
+    const radius = 1 + ripple * 0.055 + Math.sin((x + z) * 15 + seed) * 0.018;
+    positions.setXYZ(i, x * radius, y * radius, z * radius);
+    const light = 0.82 + Math.max(0, y) * 0.2 + ripple * 0.12;
+    colors.push(light, light * (0.99 + Math.sin(seed + i) * 0.025), light * (0.94 + Math.cos(i * 0.7) * 0.035));
+  }
+  geometry.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
+  geometry.computeVertexNormals();
+  return geometry;
+}
+
+function createFern(
+  scene: THREE.Scene,
+  x: number,
+  z: number,
+  scale: number,
+  seed: number,
+  leafletGeometry: THREE.BufferGeometry,
+  leafletMaterial: THREE.MeshStandardMaterial,
+  stemMaterial: THREE.MeshStandardMaterial,
+) {
+  const fern = new THREE.Group();
+  fern.name = "Woodland Fern";
+  fern.position.set(x, groundHeight(x, z), z);
+  const frondCount = 5 + (seed % 3);
+  const leafletsPerFrond = 14;
+  const stemGeometries: THREE.BufferGeometry[] = [];
+  const leaves = new THREE.InstancedMesh(leafletGeometry, leafletMaterial, frondCount * leafletsPerFrond);
+  const dummy = new THREE.Object3D();
+  const up = new THREE.Vector3(0, 1, 0);
+  let instance = 0;
+
+  for (let frond = 0; frond < frondCount; frond += 1) {
+    const angle = (Math.PI * 2 * frond) / frondCount + seed * 0.73;
+    const direction = new THREE.Vector3(Math.cos(angle), 0, Math.sin(angle));
+    const side = new THREE.Vector3(-direction.z, 0, direction.x);
+    const length = scale * (0.76 + ((seed + frond) % 4) * 0.085);
+    const curve = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0, 0.06 * scale, 0),
+      direction.clone().multiplyScalar(length * 0.38).add(new THREE.Vector3(0, length * 0.48, 0)),
+      direction.clone().multiplyScalar(length).add(new THREE.Vector3(0, length * 0.76, 0)),
+    ]);
+    stemGeometries.push(new THREE.TubeGeometry(curve, 14, 0.012 * scale, 5, false));
+
+    for (let leaflet = 0; leaflet < 7; leaflet += 1) {
+      const t = 0.2 + leaflet * 0.105;
+      const center = curve.getPoint(t);
+      const tangent = curve.getTangent(t).normalize();
+      for (const sign of [-1, 1]) {
+        const leafDirection = side.clone().multiplyScalar(sign * 0.78).addScaledVector(tangent, 0.34).normalize();
+        const width = length * (0.17 - t * 0.07);
+        dummy.position.copy(center).addScaledVector(side, sign * width * 0.42);
+        dummy.quaternion.setFromUnitVectors(up, leafDirection);
+        dummy.scale.set(0.047 * scale, width * 0.86, 0.026 * scale);
+        dummy.updateMatrix();
+        leaves.setMatrixAt(instance, dummy.matrix);
+        const tint = new THREE.Color().setHSL(0.25 + ((seed + leaflet) % 5) * 0.008, 0.32, 0.32 + ((seed + frond) % 4) * 0.025);
+        leaves.setColorAt(instance, tint);
+        instance += 1;
+      }
+    }
+  }
+  leaves.instanceMatrix.needsUpdate = true;
+  if (leaves.instanceColor) leaves.instanceColor.needsUpdate = true;
+  leaves.castShadow = false;
+  leaves.receiveShadow = true;
+  fern.add(leaves);
+  const mergedStems = BufferGeometryUtils.mergeGeometries(stemGeometries, false);
+  stemGeometries.forEach((geometry) => geometry.dispose());
+  if (mergedStems) {
+    const stemMesh = new THREE.Mesh(mergedStems, stemMaterial);
+    stemMesh.castShadow = false;
+    fern.add(stemMesh);
+  }
+  scene.add(fern);
+  return fern;
+}
+
+function createGrassLayer(
+  scene: THREE.Scene,
+  trailPoints: THREE.Vector3[],
+  count: number,
+) {
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute("position", new THREE.Float32BufferAttribute([
+    -0.075, 0, 0, 0.075, 0, 0,
+    -0.048, 0.23, 0.018, 0.048, 0.23, 0.018,
+    0, 0.52, 0.065,
+  ], 3));
+  geometry.setIndex([0, 2, 1, 1, 2, 3, 2, 4, 3]);
+  geometry.computeVertexNormals();
+  const material = new THREE.MeshStandardMaterial({
+    color: "#ffffff",
+    roughness: 1,
+    side: THREE.DoubleSide,
+  });
+  const grass = new THREE.InstancedMesh(geometry, material, count);
+  grass.name = "Forest Floor Grass";
+  grass.instanceMatrix.setUsage(THREE.StaticDrawUsage);
+  grass.castShadow = false;
+  grass.receiveShadow = true;
+
+  let seed = 919;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+  const trailXAt = (z: number) => {
+    for (let i = 0; i < trailPoints.length - 1; i += 1) {
+      const a = trailPoints[i];
+      const b = trailPoints[i + 1];
+      if (z <= a.z && z >= b.z) {
+        const t = (z - a.z) / (b.z - a.z);
+        return THREE.MathUtils.lerp(a.x, b.x, t);
+      }
+    }
+    return z > trailPoints[0].z ? trailPoints[0].x : trailPoints[trailPoints.length - 1].x;
+  };
+  const dummy = new THREE.Object3D();
+  let placed = 0;
+  let attempts = 0;
+  while (placed < count && attempts < count * 8) {
+    attempts += 1;
+    const x = -37 + random() * 74;
+    const z = -41 + random() * 77;
+    const riverX = 13 + Math.sin((z + 4) * 0.17) * 1.1;
+    if (Math.abs(x - trailXAt(z)) < 2.1) continue;
+    if (Math.abs(x - riverX) < 1.9) continue;
+    if (Math.abs(x) < 3.2 && z > -7 && z < 1.5) continue;
+    const height = 0.72 + random() * 0.85;
+    dummy.position.set(x, groundHeight(x, z), z);
+    dummy.rotation.set((random() - 0.5) * 0.16, random() * Math.PI * 2, (random() - 0.5) * 0.12);
+    dummy.scale.set(0.7 + random() * 0.8, height, 0.7 + random() * 0.8);
+    dummy.updateMatrix();
+    grass.setMatrixAt(placed, dummy.matrix);
+    const tint = new THREE.Color().setHSL(0.23 + random() * 0.07, 0.28 + random() * 0.2, 0.2 + random() * 0.18);
+    grass.setColorAt(placed, tint);
+    placed += 1;
+  }
+  grass.count = placed;
+  grass.instanceMatrix.needsUpdate = true;
+  if (grass.instanceColor) grass.instanceColor.needsUpdate = true;
+  scene.add(grass);
+  return grass;
 }
 
 function createTree(
@@ -185,72 +564,113 @@ function createTree(
   height: number,
   seed: number,
   leafColor: string,
+  barkTexture: THREE.Texture | null,
+  canopyInstances: CanopyInstance[],
+  trunkRadius = 0.82,
 ) {
   const tree = new THREE.Group();
-  tree.name = `Ancient Tree ${seed}`;
+  tree.name = "Ancient Tree " + seed;
   tree.position.set(x, groundHeight(x, z), z);
 
-  const bark = makeMaterial(seed % 3 === 0 ? "#6d5945" : "#55483a", 1);
-  const moss = makeMaterial("#52664a", 1);
-  const foliage = [
-    makeMaterial(leafColor, 0.96),
-    makeMaterial(seed % 2 ? "#496344" : "#405b40", 0.98),
-    makeMaterial(seed % 3 ? "#59724b" : "#4b6543", 1),
-  ];
-
-  const trunkHeight = height * 0.62;
-  const trunk = new THREE.Mesh(
-    new THREE.CylinderGeometry(0.24, 0.56, trunkHeight, 12, 5),
-    bark,
+  const bark = makeMaterial(
+    seed % 3 === 0 ? "#c2a17d" : "#ad8c6a",
+    0.96,
+    barkTexture ? { map: barkTexture, bumpMap: barkTexture, bumpScale: 0.11 } : {},
   );
-  trunk.position.y = trunkHeight / 2;
-  trunk.castShadow = true;
-  trunk.receiveShadow = true;
-  tree.add(trunk);
+  const moss = makeMaterial("#586c43", 0.98);
+  const woodGeometries: THREE.BufferGeometry[] = [];
+  const mossGeometries: THREE.BufferGeometry[] = [];
+  const trunkHeight = height * 0.74;
+  const leanX = Math.sin(seed * 2.17) * 0.32;
+  const leanZ = Math.cos(seed * 1.61) * 0.26;
+  woodGeometries.push(
+    makeTaperedTube([
+      new THREE.Vector3(0, 0.03, 0),
+      new THREE.Vector3(leanX * 0.18, trunkHeight * 0.26, leanZ * 0.14),
+      new THREE.Vector3(leanX * 0.48, trunkHeight * 0.57, leanZ * 0.4),
+      new THREE.Vector3(leanX, trunkHeight, leanZ),
+    ], trunkRadius * 1.15, trunkRadius * 0.16, 13),
+  );
 
-  for (let i = 0; i < 4; i += 1) {
-    const angle = (Math.PI * 2 * i) / 4 + seed * 0.37;
-    const heightAtBranch = trunkHeight * (0.45 + i * 0.095);
-    const start = new THREE.Vector3(0, heightAtBranch, 0);
-    const end = new THREE.Vector3(
-      Math.cos(angle) * (1.8 + (seed % 3) * 0.2),
-      heightAtBranch + 1.6,
-      Math.sin(angle) * 1.8,
+  for (let i = 0; i < 5; i += 1) {
+    const angle = (Math.PI * 2 * i) / 5 + seed * 0.37;
+    const reach = trunkRadius * (1.55 + (i % 3) * 0.28);
+    woodGeometries.push(
+      makeTaperedTube([
+        new THREE.Vector3(0, 0.52, 0),
+        new THREE.Vector3(Math.cos(angle) * reach * 0.48, 0.23, Math.sin(angle) * reach * 0.48),
+        new THREE.Vector3(Math.cos(angle) * reach, 0.035, Math.sin(angle) * reach),
+      ], trunkRadius * 0.3, 0.045, 8),
     );
-    addBeam(tree, start, end, 0.18, bark);
   }
 
-  const crownY = height * 0.73;
-  const lobes = [
-    [0, 0, 0, 2.8],
-    [-1.6, -0.2, 0.2, 2.05],
-    [1.65, -0.1, -0.4, 2.2],
-    [0.35, 0.35, 1.45, 1.9],
-    [-0.45, 0.1, -1.5, 2.05],
-    [0, 2.2, 0.1, 1.8],
-  ] as const;
-
-  for (let i = 0; i < lobes.length; i += 1) {
-    const [ox, oy, oz, radius] = lobes[i];
-    const canopy = new THREE.Mesh(
-      new THREE.IcosahedronGeometry(radius * (0.92 + ((seed + i) % 3) * 0.07), 2),
-      foliage[(seed + i) % foliage.length],
+  const branchCount = 4 + (seed % 3);
+  for (let i = 0; i < branchCount; i += 1) {
+    const angle = (Math.PI * 2 * i) / branchCount + seed * 0.61;
+    const startY = trunkHeight * (0.5 + (i % 3) * 0.075);
+    const reach = 1.55 + (seed % 4) * 0.25 + (i % 2) * 0.45;
+    const start = new THREE.Vector3(leanX * (startY / trunkHeight), startY, leanZ * (startY / trunkHeight));
+    const middle = new THREE.Vector3(
+      start.x + Math.cos(angle) * reach * 0.52,
+      startY + 0.48,
+      start.z + Math.sin(angle) * reach * 0.52,
     );
-    canopy.position.set(ox, crownY + oy, oz);
-    canopy.scale.set(1.08, 0.8 + ((seed + i) % 3) * 0.08, 0.94);
-    canopy.castShadow = true;
-    canopy.receiveShadow = true;
-    tree.add(canopy);
+    const end = new THREE.Vector3(
+      start.x + Math.cos(angle) * reach,
+      startY + 1.35 + (i % 2) * 0.45,
+      start.z + Math.sin(angle) * reach,
+    );
+    woodGeometries.push(
+      makeTaperedTube([start, middle, end], trunkRadius * 0.22, 0.045, 8),
+    );
+  }
+
+  const crownY = height * (0.73 + (seed % 3) * 0.025);
+  const clusterCount = 7 + (seed % 3);
+  for (let i = 0; i < clusterCount; i += 1) {
+    const angle = (Math.PI * 2 * i) / clusterCount + seed * 0.43;
+    const ring = i === 0 ? 0 : 1.35 + (i % 3) * 0.3;
+    const radius = 1.75 + ((seed + i * 3) % 4) * 0.25 + trunkRadius * 0.14;
+    canopyInstances.push({
+      position: new THREE.Vector3(
+        x + leanX + Math.cos(angle) * ring,
+        groundHeight(x, z) + crownY + (i === 0 ? 0.72 : (i % 3) * 0.48 - 0.15),
+        z + leanZ + Math.sin(angle) * ring,
+      ),
+      scale: new THREE.Vector3(
+        radius * (1.05 + (i % 2) * 0.14),
+        radius * 0.72,
+        radius * (0.92 + (i % 3) * 0.07),
+      ),
+      color: leafColor,
+      rotation: angle + i * 0.31,
+    });
   }
 
   for (let i = 0; i < 3; i += 1) {
-    const angle = (Math.PI * 2 * i) / 3 + seed * 0.51;
-    const root = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.22, 1.6, 8), moss);
-    root.position.set(Math.cos(angle) * 0.58, 0.08, Math.sin(angle) * 0.58);
-    root.rotation.z = Math.cos(angle) * 0.4;
-    root.rotation.x = -Math.sin(angle) * 0.4;
-    root.castShadow = true;
-    tree.add(root);
+    const angle = (Math.PI * 2 * i) / 3 + seed * 0.29;
+    const patchGeometry = new THREE.SphereGeometry(trunkRadius * (0.72 + i * 0.11), 16, 9);
+    patchGeometry.scale(1.3, 0.12, 0.82);
+    patchGeometry.translate(Math.cos(angle) * 0.45, 0.1, Math.sin(angle) * 0.45);
+    mossGeometries.push(patchGeometry);
+  }
+
+  const mergedWood = BufferGeometryUtils.mergeGeometries(woodGeometries, false);
+  woodGeometries.forEach((geometry) => geometry.dispose());
+  if (mergedWood) {
+    const woodMesh = new THREE.Mesh(mergedWood, bark);
+    woodMesh.name = "Textured Trunk and Branches";
+    woodMesh.castShadow = true;
+    woodMesh.receiveShadow = true;
+    tree.add(woodMesh);
+  }
+  const mergedMoss = BufferGeometryUtils.mergeGeometries(mossGeometries, false);
+  mossGeometries.forEach((geometry) => geometry.dispose());
+  if (mergedMoss) {
+    const mossMesh = new THREE.Mesh(mergedMoss, moss);
+    mossMesh.name = "Root Moss";
+    mossMesh.receiveShadow = true;
+    tree.add(mossMesh);
   }
 
   scene.add(tree);
@@ -568,24 +988,25 @@ function makeFirefly(scene: THREE.Scene, x: number, y: number, z: number, phase:
 
 function buildForest(canvas: HTMLCanvasElement): ForestObjects {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#1b2b22");
-  scene.fog = new THREE.Fog("#1b2b22", 30, 76);
+  scene.background = new THREE.Color("#64786a");
+  scene.fog = new THREE.Fog("#64786a", 22, 78);
 
   const camera = new THREE.PerspectiveCamera(51, 1, 0.1, 120);
   camera.position.set(0, 2.75, 13.5);
 
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.6));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.18;
+  renderer.toneMappingExposure = 1.27;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  const hemisphere = new THREE.HemisphereLight("#e4edcf", "#293c31", 1.35);
+  const hemisphere = new THREE.HemisphereLight("#eaf0dc", "#43533c", 1.7);
   scene.add(hemisphere);
-  const sun = new THREE.DirectionalLight("#ffe0a4", 2.65);
-  sun.position.set(-12, 22, 10);
+  scene.add(new THREE.AmbientLight("#dce6d4", 0.28));
+  const sun = new THREE.DirectionalLight("#ffe8bb", 2.05);
+  sun.position.set(-16, 27, -12);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1536, 1536);
   sun.shadow.camera.left = -34;
@@ -593,14 +1014,24 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
   sun.shadow.camera.top = 34;
   sun.shadow.camera.bottom = -34;
   sun.shadow.bias = -0.0004;
+  sun.shadow.radius = 4;
   scene.add(sun);
-  const clearingLight = new THREE.PointLight("#e9c58e", 0.9, 26, 1.7);
-  clearingLight.position.set(-1, 7, -14);
+  const clearingLight = new THREE.PointLight("#f1d9a7", 0.62, 30, 1.8);
+  clearingLight.position.set(-1, 8, -16);
   scene.add(clearingLight);
+  const distantFill = new THREE.PointLight("#c8d9c3", 0.34, 34, 1.7);
+  distantFill.position.set(5, 10, -30);
+  scene.add(distantFill);
 
   const groundTexture = makeGroundTexture();
-  const groundMaterial = makeMaterial("#6c7954", 1, groundTexture ? { map: groundTexture } : {});
-  const groundGeometry = new THREE.PlaneGeometry(84, 78, 72, 72);
+  const barkTexture = makeBarkTexture();
+  const trailTexture = makeTrailTexture();
+  const groundMaterial = makeMaterial(
+    "#b1b497",
+    1,
+    groundTexture ? { map: groundTexture, bumpMap: groundTexture, bumpScale: 0.055 } : {},
+  );
+  const groundGeometry = new THREE.PlaneGeometry(84, 92, 72, 80);
   groundGeometry.rotateX(-Math.PI / 2);
   const groundPositions = groundGeometry.attributes.position as THREE.BufferAttribute;
   for (let i = 0; i < groundPositions.count; i += 1) {
@@ -614,6 +1045,29 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
   ground.receiveShadow = true;
   scene.add(ground);
 
+  const sunlightTexture = makeSunPatchTexture();
+  if (sunlightTexture) {
+    const lightPatchMaterial = new THREE.MeshBasicMaterial({
+      map: sunlightTexture,
+      transparent: true,
+      opacity: 0.8,
+      depthWrite: false,
+      toneMapped: false,
+    });
+    const sunlightPatches: [number, number, number, number][] = [
+      [-1.4, 8.5, 4.2, 2.4],
+      [1.7, -10.4, 3.6, 2.3],
+      [-1.2, -24.4, 4.4, 2.8],
+    ];
+    sunlightPatches.forEach(([x, z, width, depth]) => {
+      const patch = new THREE.Mesh(new THREE.PlaneGeometry(width, depth), lightPatchMaterial);
+      patch.rotation.x = -Math.PI / 2;
+      patch.position.set(x, groundHeight(x, z) + 0.045, z);
+      patch.renderOrder = 2;
+      scene.add(patch);
+    });
+  }
+
   const trailPoints = [
     new THREE.Vector3(-1, 0.05, 31),
     new THREE.Vector3(0.4, 0.05, 19),
@@ -623,11 +1077,16 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
     new THREE.Vector3(-2.8, 0.05, -27),
     new THREE.Vector3(-3.2, 0.05, -39),
   ];
-  const trailMaterial = makeMaterial("#5a4b37", 0.98);
-  const trail = new THREE.Mesh(createRibbon(trailPoints, 3.8), trailMaterial);
+  const trailMaterial = makeMaterial(
+    "#d0b996",
+    0.98,
+    trailTexture ? { map: trailTexture, bumpMap: trailTexture, bumpScale: 0.035 } : {},
+  );
+  const trail = new THREE.Mesh(createRibbon(trailPoints, 2.9), trailMaterial);
   trail.name = "Forest Trail";
   trail.receiveShadow = true;
   scene.add(trail);
+  createGrassLayer(scene, trailPoints, 760);
 
   const streamPoints = [
     new THREE.Vector3(13.5, 0.02, 34),
@@ -639,18 +1098,27 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
     new THREE.Vector3(16.2, 0.02, -30),
     new THREE.Vector3(15.5, 0.02, -39),
   ];
+  const streambed = new THREE.Mesh(
+    createRibbon(streamPoints, 3.55),
+    makeMaterial("#42584a", 0.98),
+  );
+  streambed.name = "Shallow Streambed";
+  streambed.receiveShadow = true;
+  scene.add(streambed);
   const waterGeometry = createRibbon(streamPoints, 2.1);
   const waterPositions = waterGeometry.attributes.position as THREE.BufferAttribute;
   const waterBaseY = new Float32Array(waterPositions.count);
   for (let i = 0; i < waterPositions.count; i += 1) waterBaseY[i] = waterPositions.getY(i);
+  const waterTexture = makeWaterTexture();
   const waterMaterial = new THREE.MeshPhysicalMaterial({
-    color: "#43817c",
-    roughness: 0.18,
-    metalness: 0.06,
+    color: "#b7d4c3",
+    map: waterTexture,
+    roughness: 0.22,
+    metalness: 0.035,
     transparent: true,
-    opacity: 0.9,
-    clearcoat: 0.55,
-    clearcoatRoughness: 0.18,
+    opacity: 0.82,
+    clearcoat: 0.7,
+    clearcoatRoughness: 0.24,
   });
   const water = new THREE.Mesh(waterGeometry, waterMaterial);
   water.name = "Stream";
@@ -659,7 +1127,11 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
 
   const log = new THREE.Mesh(
     new THREE.CylinderGeometry(0.35, 0.48, 4.5, 24, 2),
-    makeMaterial("#5a4332", 0.96),
+    makeMaterial(
+      "#a98965",
+      0.96,
+      barkTexture ? { map: barkTexture, bumpMap: barkTexture, bumpScale: 0.09 } : {},
+    ),
   );
   log.name = "Mossy Log";
   log.rotation.z = Math.PI / 2;
@@ -667,21 +1139,56 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
   log.castShadow = true;
   log.receiveShadow = true;
   scene.add(log);
-  const logMoss = new THREE.Mesh(new THREE.BoxGeometry(2.6, 0.08, 0.42), makeMaterial("#50684a", 1));
-  logMoss.position.set(0, 0.77, -2.9);
-  logMoss.rotation.z = -0.03;
-  logMoss.castShadow = true;
-  scene.add(logMoss);
+  const logMossMaterial = makeMaterial("#526b43", 0.98);
+  for (let i = 0; i < 6; i += 1) {
+    const mossPatch = new THREE.Mesh(new THREE.SphereGeometry(1, 14, 8), logMossMaterial);
+    mossPatch.position.set(-1.55 + i * 0.62, 0.76 + (i % 2) * 0.025, -2.9 + Math.sin(i * 1.3) * 0.16);
+    mossPatch.scale.set(0.42 + (i % 3) * 0.08, 0.07, 0.22);
+    mossPatch.castShadow = true;
+    scene.add(mossPatch);
+  }
 
-  const treePositions: [number, number, number][] = [
-    [-25, 17, 13], [-21, 5, 10], [-25, -7, 14], [-22, -20, 11], [-25, -32, 13],
-    [-13, -37, 12], [-3, -41, 14], [9, -39, 11], [22, -34, 13], [25, -21, 11],
-    [22, -8, 13], [25, 5, 12], [25, 18, 14], [15, 27, 11], [-16, 27, 12],
-    [-34, -10, 10], [34, -13, 12], [-31, 23, 9], [33, 24, 10],
+  const treePositions: [number, number, number, number][] = [
+    [-9, 9, 18, 1.75], [9.5, 10, 19, 1.9], [-15, 15, 15, 1.25], [16, 17, 17, 1.3],
+    [-14, 2, 16, 1.15], [15, -2, 18, 1.25], [-12, -14, 17, 1.35], [14, -16, 16, 1.2],
+    [-21, -10, 15, 1.25], [22, -9, 16, 1.25], [-19, -25, 17, 1.2], [20, -25, 17, 1.25],
+    [-9, -31, 18, 0.92], [8, -34, 19, 0.95], [-28, 3, 16, 1.55], [29, 5, 15, 1.4],
+    [-31, -19, 16, 1.4], [31, -18, 17, 1.5], [-9, -36, 20, 0.9], [5, -38, 19, 0.9],
+    [-25, 27, 14, 1.25], [25, 28, 15, 1.3], [-36, 14, 15, 1.2], [36, 15, 16, 1.25],
   ];
-  treePositions.forEach(([x, z, height], i) => {
-    createTree(scene, x, z, height, i + 3, i % 3 === 0 ? "#3e5d3e" : "#496443");
+  const leafPalette = ["#4d6842", "#5c7446", "#6c7c4e", "#3f5d3f", "#70804f"];
+  const canopyInstances: CanopyInstance[] = [];
+  const walkObstacles: [number, number, number][] = [];
+  treePositions.forEach(([x, z, height, trunkRadius], i) => {
+    walkObstacles.push([x, z, trunkRadius * 1.55]);
+    createTree(scene, x, z, height, i + 3, leafPalette[i % leafPalette.length], barkTexture, canopyInstances, trunkRadius);
   });
+  const canopyMaterial = new THREE.MeshStandardMaterial({
+    color: "#ffffff",
+    roughness: 0.92,
+    vertexColors: true,
+  });
+  const canopyMesh = new THREE.InstancedMesh(
+    makeCanopyGeometry(17),
+    canopyMaterial,
+    canopyInstances.length,
+  );
+  canopyMesh.name = "Layered Forest Canopy";
+  const canopyTransform = new THREE.Object3D();
+  canopyInstances.forEach((instance, i) => {
+    canopyTransform.position.copy(instance.position);
+    canopyTransform.rotation.y = instance.rotation;
+    canopyTransform.scale.copy(instance.scale);
+    canopyTransform.updateMatrix();
+    canopyMesh.setMatrixAt(i, canopyTransform.matrix);
+    canopyMesh.setColorAt(i, new THREE.Color(instance.color));
+  });
+  canopyMesh.instanceMatrix.needsUpdate = true;
+  if (canopyMesh.instanceColor) canopyMesh.instanceColor.needsUpdate = true;
+  canopyMesh.castShadow = true;
+  canopyMesh.receiveShadow = true;
+  canopyMesh.computeBoundingSphere();
+  scene.add(canopyMesh);
 
   const shrubs = [
     [-15, 13, 1.4], [-10, 8, 1.1], [8, 10, 1.3], [17, 6, 1.25],
@@ -692,8 +1199,8 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
     shrub.position.set(x, groundHeight(x, z), z);
     for (let puff = 0; puff < 4; puff += 1) {
       const bush = new THREE.Mesh(
-        new THREE.IcosahedronGeometry(0.68 * scale, 2),
-        makeMaterial(i % 2 ? "#526b45" : "#415d41", 0.98),
+        new THREE.SphereGeometry(0.68 * scale, 20, 14),
+        makeMaterial(i % 2 ? "#61794a" : "#4d6943", 0.98),
       );
       bush.position.set((puff - 1.5) * 0.48 * scale, 0.6 * scale + (puff % 2) * 0.16, (puff % 2) * 0.32);
       bush.scale.y = 0.82;
@@ -703,14 +1210,17 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
     scene.add(shrub);
   });
 
-  const rockMaterial = makeMaterial("#777866", 0.95);
+  const rockMaterial = makeMaterial("#777866", 0.94);
   const rockPositions: [number, number, number][] = [
     [-12, 10, 0.6], [-9, 9, 0.4], [9, 7, 0.55], [17, -2, 0.7],
     [10, -17, 0.6], [18, -27, 0.8], [-17, -19, 0.5], [-7, -31, 0.55],
     [5, 22, 0.55], [-19, -4, 0.7],
+    [10.5, 14, 0.64], [16.2, 8, 0.82], [10.4, -7, 0.55],
+    [16.7, -18, 0.72], [13.8, -28, 0.58], [18.2, -31, 0.68],
   ];
   rockPositions.forEach(([x, z, size], i) => {
-    const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(size, 1), rockMaterial);
+    walkObstacles.push([x, z, size * 0.9]);
+    const rock = new THREE.Mesh(new THREE.IcosahedronGeometry(size, 2), rockMaterial);
     rock.position.set(x, groundHeight(x, z) + size * 0.48, z);
     rock.rotation.set(i * 0.23, i * 0.64, i * 0.16);
     rock.scale.set(1.25, 0.78 + (i % 3) * 0.12, 0.96);
@@ -727,6 +1237,14 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
     createMushroom(scene, 5.1, -24.2, 0.78, "#b79a59", 4),
     createMushroom(scene, 17.2, 14.2, 0.72, "#c08d53", 5),
     createMushroom(scene, -18.2, 14.5, 0.84, "#a95252", 6),
+    createMushroom(scene, -13.1, 9.4, 0.42, "#b27a50", 7),
+    createMushroom(scene, -12.2, 8.7, 0.3, "#a95650", 8),
+    createMushroom(scene, 11.9, 12.1, 0.36, "#bc9b5c", 9),
+    createMushroom(scene, 12.6, 11.4, 0.29, "#557d82", 10),
+    createMushroom(scene, -15.8, -17.4, 0.4, "#a95555", 11),
+    createMushroom(scene, 18.8, -22.1, 0.42, "#b47a53", 12),
+    createMushroom(scene, -21.3, 16.8, 0.4, "#527b83", 13),
+    createMushroom(scene, 5.9, -30.2, 0.34, "#c49b58", 14),
   ];
 
   const flowers: THREE.Group[] = [];
@@ -780,15 +1298,17 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
   logByStream.castShadow = true;
   scene.add(logByStream);
 
-  for (let i = 0; i < 3; i += 1) {
-    const shaft = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.15, 1.9, 10, 16, 1, true),
-      new THREE.MeshBasicMaterial({ color: "#f5d9a4", transparent: true, opacity: 0.075, depthWrite: false, side: THREE.DoubleSide }),
-    );
-    shaft.position.set(-7 + i * 6, 7.4, -16 - i * 3);
-    shaft.rotation.z = -0.12 + i * 0.06;
-    scene.add(shaft);
-  }
+  const fernLeafGeometry = new THREE.SphereGeometry(1, 8, 6);
+  const fernLeafMaterial = new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: 0.92, side: THREE.DoubleSide });
+  const fernStemMaterial = makeMaterial("#64794b", 0.95);
+  const fernLocations: [number, number, number][] = [
+    [-6.8, 8.2, 1.15], [-12.2, 11.8, 1.25], [7.7, 10.7, 1.0], [16.7, 8.8, 1.35],
+    [-17.4, 4.2, 1.5], [18.8, -4.5, 1.35], [-7.4, -12.8, 1.2], [7.7, -18.2, 1.25],
+    [18.7, -20.1, 1.45], [-19.4, -23.1, 1.3], [2.2, -29.7, 1.1], [-3.8, 18.5, 1.0],
+  ];
+  fernLocations.forEach(([x, z, scale], i) => {
+    createFern(scene, x, z, scale, i + 7, fernLeafGeometry, fernLeafMaterial, fernStemMaterial);
+  });
 
   const fireflies = [
     [-9, 2.8, 9], [-5, 4.0, 4], [5.5, 3.4, 3], [11, 3.1, 6],
@@ -827,8 +1347,10 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
     flowers,
     ripples,
     water,
+    waterTexture,
     waterBaseY,
     mushrooms,
+    obstacles: walkObstacles,
     hitTargets,
     held,
     magic,
@@ -884,15 +1406,6 @@ export default function EnchantedForestPlayground() {
       new THREE.Vector3(2.4, 0.12, -25.2),
       new THREE.Vector3(0, 0.68, -2.9),
     ];
-    const obstacles = [
-      [-25, 17, 1.55], [-21, 5, 1.25], [-25, -7, 1.6], [-22, -20, 1.4], [-25, -32, 1.55],
-      [-13, -37, 1.45], [-3, -41, 1.4], [9, -39, 1.45], [22, -34, 1.55], [25, -21, 1.4],
-      [22, -8, 1.5], [25, 5, 1.4], [25, 18, 1.55], [15, 27, 1.4], [-16, 27, 1.4],
-      [-34, -10, 1.6], [34, -13, 1.6], [-31, 23, 1.3], [33, 24, 1.3],
-      [-12, 10, 0.72], [-9, 9, 0.58], [9, 7, 0.72], [17, -2, 0.9], [10, -17, 0.72],
-      [18, -27, 0.95], [-17, -19, 0.62], [-7, -31, 0.68], [5, 22, 0.72], [-19, -4, 0.88],
-    ];
-
     const makeSparkles = () => {
       if (sparkleGroup) return;
       sparkleGroup = new THREE.Group();
@@ -1035,7 +1548,7 @@ export default function EnchantedForestPlayground() {
       cameraDesired.copy(forest.camera.position).addScaledVector(velocity, dt);
       cameraDesired.x = clamp(cameraDesired.x, -34, 34);
       cameraDesired.z = clamp(cameraDesired.z, -34, 30);
-      for (const [ox, oz, radius] of obstacles) {
+      for (const [ox, oz, radius] of forest.obstacles) {
         const dx = cameraDesired.x - ox;
         const dz = cameraDesired.z - oz;
         const distance = Math.hypot(dx, dz);
@@ -1165,6 +1678,7 @@ export default function EnchantedForestPlayground() {
         waterPositions.setY(i, forest.waterBaseY[i] + Math.sin(elapsed * 1.7 + z * 1.3 + x * 0.55) * 0.035);
       }
       waterPositions.needsUpdate = true;
+      if (forest.waterTexture) forest.waterTexture.offset.y = (elapsed * 0.035) % 1;
 
       forest.renderer.render(forest.scene, forest.camera);
       frame = requestAnimationFrame(tick);

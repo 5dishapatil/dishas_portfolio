@@ -13,6 +13,8 @@ interface StreetTravellerProps {
   facing: 1 | -1;
   /** Entry state when approaching/entering a house */
   entryState: "idle" | "selecting" | "aligning" | "opening-door" | "entering" | "interior";
+  /** Dynamic scale matching the responsive street height */
+  scale?: number;
 }
 
 export default function StreetTraveller({
@@ -21,6 +23,7 @@ export default function StreetTraveller({
   walkIntensity,
   facing,
   entryState,
+  scale = 1,
 }: StreetTravellerProps) {
   const isApproachingDoor =
     entryState === "opening-door" || entryState === "entering";
@@ -46,14 +49,17 @@ export default function StreetTraveller({
   const bobY = Math.abs(sin) * -4.5 * activeIntensity;
   const torsoLean = 3.5 * activeIntensity;
 
+  const effectiveScale = (isApproachingDoor ? 0.93 : 1) * scale;
+  const bottomPx = Math.round(28 * scale);
+
   return (
     <div
-      className="pointer-events-none absolute bottom-[34px] z-30 transition-opacity duration-500"
+      className="pointer-events-none absolute z-30 transition-opacity duration-500"
       style={{
+        bottom: `${bottomPx}px`,
         left: `${screenXPercent}%`,
-        transform: `translate3d(-50%, ${ isApproachingDoor ? "-14px" : "0px" }, 0) scale(${
-          isApproachingDoor ? 0.93 : 1
-        })`,
+        transform: `translate3d(-50%, ${ isApproachingDoor ? "-14px" : "0px" }, 0) scale(${effectiveScale})`,
+        transformOrigin: "bottom center",
         opacity: entryState === "interior" ? 0 : 1,
         transition:
           entryState === "aligning" || isApproachingDoor
