@@ -167,6 +167,7 @@ const BENTO_WORLDS: BentoWorldItem[] = [
     title: "Ideas",
     icon: "ideas",
     image: "/assets/bento-4.jpg",
+    href: "/ideas",
     lines: ["RANDOM THOUGHTS", "HALF-FORMED PLANS", 'AND "WHAT IF?"'],
   },
   {
