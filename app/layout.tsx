@@ -61,6 +61,11 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Archivo+Black&family=DM+Serif+Display&family=Manrope:wght@500;800&family=Outfit:wght@700&family=Poppins:wght@700&family=Sora:wght@700&family=Space+Grotesk:wght@700&family=Space+Mono&family=Unbounded:wght@600&display=swap"
           rel="stylesheet"
         />
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className="min-h-full bg-[#120d08] text-[#f5efe6] selection:bg-[#d8b880]/30 selection:text-[#fff9f0]">
         {children}

@@ -17,6 +17,16 @@
   --font-display: var(--font-cormorant), var(--font-playfair), Georgia, serif;
   --font-sans: var(--font-jost), system-ui, sans-serif;
   --font-script: var(--font-caveat), cursive;
+  --font-serif-title: 'Cinzel', Georgia, serif;
+  --font-mono-code: 'Space Mono', monospace;
+}
+
+.font-serif-title {
+  font-family: 'Cinzel', Georgia, serif;
+}
+
+.font-mono-code {
+  font-family: 'Space Mono', monospace;
 }
 
 body {

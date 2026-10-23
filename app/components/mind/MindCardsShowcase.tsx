@@ -15,6 +15,7 @@ export interface MindCardItem {
   tags: string[];
   href?: string;
   isSpecial?: boolean;
+  badgeText?: string;
   ctaText?: string;
 }
 
@@ -27,8 +28,12 @@ export const MIND_CARDS: MindCardItem[] = [
     description:
       "Unpacking behavioral biases, perception engines, heuristics, and the hidden mechanics governing human decision-making under uncertainty.",
     accent: "#f59e0b",
-    glow: "rgba(245, 158, 11, 0.35)",
-    tags: ["Cognition", "Biases", "Behavior", "Mental Models"],
+    glow: "rgba(245, 158, 11, 0.45)",
+    tags: ["Cognition", "Biases", "Behavior", "Metacognition"],
+    href: "/mind/psychology",
+    isSpecial: true,
+    badgeText: "Interactive Monograph",
+    ctaText: "Explore Architecture of Psyche ↗",
   },
   {
     id: "finance",
@@ -53,6 +58,7 @@ export const MIND_CARDS: MindCardItem[] = [
     tags: ["3D DNA Helix", "Genomics", "Ancestry", "Neuroscience"],
     href: "/mind/brain-and-biology",
     isSpecial: true,
+    badgeText: "Interactive 3D",
     ctaText: "Launch 3D DNA Simulation ↗",
   },
   {
@@ -94,13 +100,14 @@ export default function MindCardsShowcase({
               }}
               style={
                 {
+                  borderColor: card.isSpecial ? `${card.accent}66` : "rgba(255,255,255,0.1)",
                   "--card-glow": card.glow,
                   "--card-accent": card.accent,
                 } as React.CSSProperties
               }
               className={`group relative flex flex-col justify-between p-6 sm:p-8 rounded-3xl bg-[#0c101d]/85 backdrop-blur-xl border transition-all duration-500 shadow-2xl cursor-pointer overflow-hidden ${
                 card.isSpecial
-                  ? "border-[#46d3db]/50 hover:border-[#46d3db] hover:shadow-[0_20px_50px_rgba(70,211,219,0.25)]"
+                  ? "hover:border-opacity-100"
                   : "border-white/10 hover:border-white/30 hover:shadow-[0_20px_45px_rgba(0,0,0,0.6)]"
               }`}
             >
@@ -128,10 +135,20 @@ export default function MindCardsShowcase({
                   </span>
                 </div>
 
-                {card.isSpecial ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase bg-[#46d3db]/15 border border-[#46d3db]/40 text-[#46d3db] animate-pulse">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#46d3db]" />
-                    Interactive 3D
+                {card.badgeText ? (
+                  <span
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono tracking-widest uppercase animate-pulse border"
+                    style={{
+                      backgroundColor: `${card.accent}1a`,
+                      borderColor: `${card.accent}66`,
+                      color: card.accent,
+                    }}
+                  >
+                    <span
+                      className="w-1.5 h-1.5 rounded-full"
+                      style={{ backgroundColor: card.accent }}
+                    />
+                    {card.badgeText}
                   </span>
                 ) : (
                   <span className="text-[11px] font-mono text-white/40 uppercase tracking-widest">
@@ -142,11 +159,7 @@ export default function MindCardsShowcase({
 
               {/* Title & Subtitle */}
               <div className="relative z-10 space-y-2 mb-4">
-                <h3
-                  className={`text-2xl sm:text-3xl font-bold tracking-tight text-white transition-colors duration-300 ${
-                    card.isSpecial ? "group-hover:text-[#46d3db]" : "group-hover:text-white"
-                  }`}
-                >
+                <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-white transition-colors duration-300">
                   {card.title}
                 </h3>
                 <p className="font-mono text-xs text-white/60 tracking-wider">
@@ -173,7 +186,10 @@ export default function MindCardsShowcase({
                 </div>
 
                 {card.ctaText && (
-                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#46d3db] group-hover:translate-x-1 transition-transform">
+                  <span
+                    className="inline-flex items-center gap-1 text-xs font-semibold group-hover:translate-x-1 transition-transform"
+                    style={{ color: card.accent }}
+                  >
                     {card.ctaText}
                   </span>
                 )}
@@ -208,3 +224,4 @@ export default function MindCardsShowcase({
     </div>
   );
 }
+

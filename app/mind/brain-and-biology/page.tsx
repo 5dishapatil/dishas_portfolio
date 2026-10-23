@@ -11,3 +11,4 @@ import DnaHelixViewer from "@/app/components/mind/DnaHelixViewer";
 export default function BrainAndBiologyPage() {
   return <DnaHelixViewer />;
 }
+
