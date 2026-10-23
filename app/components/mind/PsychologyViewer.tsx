@@ -15,8 +15,6 @@ import {
   AnimatePresence,
 } from "motion/react";
 import {
-  Volume2,
-  VolumeX,
   Play,
   Pause,
   ChevronDown,
@@ -420,11 +418,8 @@ export default function PsychologyViewer() {
   const heroContentOpacity = useTransform(scrollYProgress, [0, 0.16], [1, 0]);
   const heroContentY = useTransform(scrollYProgress, [0, 0.18], [0, -100]);
 
-  // Video and audio state
+  // Video state
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
-  const [audioActive, setAudioActive] = useState<boolean>(false);
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
 
   // Active section tracking
   const [activeChapterId, setActiveChapterId] = useState<string>("predictive-mind");
@@ -438,71 +433,6 @@ export default function PsychologyViewer() {
   });
   const [crtResult, setCrtResult] = useState<CRTResult | null>(null);
   const [showCrtAnalysis, setShowCrtAnalysis] = useState<boolean>(false);
-
-  // Ambient sound synthesizer: generates a gentle, resonant 432Hz sine focus tone with binaural modulation
-  const toggleAmbientAudio = () => {
-    if (!audioActive) {
-      try {
-        const AudioContextClass =
-          window.AudioContext ||
-          (window as unknown as { webkitAudioContext: typeof AudioContext })
-            .webkitAudioContext;
-        const ctx = new AudioContextClass();
-        audioCtxRef.current = ctx;
-
-        const masterGain = ctx.createGain();
-        masterGain.gain.setValueAtTime(0.001, ctx.currentTime);
-        masterGain.gain.exponentialRampToValueAtTime(0.06, ctx.currentTime + 3);
-        masterGain.connect(ctx.destination);
-        gainNodeRef.current = masterGain;
-
-        // Carrier frequency (432Hz deep meditative drone)
-        const oscLeft = ctx.createOscillator();
-        oscLeft.type = "sine";
-        oscLeft.frequency.setValueAtTime(108, ctx.currentTime); // Deep sub octave
-
-        const oscRight = ctx.createOscillator();
-        oscRight.type = "sine";
-        oscRight.frequency.setValueAtTime(114, ctx.currentTime); // 6Hz Theta binaural beat
-
-        const subOsc = ctx.createOscillator();
-        subOsc.type = "triangle";
-        subOsc.frequency.setValueAtTime(54, ctx.currentTime); // Deep grounding floor
-
-        // Gentle lowpass filter
-        const filter = ctx.createBiquadFilter();
-        filter.type = "lowpass";
-        filter.frequency.setValueAtTime(320, ctx.currentTime);
-
-        oscLeft.connect(filter);
-        oscRight.connect(filter);
-        subOsc.connect(filter);
-        filter.connect(masterGain);
-
-        oscLeft.start();
-        oscRight.start();
-        subOsc.start();
-
-        setAudioActive(true);
-      } catch (err) {
-        console.error("Audio context error:", err);
-      }
-    } else {
-      if (audioCtxRef.current && gainNodeRef.current) {
-        gainNodeRef.current.gain.exponentialRampToValueAtTime(
-          0.0001,
-          audioCtxRef.current.currentTime + 1.2
-        );
-        setTimeout(() => {
-          audioCtxRef.current?.close();
-          audioCtxRef.current = null;
-          setAudioActive(false);
-        }, 1300);
-      } else {
-        setAudioActive(false);
-      }
-    }
-  };
 
   // Video play/pause toggle
   const toggleVideoPlayback = () => {
@@ -543,15 +473,6 @@ export default function PsychologyViewer() {
       setActiveChapterId(id);
     }
   };
-
-  // Cleanup audio on unmount
-  useEffect(() => {
-    return () => {
-      if (audioCtxRef.current && audioCtxRef.current.state !== "closed") {
-        audioCtxRef.current.close().catch(() => {});
-      }
-    };
-  }, []);
 
   const totalWords = 2800;
   const [currentProgressVal, setCurrentProgressVal] = useState<number>(0);
@@ -629,93 +550,57 @@ export default function PsychologyViewer() {
         </div>
 
         {/* Minimal Floating Navigation Bar */}
-        <div className="w-full px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between backdrop-blur-md bg-black/40 border-b border-white/[0.06] pointer-events-auto">
-          {/* Brand & Monograph Metadata */}
-          <div className="flex items-center space-x-3">
-            <Link
-              href="/mind"
-              className="group inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono-code uppercase bg-white/5 hover:bg-white/10 border border-white/15 text-neutral-300 hover:text-white transition-all shadow-sm"
-              title="Return to Mind & More"
-            >
-              <span className="transition-transform group-hover:-translate-x-0.5">←</span>
-              <span>Mind</span>
-            </Link>
-
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            <a
-              href="#hero"
-              className="font-serif-title tracking-[0.25em] text-sm md:text-base font-semibold text-neutral-100 hover:text-white transition-colors"
-            >
-              COGNITION
-            </a>
-            <span className="hidden sm:inline text-xs font-mono-code text-neutral-400 border-l border-neutral-800 pl-3">
-              ARCHIVE // PSYCHE.01
-            </span>
-          </div>
-
-          {/* Quick Chapter Selector */}
-          <nav
-            aria-label="Chapter Navigation"
-            className="hidden md:flex items-center space-x-1 text-xs font-mono-code text-neutral-400"
+        <div className="w-full px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between backdrop-blur-md bg-black/60 border-b border-white/[0.08] pointer-events-auto">
+          {/* Bigger "GO TO MY MIND" Button */}
+          <Link
+            href="/mind"
+            className="group inline-flex items-center gap-2.5 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-mono-code uppercase tracking-[0.18em] font-semibold bg-white/10 hover:bg-white/20 border border-white/25 hover:border-white/50 text-white transition-all duration-300 shadow-xl hover:scale-[1.03]"
+            title="Go to My Mind"
           >
-            {CHAPTERS.map((ch) => (
+            <span className="text-base transition-transform duration-300 group-hover:-translate-x-1">
+              ←
+            </span>
+            <span>GO TO MY MIND</span>
+          </Link>
+
+          {/* Chapters & Pause Button */}
+          <div className="flex items-center gap-3 sm:gap-6">
+            {/* Quick Chapter Selector */}
+            <nav
+              aria-label="Chapter Navigation"
+              className="flex items-center space-x-1 sm:space-x-1.5 text-xs sm:text-sm font-mono-code text-neutral-400"
+            >
+              {CHAPTERS.map((ch) => (
+                <button
+                  key={ch.id}
+                  onClick={() => scrollToSection(ch.id)}
+                  className={`px-2.5 sm:px-3 py-1.5 rounded transition-all duration-300 cursor-pointer ${
+                    activeChapterId === ch.id
+                      ? "text-white bg-white/15 font-semibold shadow-sm"
+                      : "hover:text-neutral-200 hover:bg-white/5"
+                  }`}
+                >
+                  {ch.number}
+                </button>
+              ))}
               <button
-                key={ch.id}
-                onClick={() => scrollToSection(ch.id)}
-                className={`px-3 py-1.5 rounded transition-all duration-300 ${
-                  activeChapterId === ch.id
-                    ? "text-white bg-white/10 font-medium"
-                    : "hover:text-neutral-200 hover:bg-white/5"
-                }`}
+                onClick={() => scrollToSection("interactive-crt")}
+                className="px-2.5 sm:px-3 py-1.5 rounded text-neutral-400 hover:text-white hover:bg-white/5 transition-colors cursor-pointer"
               >
-                {ch.number}
+                EXPERIMENT
               </button>
-            ))}
-            <button
-              onClick={() => scrollToSection("interactive-crt")}
-              className="px-3 py-1.5 rounded text-neutral-400 hover:text-white hover:bg-white/5 transition-colors"
-            >
-              EXPERIMENT
-            </button>
-          </nav>
+            </nav>
 
-          {/* Controls: Ambient Sound & Video Controls */}
-          <div className="flex items-center space-x-2">
-            {/* Ambient Sound Generator Button */}
-            <button
-              onClick={toggleAmbientAudio}
-              aria-label={
-                audioActive
-                  ? "Mute 432Hz ambient focus tone"
-                  : "Enable 432Hz ambient focus tone"
-              }
-              className={`p-2 rounded-full border transition-all flex items-center space-x-1.5 text-xs ${
-                audioActive
-                  ? "border-white/40 bg-white/10 text-white shadow-[0_0_12px_rgba(255,255,255,0.15)]"
-                  : "border-white/10 bg-black/40 text-neutral-400 hover:text-white hover:border-white/20"
-              }`}
-              title={
-                audioActive
-                  ? "Mute 432Hz neural tone"
-                  : "Activate 432Hz neural focus tone"
-              }
-            >
-              {audioActive ? <Volume2 size={14} /> : <VolumeX size={14} />}
-              <span className="hidden lg:inline text-[11px] font-mono-code">
-                {audioActive ? "432Hz ON" : "SOUND"}
-              </span>
-            </button>
-
-            {/* Video Play/Pause */}
+            {/* Video Play/Pause Button at the Very End */}
             <button
               onClick={toggleVideoPlayback}
               aria-label={
                 isPlaying ? "Pause background video" : "Resume background video"
               }
-              className="p-2 rounded-full border border-white/10 bg-black/40 text-neutral-400 hover:text-white hover:border-white/20 transition-all"
+              className="p-2.5 sm:p-3 rounded-full border border-white/20 bg-white/5 hover:bg-white/15 text-neutral-200 hover:text-white hover:border-white/40 transition-all cursor-pointer shadow-sm hover:scale-105"
               title={isPlaying ? "Pause video loop" : "Play video loop"}
             >
-              {isPlaying ? <Pause size={14} /> : <Play size={14} />}
+              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
             </button>
           </div>
         </div>
@@ -1259,30 +1144,6 @@ export default function PsychologyViewer() {
           </div>
         </section>
       </main>
-
-      {/* ─────────────────────────────────────────────────────────────
-          9. REFINED EDITORIAL FOOTER
-          ───────────────────────────────────────────────────────────── */}
-      <footer className="relative z-10 border-t border-white/[0.08] bg-black/90 py-12 px-6">
-        <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between text-xs text-neutral-400 gap-6 font-mono-code">
-          <div>
-            <span className="font-serif-title text-neutral-200 text-sm tracking-widest uppercase block mb-1">
-              Cognition Monograph
-            </span>
-            <span>A study in neural inference, heuristics & conscious synthesis.</span>
-          </div>
-
-          <div className="flex items-center space-x-6">
-            <span className="hover:text-neutral-200 transition-colors">
-              PITCH BLACK CINEMA // 2026
-            </span>
-            <span className="text-neutral-700">|</span>
-            <span className="text-neutral-400">
-              {Math.round(currentProgressVal * 100)}% READ
-            </span>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
