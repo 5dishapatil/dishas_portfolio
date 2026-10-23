@@ -189,12 +189,12 @@ export const STEP_ANCHORS: readonly StepAnchor[] = [
     slotIndex: 1,
     xPercent: 38.6,
     yPercent: 58.2,
-    scale: 0.76,
+    scale: 0.8,
     rotateZ: -2.0,
     skewX: -2.0,
-    opacity: 0.94,
-    textOpacity: 0.95,
-    shadowIntensity: 0.75,
+    opacity: 0.95,
+    textOpacity: 0.96,
+    shadowIntensity: 0.78,
     blurPx: 0,
     zIndex: 30,
   },
@@ -202,26 +202,26 @@ export const STEP_ANCHORS: readonly StepAnchor[] = [
     slotIndex: 2,
     xPercent: 26.8,
     yPercent: 47.7,
-    scale: 0.57,
+    scale: 0.63,
     rotateZ: -0.8,
     skewX: -0.8,
-    opacity: 0.88,
-    textOpacity: 0.9,
-    shadowIntensity: 0.52,
-    blurPx: 0.15,
+    opacity: 0.9,
+    textOpacity: 0.92,
+    shadowIntensity: 0.56,
+    blurPx: 0.1,
     zIndex: 20,
   },
   {
     slotIndex: 3,
     xPercent: 18.5,
     yPercent: 41.5,
-    scale: 0.42,
+    scale: 0.49,
     rotateZ: 0.0,
     skewX: 0.0,
-    opacity: 0.82,
-    textOpacity: 0.84,
-    shadowIntensity: 0.35,
-    blurPx: 0.25,
+    opacity: 0.85,
+    textOpacity: 0.88,
+    shadowIntensity: 0.4,
+    blurPx: 0.2,
     zIndex: 12,
   },
 ];
@@ -544,7 +544,7 @@ const StaircaseCard: React.FC<StaircaseCardProps> = ({ step, transformState }) =
           4
         )}) rotateZ(${rotateZ.toFixed(2)}deg) skewX(${skewX.toFixed(2)}deg)`,
       }}
-      className="group absolute w-[118px] h-[42px] sm:w-[132px] sm:h-[46px] rounded-[7px] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 will-change-transform select-none text-left block"
+      className="group absolute w-[156px] h-[56px] sm:w-[184px] sm:h-[64px] md:w-[202px] md:h-[68px] rounded-[10px] cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80 will-change-transform select-none text-left block"
     >
       {/* Dynamic ambient step shadow & glow */}
       <div
@@ -554,7 +554,7 @@ const StaircaseCard: React.FC<StaircaseCardProps> = ({ step, transformState }) =
           opacity: Math.min(1, activeGlowMultiplier),
           transform: `scale(${1 + transitionProgress * 0.14})`,
         }}
-        className="pointer-events-none absolute -inset-2 rounded-[12px] blur-md transition-opacity duration-200"
+        className="pointer-events-none absolute -inset-2.5 rounded-[14px] blur-md transition-opacity duration-200"
       />
 
       {/* 1px luminous rim border */}
@@ -566,7 +566,7 @@ const StaircaseCard: React.FC<StaircaseCardProps> = ({ step, transformState }) =
             12 * shadowIntensity
           )}px ${step.theme.primaryGlow}`,
         }}
-        className="pointer-events-none absolute inset-0 rounded-[7px] p-[1px]"
+        className="pointer-events-none absolute inset-0 rounded-[10px] p-[1px]"
       >
         {/* Main dark tinted glassmorphic body */}
         <div
@@ -576,7 +576,7 @@ const StaircaseCard: React.FC<StaircaseCardProps> = ({ step, transformState }) =
               0.12 + transitionProgress * 0.14
             }), inset 0 -6px 16px ${step.theme.primaryGlow}`,
           }}
-          className="relative w-full h-full rounded-[6px] backdrop-blur-md overflow-hidden"
+          className="relative w-full h-full rounded-[9px] backdrop-blur-md overflow-hidden"
         >
           {/* Base glass specular sheen */}
           <div
@@ -620,7 +620,7 @@ const StaircaseCard: React.FC<StaircaseCardProps> = ({ step, transformState }) =
                 1 + transitionProgress * 0.22 + (isHovered ? 0.15 : 0)
               })`,
             }}
-            className="pointer-events-none absolute left-[14.5%] top-[44%] w-5 h-5 flex items-center justify-center animate-star-subtle"
+            className="pointer-events-none absolute left-[14.5%] top-[44%] w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center animate-star-subtle"
           >
             <div
               style={{
@@ -630,18 +630,18 @@ const StaircaseCard: React.FC<StaircaseCardProps> = ({ step, transformState }) =
             />
             <div
               style={{ backgroundColor: step.theme.orbCore }}
-              className="absolute w-3.5 h-[1px] opacity-85 blur-[0.2px] rotate-12"
+              className="absolute w-4.5 h-[1px] opacity-85 blur-[0.2px] rotate-12"
             />
             <div
               style={{ backgroundColor: step.theme.orbCore }}
-              className="absolute w-[1px] h-3.5 opacity-85 blur-[0.2px] rotate-12"
+              className="absolute w-[1px] h-4.5 opacity-85 blur-[0.2px] rotate-12"
             />
             <div
               style={{
                 backgroundColor: '#ffffff',
                 boxShadow: `0 0 6px 1.2px ${step.theme.orbCore}, 0 0 11px 2.5px ${step.theme.orbHalo}`,
               }}
-              className="relative w-1.5 h-1.5 rounded-full"
+              className="relative w-2 h-2 rounded-full"
             />
           </div>
 
@@ -699,7 +699,7 @@ const StaircaseCard: React.FC<StaircaseCardProps> = ({ step, transformState }) =
                 transform: `translate3d(0, ${textTranslateY}px, 0)`,
                 textShadow: '0 2px 8px rgba(0, 0, 0, 0.8), 0 0 12px rgba(255, 255, 255, 0.22)',
               }}
-              className="font-editorial text-[13px] sm:text-[14px] font-medium tracking-[0.01em] text-white whitespace-nowrap leading-none will-change-transform"
+              className="font-editorial text-[16px] sm:text-[18px] md:text-[20px] font-medium tracking-[0.015em] text-white whitespace-nowrap leading-none will-change-transform"
             >
               {step.cardTitle}
             </span>
@@ -996,3 +996,4 @@ export default function CosmicStaircaseViewer({
     </main>
   );
 }
+
