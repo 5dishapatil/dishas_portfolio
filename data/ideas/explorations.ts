@@ -73,3 +73,4 @@ export const EXPLORATION_ITEMS: ExplorationItem[] = [
     tags: ['Colorimetry', 'Ambient Noise', 'Topologies'],
   },
 ];
+
