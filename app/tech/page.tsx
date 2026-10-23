@@ -5,24 +5,21 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import Hls from "hls.js";
 import TechStackShowcase from "@/app/components/tech/TechStackShowcase";
+import ProjectShowcase from "@/app/components/tech/ProjectShowcase";
 
 /**
  * Tech World Page — Disha Portfolio
  * 
  * 1. Mindloop Dynamic Journey CTA Hero (with HLS video stream & Liquid Glass)
- * 2. Interactive Cinematic Tech Stack Showcase (immediately below, reachable via View Tech Stack button or smooth scrolling)
+ * 2. Interactive Cinematic Tech Stack Showcase (immediately below)
+ * 3. Single-File Pitch Black Project Showcase (seamless blending endless videos)
  */
 
 export default function TechPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const techStackRef = useRef<HTMLElement>(null);
+  const projectsRef = useRef<HTMLElement>(null);
   const [isVideoReady, setIsVideoReady] = useState(false);
-  const [modalType, setModalType] = useState<"writer" | null>(null);
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [focusArea, setFocusArea] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   // 1. Dynamic Video Setup (HLS via hls.js with native Safari fallback)
   useEffect(() => {
@@ -61,31 +58,12 @@ export default function TechPage() {
     };
   }, []);
 
-  const handleWriterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !email.includes("@")) {
-      setErrorMessage("Please provide a valid email address");
-      return;
-    }
-    if (!name.trim()) {
-      setErrorMessage("Please enter your name");
-      return;
-    }
-    setErrorMessage("");
-    setSubmitted(true);
-  };
-
-  const closeModal = () => {
-    setModalType(null);
-    setEmail("");
-    setName("");
-    setFocusArea("");
-    setSubmitted(false);
-    setErrorMessage("");
-  };
-
   const handleScrollToTechStack = () => {
     techStackRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleScrollToProjects = () => {
+    projectsRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const handleScrollToTop = () => {
@@ -185,20 +163,19 @@ export default function TechPage() {
             <div className="w-5 h-5 rounded-full border border-white/70" />
           </div>
 
-          {/* Heading: "Start Your Journey" */}
+          {/* Heading: "Technology for the Living" */}
           <h1 className="text-6xl sm:text-7xl md:text-8xl tracking-tight leading-[1.08] mb-6">
-            <span className="mindloop-serif text-white">Start Your Journey</span>
+            <span className="mindloop-serif text-white">Technology for the Living</span>
           </h1>
 
           {/* Subtitle */}
           <p className="text-zinc-300 text-base sm:text-lg md:text-xl max-w-xl mx-auto mb-10 leading-relaxed font-normal">
-            Whether you&apos;re looking for curated perspective or sharing the ideas
-            shaping the future, Mindloop is your home.
+            Ideas can turn into actions only when they are prepared to be executed.
           </p>
 
-          {/* Action Buttons */}
+          {/* Action Buttons: View Tech Stack & View Projects */}
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
-            {/* View Tech Stack Button (renamed from Subscribe Now, smooth scrolls to Tech Stack section) */}
+            {/* View Tech Stack Button */}
             <button
               type="button"
               onClick={handleScrollToTechStack}
@@ -210,13 +187,16 @@ export default function TechPage() {
               </span>
             </button>
 
-            {/* Start Writing Button (Liquid Glass) */}
+            {/* View Projects Button (replaces Start Writing) */}
             <button
               type="button"
-              onClick={() => setModalType("writer")}
-              className="mindloop-liquid-glass w-full sm:w-auto rounded-lg text-white font-semibold text-sm tracking-wide px-8 py-3.5 active:scale-95 cursor-pointer"
+              onClick={handleScrollToProjects}
+              className="mindloop-liquid-glass group relative inline-flex items-center justify-center gap-2 w-full sm:w-auto rounded-lg text-white font-semibold text-sm tracking-wide px-8 py-3.5 active:scale-95 cursor-pointer shadow-xl hover:shadow-[0_0_25px_rgba(255,255,255,0.2)]"
             >
-              Start Writing
+              <span>View Projects</span>
+              <span className="text-sm transition-transform duration-300 group-hover:translate-y-0.5">
+                ↓
+              </span>
             </button>
           </div>
         </main>
@@ -255,132 +235,70 @@ export default function TechPage() {
         ref={techStackRef}
         className="relative w-full min-h-screen bg-[#111] overflow-hidden"
       >
-        {/* Quick jump back to top */}
-        <div className="absolute top-5 right-5 sm:top-7 sm:right-8 z-30">
+        {/* Quick jump navigation buttons */}
+        <div className="absolute top-5 right-5 sm:top-7 sm:right-8 z-30 flex items-center gap-2">
           <button
             onClick={handleScrollToTop}
             aria-label="Return to journey top"
-            className="group inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono tracking-wider uppercase bg-black/60 hover:bg-black/90 border border-white/15 text-white/70 hover:text-white backdrop-blur-md transition-all shadow-lg hover:scale-105"
+            className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono tracking-wider uppercase bg-black/60 hover:bg-black/90 border border-white/15 text-white/70 hover:text-white backdrop-blur-md transition-all shadow-lg hover:scale-105 cursor-pointer"
           >
             <span className="transition-transform duration-300 group-hover:-translate-y-0.5">↑</span>
             <span>Journey</span>
+          </button>
+          <button
+            onClick={handleScrollToProjects}
+            aria-label="Scroll to projects"
+            className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono tracking-wider uppercase bg-black/60 hover:bg-black/90 border border-white/15 text-white/70 hover:text-white backdrop-blur-md transition-all shadow-lg hover:scale-105 cursor-pointer"
+          >
+            <span>Projects</span>
+            <span className="transition-transform duration-300 group-hover:translate-y-0.5">↓</span>
           </button>
         </div>
 
         {/* Interactive Cinematic Tech Stack */}
         <TechStackShowcase />
+
+        {/* Bottom prompt to scroll down to Projects */}
+        <button
+          onClick={handleScrollToProjects}
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 px-4 py-1.5 rounded-full bg-black/70 hover:bg-black/95 border border-white/20 text-white/70 hover:text-white font-mono text-[11px] uppercase tracking-widest backdrop-blur-md transition-all hover:scale-105 cursor-pointer shadow-xl"
+        >
+          <span>Scroll to Projects</span>
+          <span className="text-xs">↓</span>
+        </button>
       </section>
 
-      {/* Interactive Modal Dialog (Start Writing) */}
-      {modalType && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-          <div
-            className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity"
-            onClick={closeModal}
-          />
-
-          <div
-            className="mindloop-liquid-glass relative w-full max-w-md rounded-2xl p-6 sm:p-8 bg-zinc-950/95 border border-white/10 shadow-2xl z-10 text-white"
-            role="dialog"
-            aria-modal="true"
+      {/* =========================================================================
+          SECTION 3: PITCH BLACK PROJECT SHOWCASE (RIGHT BELOW TECH STACK)
+          ========================================================================= */}
+      <section
+        id="projects"
+        ref={projectsRef}
+        className="relative w-full min-h-screen bg-black overflow-hidden"
+      >
+        {/* Quick jump navigation buttons */}
+        <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-30 flex items-center gap-2.5">
+          <button
+            onClick={handleScrollToTechStack}
+            aria-label="Return to tech stack"
+            className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono tracking-wider uppercase bg-black/60 hover:bg-black/90 border border-white/15 text-white/70 hover:text-white backdrop-blur-md transition-all shadow-lg hover:scale-105 cursor-pointer"
           >
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={closeModal}
-              aria-label="Close modal"
-              className="absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center text-zinc-400 hover:text-white transition-colors cursor-pointer"
-            >
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-
-            {submitted ? (
-              <div className="text-center py-6">
-                <div className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center mx-auto mb-4 font-bold text-lg">
-                  <svg className="w-6 h-6 stroke-black" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold mb-2">You&apos;re on the list</h3>
-                <p className="text-sm text-zinc-400">
-                  Thank you, {name}. Our editorial team has received your creator application.
-                </p>
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="mt-6 bg-white text-black font-semibold text-xs tracking-wider uppercase rounded-full px-6 py-2.5 hover:bg-zinc-200 cursor-pointer"
-                >
-                  Close
-                </button>
-              </div>
-            ) : (
-              <div>
-                <h3 className="text-2xl font-bold mb-2">
-                  Start Writing on Mindloop
-                </h3>
-                <p className="text-sm text-zinc-400 mb-6">
-                  Publish thoughtful, high-signal newsletters with complete subscriber ownership.
-                </p>
-
-                <form onSubmit={handleWriterSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Ada Lovelace"
-                      className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="reader@mindloop.io"
-                      required
-                      className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1">
-                      Publication / Writing Focus
-                    </label>
-                    <input
-                      type="text"
-                      value={focusArea}
-                      onChange={(e) => setFocusArea(e.target.value)}
-                      placeholder="e.g. AI Systems & Human Agency"
-                      className="w-full bg-zinc-900 border border-white/10 rounded-lg px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/30"
-                    />
-                  </div>
-
-                  {errorMessage && (
-                    <p className="text-xs text-red-400">{errorMessage}</p>
-                  )}
-
-                  <button
-                    type="submit"
-                    className="w-full bg-white text-black font-semibold text-sm rounded-lg py-3 hover:bg-zinc-200 transition-colors cursor-pointer mt-2"
-                  >
-                    Request Creator Access
-                  </button>
-                </form>
-              </div>
-            )}
-          </div>
+            <span className="transition-transform duration-300 group-hover:-translate-y-0.5">↑</span>
+            <span>Stack</span>
+          </button>
+          <button
+            onClick={handleScrollToTop}
+            aria-label="Return to journey top"
+            className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-mono tracking-wider uppercase bg-black/60 hover:bg-black/90 border border-white/15 text-white/70 hover:text-white backdrop-blur-md transition-all shadow-lg hover:scale-105 cursor-pointer"
+          >
+            <span className="transition-transform duration-300 group-hover:-translate-y-0.5">↑</span>
+            <span>Top</span>
+          </button>
         </div>
-      )}
+
+        {/* Pitch Black Borderless Video Projects */}
+        <ProjectShowcase />
+      </section>
     </div>
   );
 }
