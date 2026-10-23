@@ -43,8 +43,12 @@ export const MIND_CARDS: MindCardItem[] = [
     description:
       "Decoupled capital allocation, market reflexivity, risk asymmetry, and exponential wealth creation over multi-decadal horizons.",
     accent: "#10b981",
-    glow: "rgba(16, 185, 129, 0.35)",
+    glow: "rgba(16, 185, 129, 0.45)",
     tags: ["Markets", "Capital", "Asymmetry", "Compounding"],
+    href: "/mind/finance",
+    isSpecial: true,
+    badgeText: "Interactive Terminal",
+    ctaText: "Launch Dalal Street Architecture ↗",
   },
   {
     id: "brain-and-biology",
