@@ -90,6 +90,69 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
   const facingRef = useRef<1 | -1>(1);
   const savedScrollYRef = useRef(0);
   const entryTimersRef = useRef<number[]>([]);
+  const activeKeysRef = useRef<{ left: boolean; right: boolean }>({
+    left: false,
+    right: false,
+  });
+  const entryStateRef = useRef<EntryState>(entryState);
+
+  // Keep entryStateRef synchronized and clear active keys when entering a house
+  useEffect(() => {
+    entryStateRef.current = entryState;
+    if (entryState !== "idle") {
+      activeKeysRef.current.left = false;
+      activeKeysRef.current.right = false;
+    }
+  }, [entryState]);
+
+  // Keyboard Left / Right arrow navigation along the boulevard
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if currently inside a house or typing in search/input
+      if (entryStateRef.current !== "idle") return;
+
+      const targetTag = (e.target as HTMLElement)?.tagName?.toLowerCase();
+      if (
+        targetTag === "input" ||
+        targetTag === "textarea" ||
+        targetTag === "select" ||
+        (e.target as HTMLElement)?.isContentEditable
+      ) {
+        return;
+      }
+
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        activeKeysRef.current.right = true;
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        activeKeysRef.current.left = true;
+      }
+    };
+
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        activeKeysRef.current.right = false;
+      } else if (e.key === "ArrowLeft") {
+        activeKeysRef.current.left = false;
+      }
+    };
+
+    const handleBlur = () => {
+      activeKeysRef.current.left = false;
+      activeKeysRef.current.right = false;
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", handleBlur);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, []);
 
   // Map catalogue with the 10 reference archetype showcases in order 01 to 10,
   // followed by all remaining books mapped to their respective archetypes
@@ -218,6 +281,33 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
     window.addEventListener("scroll", handleScroll, { passive: true });
 
     const tick = () => {
+      // Process continuous smooth walking via ArrowRight / ArrowLeft
+      if (entryStateRef.current === "idle") {
+        const dir =
+          (activeKeysRef.current.right ? 1 : 0) -
+          (activeKeysRef.current.left ? 1 : 0);
+        if (dir !== 0) {
+          const speed = 16;
+          const currentScrollY = window.scrollY;
+          const maxScrollY = Math.max(
+            1,
+            document.documentElement.scrollHeight - window.innerHeight
+          );
+          const nextScrollY = Math.min(
+            maxScrollY,
+            Math.max(0, currentScrollY + dir * speed)
+          );
+          if (nextScrollY !== currentScrollY) {
+            window.scrollTo({
+              top: nextScrollY,
+              behavior: "instant" as ScrollBehavior,
+            });
+            const scrollRatio = nextScrollY / maxScrollY;
+            targetWorldXRef.current = scrollRatio * maxWorldTravel;
+          }
+        }
+      }
+
       const target = targetWorldXRef.current;
       const current = currentWorldXRef.current;
       const next = current + (target - current) * 0.14;
@@ -741,8 +831,7 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
           <div className="flex items-center gap-3 text-white/70">
             <span className="inline-block w-2 h-2 rounded-full bg-[#D8AE68] animate-pulse" />
             <span>
-              Scroll to walk the street • Click any book-house door to step
-              inside
+              Scroll or use ← / → Arrow Keys to walk the boulevard • Click any book-house door to step inside
             </span>
           </div>
 
