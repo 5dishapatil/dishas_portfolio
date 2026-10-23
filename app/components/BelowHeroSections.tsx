@@ -2,8 +2,11 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { AnimatePresence, motion } from "framer-motion";
 import EnchantedForestPlayground from "./playground/EnchantedForestPlayground";
+import MindCardsShowcase from "./mind/MindCardsShowcase";
 
 interface CarouselCard {
   src: string;
@@ -176,6 +179,7 @@ const BENTO_WORLDS: BentoWorldItem[] = [
     title: "Mind & More",
     icon: "mind",
     image: "/assets/bento-5.jpg",
+    href: "/mind",
     lines: [
       "PSYCHOLOGY, FINANCE,",
       "THE BRAIN, SYSTEMS",
@@ -286,6 +290,7 @@ function BentoCategoryIcon({ type }: { type: BentoWorldItem["icon"] }) {
 export default function BelowHeroSections() {
   const router = useRouter();
   const [selectedFilter, setSelectedFilter] = useState<string>("All");
+  const [isMindModalOpen, setIsMindModalOpen] = useState<boolean>(false);
   const [filterOpen, setFilterOpen] = useState<boolean>(false);
 
   const filterDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -695,6 +700,7 @@ export default function BelowHeroSections() {
             </div>
           </div>
         </div>
+
       </section>
 
       {/* Subtle Cosmic Divider Between Carousels and Bento Worlds Grid */}
@@ -887,7 +893,9 @@ export default function BelowHeroSections() {
               <article
                 key={world.num}
                 onClick={() => {
-                  if (world.href) {
+                  if (world.title === "Mind & More") {
+                    setIsMindModalOpen(true);
+                  } else if (world.href) {
                     router.push(world.href);
                   } else if (world.title === "Playground") {
                     setSelectedFilter("Playground");
@@ -984,6 +992,74 @@ export default function BelowHeroSections() {
             );
           })}
         </div>
+
+        {/* Mind & More Floating Cards Modal */}
+        <AnimatePresence>
+          {isMindModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsMindModalOpen(false)}
+                className="fixed inset-0 bg-black/85 backdrop-blur-md"
+              />
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.94, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.94, y: 20 }}
+                transition={{ duration: 0.3 }}
+                className="relative max-w-5xl w-full bg-[#070b16] border border-white/15 rounded-3xl p-6 sm:p-10 shadow-2xl z-10 my-auto overflow-hidden"
+              >
+                {/* Close Button */}
+                <button
+                  onClick={() => setIsMindModalOpen(false)}
+                  aria-label="Close modal"
+                  className="absolute top-5 right-5 z-20 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white flex items-center justify-center transition-colors cursor-pointer"
+                >
+                  ✕
+                </button>
+
+                {/* Modal Header */}
+                <div className="text-center mb-8 space-y-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] bg-white/5 border border-white/10 text-[#46d3db]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#46d3db] animate-pulse" />
+                    05 • Mind &amp; More
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl font-light text-white">
+                    Worlds Inside <span className="italic font-serif text-[#46d3db]">My Head</span>
+                  </h2>
+                  <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto">
+                    Select a pillar below. Click Brain &amp; Biology to enter the real-time 3D DNA simulation.
+                  </p>
+                </div>
+
+                {/* 4 Floating Cards */}
+                <MindCardsShowcase
+                  isModal
+                  onCardClick={(card) => {
+                    if (card.href) {
+                      setIsMindModalOpen(false);
+                      router.push(card.href);
+                    }
+                  }}
+                />
+
+                <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-zinc-500 font-mono">
+                  <span>4 Specialized Verticals</span>
+                  <Link
+                    href="/mind"
+                    onClick={() => setIsMindModalOpen(false)}
+                    className="text-[#46d3db] hover:underline"
+                  >
+                    Open Full Page ↗
+                  </Link>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
       </section>
     </div>
   );
