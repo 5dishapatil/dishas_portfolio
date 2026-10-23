@@ -32,8 +32,6 @@ import {
   ArrowUpRight,
   Play,
   Pause,
-  Eye,
-  EyeOff,
   Sparkles,
   Layers,
   Landmark,
@@ -259,7 +257,6 @@ export default function FinanceViewer() {
 
   // Video Background controls
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
-  const [userDimOverride, setUserDimOverride] = useState<"auto" | "clear" | "deep">("auto");
 
   // Real-time market tickers state
   const [tickers, setTickers] = useState<LiveMarketTicker[]>([
@@ -400,47 +397,12 @@ export default function FinanceViewer() {
         </motion.div>
 
         {/* Dynamic Scroll-Activated Fade to Pitch Black for Reading Sections */}
-        {userDimOverride === "auto" ? (
-          <motion.div
-            style={{ opacity: darkFadeOpacity }}
-            className="absolute inset-0 bg-[#030303] transition-opacity pointer-events-none"
-          />
-        ) : (
-          <div
-            className={`absolute inset-0 transition-colors duration-500 pointer-events-none ${
-              userDimOverride === "clear" ? "bg-black/10" : "bg-[#030303]/95"
-            }`}
-          />
-        )}
+        {/* Dynamic Scroll-Activated Fade to Pitch Black for Reading Sections */}
+        <motion.div
+          style={{ opacity: darkFadeOpacity }}
+          className="absolute inset-0 bg-[#030303] transition-opacity pointer-events-none"
+        />
       </div>
-
-      {/* ================= FLOATING HUD CONTROLS ================= */}
-      <aside aria-label="Controls" className="fixed bottom-6 right-6 z-40 flex items-center gap-2 p-1.5 rounded-full bg-black/70 backdrop-blur-xl border border-white/15 shadow-2xl">
-        <button
-          onClick={toggleVideo}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-mono-num font-medium text-slate-200 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
-          title={isVideoPlaying ? "Pause video motion" : "Resume video motion"}
-          aria-label={isVideoPlaying ? "Pause video" : "Play video"}
-        >
-          {isVideoPlaying ? <Pause className="w-3.5 h-3.5 text-emerald-400" /> : <Play className="w-3.5 h-3.5 text-emerald-400" />}
-          <span className="hidden sm:inline">{isVideoPlaying ? "PAUSE BG" : "PLAY BG"}</span>
-        </button>
-
-        <div className="h-4 w-[1px] bg-white/20" />
-
-        <button
-          onClick={() => {
-            const next = userDimOverride === "auto" ? "clear" : userDimOverride === "clear" ? "deep" : "auto";
-            setUserDimOverride(next);
-          }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono-num text-slate-200 hover:text-white hover:bg-white/15 transition-colors cursor-pointer"
-          title="Toggle scroll-fade vs manual video visibility"
-          aria-label="Toggle dim level"
-        >
-          {userDimOverride === "clear" ? <Eye className="w-3.5 h-3.5 text-emerald-400" /> : <EyeOff className="w-3.5 h-3.5 text-cyan-400" />}
-          <span className="hidden sm:inline">VIEW: {userDimOverride.toUpperCase()}</span>
-        </button>
-      </aside>
 
       {/* ================= REAL-TIME MARKET TICKER BAR & HEADER ================= */}
       <header className="relative z-30 border-b border-white/10 bg-black/50 backdrop-blur-md">
@@ -489,9 +451,9 @@ export default function FinanceViewer() {
           </div>
         </div>
 
-        {/* Navigation Bar with GO TO MY MIND button */}
+        {/* Navigation Bar with GO TO MY MIND & Top Play/Pause BG Button */}
         <nav aria-label="Main Navigation" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center">
             {/* GO TO MY MIND Button */}
             <Link
               href="/mind"
@@ -503,20 +465,6 @@ export default function FinanceViewer() {
               </span>
               <span>GO TO MY MIND</span>
             </Link>
-
-            <div className="hidden sm:flex items-center space-x-2.5 pl-2 border-l border-white/10">
-              <div className="w-8 h-8 rounded-lg bg-black/60 border border-emerald-500/40 flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-                <Landmark className="w-4 h-4 text-emerald-400" />
-              </div>
-              <div>
-                <span className="font-display font-bold tracking-tight text-white text-base">
-                  NEXUS<span className="text-emerald-400">.</span>IN
-                </span>
-                <p className="text-[9px] font-mono-num text-slate-400 tracking-wider uppercase">
-                  Indian Capital Markets
-                </p>
-              </div>
-            </div>
           </div>
 
           {/* Nav Links */}
@@ -537,6 +485,21 @@ export default function FinanceViewer() {
               <Coins className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">CALCULATE</span> SIP
             </a>
+
+            {/* Play/Pause BG Button on Top Bar */}
+            <button
+              onClick={toggleVideo}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-mono-num font-medium text-slate-200 hover:text-white bg-black/60 hover:bg-white/15 border border-white/20 hover:border-white/40 transition-all cursor-pointer shadow-sm hover:scale-105"
+              title={isVideoPlaying ? "Pause video motion" : "Resume video motion"}
+              aria-label={isVideoPlaying ? "Pause video" : "Play video"}
+            >
+              {isVideoPlaying ? (
+                <Pause className="w-3.5 h-3.5 text-emerald-400" />
+              ) : (
+                <Play className="w-3.5 h-3.5 text-emerald-400" />
+              )}
+              <span className="text-[11px] font-semibold">{isVideoPlaying ? "PAUSE BG" : "PLAY BG"}</span>
+            </button>
           </div>
         </nav>
       </header>
@@ -1633,39 +1596,6 @@ export default function FinanceViewer() {
           </div>
         </motion.div>
       </section>
-
-      {/* ================= CLASSY FOOTER ================= */}
-      <footer className="relative z-10 border-t border-white/10 bg-black/95 py-12 px-4 sm:px-6 lg:px-8 text-xs font-mono-num text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <Landmark className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="text-white font-bold font-display text-sm">
-                NEXUS // DALAL STREET ARCHITECTURE
-              </p>
-              <p className="text-[11px] text-slate-400">
-                Created for finance students and investors navigating Indian Capital Markets.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-6 text-slate-400 text-[11px]">
-            <span>SEBI Academic Framework</span>
-            <span>AMFI Guidelines</span>
-            <span>Real-Time Market APIs</span>
-            <a href="#" className="text-emerald-400 hover:underline flex items-center gap-1">
-              <span>Top of page</span>
-              <ArrowUpRight className="w-3 h-3" />
-            </a>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto mt-8 pt-6 border-t border-white/10 text-center text-[10px] text-slate-500">
-          Disclaimer: This educational interactive portal is for academic and informational purposes only and strictly does not constitute financial, investment, or trading advice. Mutual fund investments and equity securities are subject to market risks; read all scheme-related documents carefully.
-        </div>
-      </footer>
     </div>
   );
 }
