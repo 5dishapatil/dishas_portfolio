@@ -176,21 +176,22 @@ export default function VisualPlaygroundPage() {
   });
 
   // Independent vertical parallax transforms for left and right columns
-  const leftParallaxY = useTransform(smoothProgress, [0, 1], [0, -180]);
-  const rightParallaxY = useTransform(smoothProgress, [0, 1], [100, -320]);
+  const leftParallaxY = useTransform(smoothProgress, [0, 1], [0, -220]);
+  const rightParallaxY = useTransform(smoothProgress, [0, 1], [100, -380]);
 
+  // Dynamically alternate all items across left and right columns
   const leftColItems = useMemo(
-    () => [EXPLORATION_ITEMS[0], EXPLORATION_ITEMS[2], EXPLORATION_ITEMS[4]].filter(Boolean),
+    () => EXPLORATION_ITEMS.filter((_, idx) => idx % 2 === 0),
     []
   );
   const rightColItems = useMemo(
-    () => [EXPLORATION_ITEMS[1], EXPLORATION_ITEMS[3], EXPLORATION_ITEMS[5]].filter(Boolean),
+    () => EXPLORATION_ITEMS.filter((_, idx) => idx % 2 === 1),
     []
   );
 
   return (
     <div
-      className="relative min-h-[230vh] bg-[#0a0a0a] text-[#f5f5f5] selection:bg-[#4E85BF]/30 selection:text-white overflow-x-hidden"
+      className="relative min-h-[280vh] bg-[#0a0a0a] text-[#f5f5f5] selection:bg-[#4E85BF]/30 selection:text-white overflow-x-hidden"
       style={{ fontFamily: "'Inter', sans-serif" }}
     >
       {/* Inline styles for Instrument Serif and Inter fonts */}
