@@ -406,24 +406,53 @@ export default function DnaHelixViewer() {
 
         #dna-s0 {
           left: 7vw;
-          bottom: 11vh;
+          bottom: 10vh;
+          max-width: 34em;
         }
 
         #dna-s1 {
-          left: 66.5vw;
-          bottom: 11vh;
+          right: 7vw;
+          bottom: 10vh;
+          max-width: 32em;
         }
 
         #dna-s2 {
-          left: 66vw;
-          top: 29vh;
+          right: 7vw;
+          top: 20vh;
+          max-width: 32em;
+        }
+
+        .dna-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          margin-bottom: 14px;
+          padding: 4px 12px;
+          border-radius: 9999px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+          font-size: 11px;
+          letter-spacing: 0.16em;
+          text-transform: uppercase;
+          color: var(--teal);
+          background: rgba(70, 211, 219, 0.12);
+          border: 1px solid rgba(70, 211, 219, 0.35);
+          backdrop-filter: blur(8px);
+        }
+
+        .dna-badge-dot {
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: var(--teal);
+          box-shadow: 0 0 8px var(--teal);
+          animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
 
         .dna-title {
           font-weight: 400;
-          font-size: clamp(24px, 2.45vw, 46px);
-          line-height: 1.28;
-          letter-spacing: -0.005em;
+          font-size: clamp(24px, 2.45vw, 44px);
+          line-height: 1.25;
+          letter-spacing: -0.01em;
         }
 
         .dna-ln {
@@ -450,12 +479,30 @@ export default function DnaHelixViewer() {
         }
 
         .dna-slide p {
-          margin-top: 22px;
-          max-width: 25em;
-          font-size: clamp(12px, 0.98vw, 17px);
-          line-height: 1.55;
+          margin-top: 18px;
+          max-width: 32em;
+          font-size: clamp(13px, 0.95vw, 16px);
+          line-height: 1.6;
           font-weight: 300;
-          color: rgba(255, 255, 255, 0.88);
+          color: rgba(255, 255, 255, 0.86);
+        }
+
+        .dna-stats-row {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          margin-top: 20px;
+        }
+
+        .dna-stat-pill {
+          padding: 3.5px 10px;
+          border-radius: 9999px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+          font-size: 10.5px;
+          color: rgba(200, 245, 247, 0.9);
+          background: rgba(70, 211, 219, 0.08);
+          border: 1px solid rgba(70, 211, 219, 0.22);
+          backdrop-filter: blur(6px);
         }
 
         .dna-fade {
@@ -480,10 +527,17 @@ export default function DnaHelixViewer() {
           display: inline-flex;
           align-items: center;
           gap: 12px;
-          margin-top: 28px;
-          font-size: clamp(12px, 0.98vw, 16px);
-          color: #fff;
+          margin-top: 22px;
+          font-size: clamp(12px, 0.95vw, 15px);
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+          letter-spacing: 0.06em;
+          color: var(--teal);
           cursor: pointer;
+          transition: color 0.3s ease;
+        }
+
+        .dna-cta:hover {
+          color: #ffffff;
         }
 
         .dna-cta i {
@@ -492,22 +546,24 @@ export default function DnaHelixViewer() {
           border-right: 1.5px solid var(--teal);
           border-bottom: 1.5px solid var(--teal);
           transform: rotate(-45deg);
-          transition: transform 0.5s var(--ease);
+          transition: transform 0.5s var(--ease), border-color 0.3s ease;
         }
 
         .dna-cta:hover i {
           transform: rotate(-45deg) translate(3px, 3px);
+          border-color: #ffffff;
         }
 
-        @media (max-width: 760px) {
+        @media (max-width: 860px) {
           #dna-s0, #dna-s1, #dna-s2 {
-            left: 7vw;
-            right: 7vw;
+            left: 6vw;
+            right: 6vw;
             top: auto;
             bottom: 12vh;
+            max-width: none;
           }
           .dna-title {
-            font-size: 26px;
+            font-size: clamp(21px, 5.2vw, 30px);
           }
         }
       `}</style>
@@ -516,13 +572,13 @@ export default function DnaHelixViewer() {
       <header className="fixed top-5 left-5 sm:top-7 sm:left-8 z-50 flex items-center gap-3">
         <Link
           href="/mind"
-          aria-label="Back to Mind & More"
-          className="group inline-flex items-center gap-2.5 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-mono tracking-[0.2em] uppercase bg-[#0d2140]/80 hover:bg-[#122c54] border border-[#46d3db]/30 hover:border-[#46d3db]/70 text-[#c8f5f7] hover:text-white backdrop-blur-xl shadow-2xl transition-all duration-300 hover:scale-[1.03]"
+          aria-label="Go to My Mind"
+          className="group inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs font-mono tracking-[0.16em] uppercase font-semibold bg-[#0d2140]/90 hover:bg-[#122c54] border border-[#46d3db]/35 hover:border-[#46d3db]/75 text-[#c8f5f7] hover:text-white backdrop-blur-xl shadow-2xl transition-all duration-300 hover:scale-[1.03]"
         >
           <span className="text-sm transition-transform duration-300 group-hover:-translate-x-1">
             ←
           </span>
-          <span className="font-medium">Mind &amp; More</span>
+          <span>GO TO MY MIND</span>
         </Link>
 
         <Link
@@ -537,101 +593,158 @@ export default function DnaHelixViewer() {
       {/* Interactive 3D Canvas */}
       <canvas ref={canvasRef} className="dna-canvas" />
 
-      {/* Slide 0: Hero Intro */}
+      {/* Slide 0: The Brain — The 20-Watt Universe */}
       <section
         id="dna-s0"
         className={`dna-slide ${activeSlide === 0 ? "on" : "out"}`}
         aria-hidden={activeSlide !== 0}
       >
+        <div className="dna-badge dna-fade">
+          <span className="dna-badge-dot" />
+          <span>Part 01 // Neural Topology</span>
+        </div>
         <h1
           className="dna-title"
-          aria-label="Find out what your DNA says about you and your family."
+          aria-label="86 billion neurons, 100 trillion synapses, the 20-watt cosmos."
         >
           <span className="dna-ln">
             <span className="dna-li" style={{ "--i": 0 } as React.CSSProperties}>
-              Find out what your
+              86 billion neurons,
             </span>
           </span>
           <span className="dna-ln">
             <span className="dna-li" style={{ "--i": 1 } as React.CSSProperties}>
-              DNA says about you
+              100 trillion synapses,
             </span>
           </span>
           <span className="dna-ln">
             <span className="dna-li" style={{ "--i": 2 } as React.CSSProperties}>
-              and your family.
+              the 20-watt cosmos.
             </span>
           </span>
         </h1>
         <p className="dna-fade">
-          Discover your ethnicity and find new relatives with a simple DNA test.
+          Weighing just 2% of your body mass, your brain burns over 20% of your metabolic fuel while operating on barely 20 watts—less power than a dim refrigerator bulb. With over 100 trillion synaptic connections, its possible operational configurations exceed the total count of fundamental particles in the observable universe.
         </p>
-      </section>
-
-      {/* Slide 1: Close-up Impact */}
-      <section
-        id="dna-s1"
-        className={`dna-slide ${activeSlide === 1 ? "on" : "out"}`}
-        aria-hidden={activeSlide !== 1}
-      >
-        <h2 className="dna-title" aria-label="How will DNA testing change you?">
-          <span className="dna-ln">
-            <span className="dna-li" style={{ "--i": 0 } as React.CSSProperties}>
-              How will DNA testing
-            </span>
-          </span>
-          <span className="dna-ln">
-            <span className="dna-li" style={{ "--i": 1 } as React.CSSProperties}>
-              change you?
-            </span>
-          </span>
-        </h2>
-        <p className="dna-fade">
-          Testing your DNA offers you a powerful tool for researching what makes you unique.
-        </p>
+        <div className="dna-stats-row dna-fade">
+          <span className="dna-stat-pill">86B Neurons</span>
+          <span className="dna-stat-pill">20W Metabolic Draw</span>
+          <span className="dna-stat-pill">&gt; Atoms in Universe</span>
+        </div>
         <button
           type="button"
           onClick={() => goRef.current(1)}
           className="dna-cta dna-fade"
         >
           <i />
-          <span>View success stories</span>
+          <span>Next: 4 Billion Years of Evolution</span>
         </button>
       </section>
 
-      {/* Slide 2: Ancestral Macro View */}
+      {/* Slide 1: Evolution — Unbroken Deep Time */}
+      <section
+        id="dna-s1"
+        className={`dna-slide ${activeSlide === 1 ? "on" : "out"}`}
+        aria-hidden={activeSlide !== 1}
+      >
+        <div className="dna-badge dna-fade">
+          <span className="dna-badge-dot" />
+          <span>Part 02 // Deep Evolutionary Time</span>
+        </div>
+        <h2 className="dna-title" aria-label="4 billion years of unbroken survival in every cell.">
+          <span className="dna-ln">
+            <span className="dna-li" style={{ "--i": 0 } as React.CSSProperties}>
+              4 billion years of
+            </span>
+          </span>
+          <span className="dna-ln">
+            <span className="dna-li" style={{ "--i": 1 } as React.CSSProperties}>
+              unbroken survival
+            </span>
+          </span>
+          <span className="dna-ln">
+            <span className="dna-li" style={{ "--i": 2 } as React.CSSProperties}>
+              in every cell.
+            </span>
+          </span>
+        </h2>
+        <p className="dna-fade">
+          Every cell in your body is the direct, uninterrupted descendant of LUCA—the single-celled ancestor from 4 billion years ago. Evolution never creates from a blank slate; it is a blind tinkerer that rewired ancient fish gill arches into human auditory ear bones and reptilian jaw hinges into mammalian hearing instruments.
+        </p>
+        <div className="dna-stats-row dna-fade">
+          <span className="dna-stat-pill">LUCA Ancestor</span>
+          <span className="dna-stat-pill">4.0 Ga Lineage</span>
+          <span className="dna-stat-pill">Adaptive Tinkering</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => goRef.current(1)}
+          className="dna-cta dna-fade"
+        >
+          <i />
+          <span>Next: Comparative DNA &amp; Viral Ghosts</span>
+        </button>
+      </section>
+
+      {/* Slide 2: Comparative Genomics & Viral Ghosts */}
       <section
         id="dna-s2"
         className={`dna-slide ${activeSlide === 2 ? "on" : "out"}`}
         aria-hidden={activeSlide !== 2}
       >
+        <div className="dna-badge dna-fade">
+          <span className="dna-badge-dot" />
+          <span>Part 03 // Comparative Genomics</span>
+        </div>
         <h2
           className="dna-title"
-          aria-label="What part of the world do your ancestors come from?"
+          aria-label="98.8% chimpanzee, 60% banana, one language of life."
         >
           <span className="dna-ln">
             <span className="dna-li" style={{ "--i": 0 } as React.CSSProperties}>
-              What part of the
+              98.8% chimpanzee,
             </span>
           </span>
           <span className="dna-ln">
             <span className="dna-li" style={{ "--i": 1 } as React.CSSProperties}>
-              world do your
+              60% banana,
             </span>
           </span>
           <span className="dna-ln">
             <span className="dna-li" style={{ "--i": 2 } as React.CSSProperties}>
-              ancestors come from?
+              one language of life.
             </span>
           </span>
         </h2>
         <p className="dna-fade">
-          Trace ancestral origins across centuries and understand migration paths encoded in your genes.
+          All terrestrial biology shares the identical 4-base chemical code. You share ~98.8% DNA with chimpanzees, ~85% with mice, and ~60% with bananas. Most stunningly: ~8% of the human genome consists of fossilized retroviruses—one of which (*Syncytin*) was co-opted by evolution millions of years ago to synthesize the mammalian placenta.
         </p>
+        <div className="dna-stats-row dna-fade">
+          <span className="dna-stat-pill">98.8% Chimp</span>
+          <span className="dna-stat-pill">60% Banana</span>
+          <span className="dna-stat-pill">8% Fossilized Viruses</span>
+        </div>
+        <button
+          type="button"
+          onClick={() => goRef.current(1)}
+          className="dna-cta dna-fade"
+        >
+          <i />
+          <span>Cycle Back to Brain Architecture ↺</span>
+        </button>
       </section>
 
       {/* Interactive Bottom Control Bar */}
       <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-10 z-30 flex items-center gap-4">
+        {/* Active Slide Label */}
+        <span className="hidden sm:inline text-[11px] font-mono uppercase tracking-[0.18em] text-[#46d3db]/90 mr-1">
+          {activeSlide === 0
+            ? "01 • The Brain"
+            : activeSlide === 1
+            ? "02 • Evolution"
+            : "03 • Comparative DNA"}
+        </span>
+
         {/* Progress dots */}
         <div className="flex items-center gap-2">
           {[0, 1, 2].map((i) => (
