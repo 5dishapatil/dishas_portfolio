@@ -2,6 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import type { BookCatalogItem, BookSynopsisInfo } from "./types";
+import {
+  ARCHETYPES,
+  ArchetypeBadgeIcon,
+  HouseArchetypeId,
+} from "./archetypeStyles";
 
 interface BookInteriorModalProps {
   book: BookCatalogItem;
@@ -108,6 +113,29 @@ export default function BookInteriorModal({
           style={{ borderColor: `${architecture.trimColor}33` }}
         >
           <div className="flex items-center gap-3">
+            {book.archetypeId && ARCHETYPES[book.archetypeId as HouseArchetypeId] && (
+              <span
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-serif tracking-[0.16em] uppercase border shadow-sm"
+                style={{
+                  background:
+                    ARCHETYPES[book.archetypeId as HouseArchetypeId].badgeBg,
+                  borderColor:
+                    ARCHETYPES[book.archetypeId as HouseArchetypeId].badgeBorder,
+                  color:
+                    ARCHETYPES[book.archetypeId as HouseArchetypeId].badgeText,
+                }}
+              >
+                <ArchetypeBadgeIcon
+                  archetypeId={book.archetypeId as HouseArchetypeId}
+                  className="w-3.5 h-3.5"
+                />
+                <span>
+                  {ARCHETYPES[book.archetypeId as HouseArchetypeId].number}{" "}
+                  {ARCHETYPES[book.archetypeId as HouseArchetypeId].name}
+                </span>
+              </span>
+            )}
+
             <span
               className="px-3 py-1 rounded-full text-xs font-serif tracking-[0.18em] uppercase border"
               style={{

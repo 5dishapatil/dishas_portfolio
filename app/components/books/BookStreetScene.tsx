@@ -9,10 +9,12 @@ import React, {
 } from "react";
 import Link from "next/link";
 import type { BookCatalogItem, BookCatalogManifest } from "./types";
+import { buildShowcaseBoulevard } from "./catalogMapper";
 import BookHouseFacade from "./BookHouseFacade";
 import StreetTraveller from "./StreetTraveller";
 import BookDoorPortal from "./BookDoorPortal";
 import BookInteriorModal from "./BookInteriorModal";
+import BookStreetEnvironment from "./BookStreetEnvironment";
 
 interface BookStreetSceneProps {
   catalog: BookCatalogManifest;
@@ -28,9 +30,9 @@ type EntryState =
   | "interior"
   | "closing";
 
-const HOUSE_GAP_PX = 26;
-const STREET_LEAD_IN_PX = 260;
-const STREET_TRAIL_OUT_PX = 420;
+const HOUSE_GAP_PX = 40;
+const STREET_LEAD_IN_PX = 320;
+const STREET_TRAIL_OUT_PX = 480;
 
 /** Vintage wrought-iron streetlamp placed every 3 houses along the boulevard */
 function StreetLamp({ x }: { x: number }) {
@@ -88,16 +90,22 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
   const savedScrollYRef = useRef(0);
   const entryTimersRef = useRef<number[]>([]);
 
+  // Map catalogue with the 10 reference archetype showcases in order 01 to 10,
+  // followed by all remaining books mapped to their respective archetypes
+  const mappedCatalogBooks = useMemo(() => {
+    return buildShowcaseBoulevard(catalog.books);
+  }, [catalog.books]);
+
   // Filter visible books (hide only if user explicitly sets "hidden": true in overrides.json)
   const visibleBooks = useMemo(() => {
-    return catalog.books.filter((b) => {
+    return mappedCatalogBooks.filter((b) => {
       if (b.hidden) return false;
       if (filterMode === "clean") return b.recordStatus === "clean";
       if (filterMode === "needs-review")
         return b.recordStatus === "needs-review";
       return true;
     });
-  }, [catalog.books, filterMode]);
+  }, [mappedCatalogBooks, filterMode]);
 
   // Search results for quick jump dropdown
   const searchMatches = useMemo(() => {
@@ -608,122 +616,15 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
           className="relative flex-1 w-full overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
           style={cameraZoomStyle}
         >
-          {/* LAYER 1: BLUE-HOUR TWILIGHT SKY, MOON, STARS & ROSE HORIZON CLOUDS */}
+          {/* CINEMATIC TWILIGHT ENVIRONMENT: Sky, Moon, Stars, Mountain Castle, Waterfalls, Canal & Cobblestones */}
+          <BookStreetEnvironment
+            worldX={worldX}
+            totalStreetWidth={houseLayout.totalStreetWidth}
+          />
+
+          {/* MAIN BOOK-HOUSE TOWNHOUSE ROW (Moves Right -> Left on Scroll) */}
           <div
-            className="pointer-events-none absolute inset-0"
-            style={{
-              background:
-                "linear-gradient(180deg, #070A19 0%, #101736 28%, #21254D 54%, #4D365C 74%, #7E4E68 88%, #2A1E33 100%)",
-            }}
-          >
-            {/* Soft Rose-Gold Horizon Glow */}
-            <div
-              className="absolute inset-x-0 bottom-[18%] h-[36%] opacity-65"
-              style={{
-                background:
-                  "radial-gradient(ellipse at 50% 85%, rgba(238, 168, 132, 0.35) 0%, rgba(164, 96, 128, 0.18) 55%, transparent 80%)",
-              }}
-            />
-
-            {/* Luminous Crescent Moon & Halo (slow parallax) */}
-            <div
-              className="absolute top-[9%] right-[16%] transition-transform duration-300"
-              style={{
-                transform: `translate3d(${-worldX * 0.025}px, 0, 0)`,
-              }}
-            >
-              <div
-                className="w-36 h-36 rounded-full blur-2xl opacity-55 -m-10"
-                style={{
-                  background:
-                    "radial-gradient(circle, rgba(255, 240, 195, 0.8) 0%, transparent 70%)",
-                }}
-              />
-              <svg viewBox="0 0 64 64" className="w-16 h-16 drop-shadow-[0_0_18px_rgba(255,238,190,0.8)]">
-                <path
-                  d="M42 12A22 22 0 1 0 42 52A17 17 0 1 1 42 12Z"
-                  fill="#FFF4D2"
-                />
-              </svg>
-            </div>
-
-            {/* Twinkling Stars & Soft Evening Clouds */}
-            <svg
-              viewBox="0 0 1600 420"
-              className="w-full h-[55%] opacity-75"
-              preserveAspectRatio="xMidYMid slice"
-              style={{
-                transform: `translate3d(${-(worldX * 0.04) % 400}px, 0, 0)`,
-              }}
-            >
-              {[
-                [120, 60, 1.6],
-                [260, 110, 1.2],
-                [420, 48, 2.0],
-                [590, 95, 1.4],
-                [760, 52, 1.8],
-                [930, 82, 1.3],
-                [1120, 44, 2.1],
-                [1290, 105, 1.5],
-                [1460, 64, 1.7],
-                [190, 175, 1.1],
-                [670, 155, 1.4],
-                [1040, 148, 1.3],
-              ].map(([cx, cy, r], i) => (
-                <circle
-                  key={i}
-                  cx={cx}
-                  cy={cy}
-                  r={r}
-                  fill="#FFF6DE"
-                  opacity={0.55 + (i % 3) * 0.15}
-                />
-              ))}
-              {/* Painterly Rose-Lavender Evening Clouds */}
-              <path
-                d="M80 280 Q180 250 290 275 T520 270 T760 285 H80 Z"
-                fill="#A86B86"
-                fillOpacity="0.16"
-              />
-              <path
-                d="M820 265 Q960 235 1110 260 T1420 255 T1580 275 H820 Z"
-                fill="#C48293"
-                fillOpacity="0.15"
-              />
-            </svg>
-          </div>
-
-          {/* LAYER 2: DISTANT SILHOUETTED EUROPEAN ROOFTOPS & SPIRES (Parallax 0.18x) */}
-          <div
-            className="pointer-events-none absolute bottom-[112px] left-0 h-[310px] flex items-end opacity-65"
-            style={{
-              width: `${houseLayout.totalStreetWidth * 0.4 + 2000}px`,
-              transform: `translate3d(${-worldX * 0.18}px, 0, 0)`,
-            }}
-          >
-            {Array.from({ length: 24 }).map((_, idx) => (
-              <svg
-                key={idx}
-                viewBox="0 0 320 260"
-                className="w-[320px] h-[260px] shrink-0"
-                preserveAspectRatio="none"
-              >
-                <path
-                  d="M0 260 V120 L40 75 L80 120 V95 L130 45 L175 95 V130 L215 80 L255 130 V60 L285 20 L315 60 V260 Z"
-                  fill="#121428"
-                />
-                {/* Distant warm attic lights */}
-                <rect x="36" y="135" width="6" height="9" fill="#FFD98E" fillOpacity="0.45" />
-                <rect x="124" y="110" width="7" height="10" fill="#FFD98E" fillOpacity="0.55" />
-                <rect x="138" y="110" width="7" height="10" fill="#FFD98E" fillOpacity="0.4" />
-                <rect x="278" y="90" width="6" height="11" fill="#FFD98E" fillOpacity="0.5" />
-              </svg>
-            ))}
-          </div>
-
-          {/* LAYER 3: MAIN BOOK-HOUSE TOWNHOUSE ROW (Moves Right -> Left on Scroll) */}
-          <div
-            className="absolute bottom-[106px] left-0 z-10"
+            className="absolute bottom-[104px] left-0 z-10"
             style={{
               width: `${houseLayout.totalStreetWidth}px`,
               transform: `translate3d(${-worldX}px, 0, 0)`,
@@ -766,52 +667,7 @@ export default function BookStreetScene({ catalog }: BookStreetSceneProps) {
             ))}
           </div>
 
-          {/* LAYER 4: COBBLESTONE PROMENADE, CURB & WARM LANTERN REFLECTIONS */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[108px] z-20 overflow-hidden">
-            {/* Upper Sidewalk Curbstone */}
-            <div
-              className="w-full h-[14px] border-t border-b"
-              style={{
-                background:
-                  "linear-gradient(180deg, #353246 0%, #222030 60%, #151420 100%)",
-                borderColor: "rgba(216, 174, 104, 0.35)",
-              }}
-            />
-
-            {/* Main Cobblestone Roadway with Scrolling Stone Pattern & Golden Reflections */}
-            <div
-              className="relative w-full h-[94px]"
-              style={{
-                background:
-                  "linear-gradient(180deg, #171624 0%, #10101B 45%, #090911 100%)",
-              }}
-            >
-              {/* Warm Window & Streetlamp Reflection Pools moving with the street */}
-              <div
-                className="absolute inset-0 opacity-50"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(90deg, transparent 0px, rgba(255, 214, 128, 0.14) 80px, transparent 160px, rgba(235, 155, 75, 0.1) 240px, transparent 320px)",
-                  backgroundPosition: `${-worldX}px 0px`,
-                }}
-              />
-
-              {/* Cobblestone Course Lines */}
-              <div
-                className="absolute inset-0 opacity-35"
-                style={{
-                  backgroundImage: `
-                    linear-gradient(180deg, rgba(255,255,255,0.07) 1px, transparent 1px),
-                    repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 36px, rgba(0,0,0,0.35) 36px, rgba(0,0,0,0.35) 38px)
-                  `,
-                  backgroundSize: "76px 18px",
-                  backgroundPosition: `${-worldX}px 0px`,
-                }}
-              />
-            </div>
-          </div>
-
-          {/* LAYER 5: WALKING HUMAN TRAVELLER (Progresses Left -> Right as Houses Move Right -> Left) */}
+          {/* WALKING HUMAN TRAVELLER (Progresses Left -> Right as Houses Move Right -> Left) */}
           <StreetTraveller
             screenXPercent={effectiveTravellerScreenXPercent}
             walkPhase={walkPhase}

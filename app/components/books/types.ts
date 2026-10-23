@@ -89,6 +89,9 @@ export interface BookCatalogItem {
   recordStatus: "clean" | "needs-review";
   reviewReasons: string[];
   sourceFile: string;
+  archetypeId?: string;
+  archetypeNumber?: string;
+  archetypeName?: string;
   cover: BookCoverInfo;
   synopsis: BookSynopsisInfo;
   architecture: BookArchitectureSpec;

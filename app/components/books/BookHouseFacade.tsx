@@ -2,6 +2,14 @@
 
 import React, { useState } from "react";
 import type { BookCatalogItem } from "./types";
+import {
+  ARCHETYPES,
+  ArchetypeBadgeIcon,
+  HouseArchetypeId,
+} from "./archetypeStyles";
+import ArchetypeRoofCrown from "./archetypeRoofs";
+import ArchetypeGroundProps from "./ArchetypeGroundProps";
+import { classifyBookArchetype } from "./catalogMapper";
 
 interface BookHouseFacadeProps {
   book: BookCatalogItem;
@@ -12,203 +20,73 @@ interface BookHouseFacadeProps {
   onSelect: (book: BookCatalogItem) => void;
 }
 
-function OrnamentCrest({
-  style,
-  color,
-}: {
-  style: BookCatalogItem["architecture"]["ornamentStyle"];
-  color: string;
-}) {
-  switch (style) {
-    case "celestial":
-      return (
-        <svg viewBox="0 0 80 80" className="w-full h-full" fill="none">
-          <circle cx="40" cy="40" r="32" stroke={color} strokeWidth="1.2" strokeDasharray="2 3" opacity="0.75" />
-          <circle cx="40" cy="40" r="23" stroke={color} strokeWidth="1" opacity="0.55" />
-          <path
-            d="M40 10L44 32L66 36L44 40L40 62L36 40L14 36L36 32L40 10Z"
-            stroke={color}
-            strokeWidth="1.3"
-            fill={color}
-            fillOpacity="0.16"
-          />
-          <path
-            d="M52 22A14 14 0 1 0 52 58A11 11 0 1 1 52 22Z"
-            fill={color}
-            fillOpacity="0.28"
-          />
-        </svg>
-      );
-    case "gothic-tracery":
-      return (
-        <svg viewBox="0 0 80 80" className="w-full h-full" fill="none">
-          <path
-            d="M16 68V36C16 20 40 10 40 10C40 10 64 20 64 36V68H16Z"
-            stroke={color}
-            strokeWidth="1.4"
-            fill={color}
-            fillOpacity="0.12"
-          />
-          <circle cx="40" cy="34" r="12" stroke={color} strokeWidth="1.2" />
-          <circle cx="40" cy="34" r="5" stroke={color} strokeWidth="1" />
-          <path d="M28 68V44C28 37 40 32 40 32C40 32 52 37 52 44V68" stroke={color} strokeWidth="1.1" opacity="0.8" />
-          <path d="M40 22V68" stroke={color} strokeWidth="1" opacity="0.65" />
-        </svg>
-      );
-    case "botanical":
-      return (
-        <svg viewBox="0 0 80 80" className="w-full h-full" fill="none">
-          <circle cx="40" cy="40" r="30" stroke={color} strokeWidth="1.2" opacity="0.7" />
-          <path
-            d="M40 64V18M40 28C30 24 24 30 28 38C32 42 40 38 40 38M40 36C50 32 56 38 52 46C48 50 40 46 40 46M40 22C34 15 46 15 40 22Z"
-            stroke={color}
-            strokeWidth="1.4"
-            strokeLinecap="round"
-          />
-          <circle cx="40" cy="20" r="3.5" fill={color} fillOpacity="0.45" />
-        </svg>
-      );
-    case "art-deco":
-      return (
-        <svg viewBox="0 0 80 80" className="w-full h-full" fill="none">
-          <rect x="16" y="16" width="48" height="48" transform="rotate(45 40 40)" stroke={color} strokeWidth="1.2" opacity="0.75" />
-          <rect x="20" y="20" width="40" height="40" stroke={color} strokeWidth="1.2" fill={color} fillOpacity="0.12" />
-          <path d="M40 12V68M12 40H68M24 24L56 56M56 24L24 56" stroke={color} strokeWidth="0.9" opacity="0.65" />
-          <circle cx="40" cy="40" r="8" fill={color} fillOpacity="0.28" stroke={color} strokeWidth="1.2" />
-        </svg>
-      );
-    case "heraldic-crest":
-      return (
-        <svg viewBox="0 0 80 80" className="w-full h-full" fill="none">
-          <path
-            d="M20 16H60V40C60 54 40 66 40 66C40 66 20 54 20 40V16Z"
-            stroke={color}
-            strokeWidth="1.5"
-            fill={color}
-            fillOpacity="0.14"
-          />
-          <path d="M28 16L40 8L52 16" stroke={color} strokeWidth="1.3" />
-          <path d="M40 16V64M20 38H60" stroke={color} strokeWidth="1" opacity="0.7" />
-          <circle cx="40" cy="38" r="6" fill={color} fillOpacity="0.35" />
-        </svg>
-      );
-    default:
-      return (
-        <svg viewBox="0 0 80 80" className="w-full h-full" fill="none">
-          <circle cx="40" cy="40" r="29" stroke={color} strokeWidth="1.3" opacity="0.8" />
-          <circle cx="40" cy="40" r="22" stroke={color} strokeWidth="0.9" strokeDasharray="3 2" opacity="0.6" />
-          <path d="M25 40H55M40 25V55" stroke={color} strokeWidth="1.2" />
-          <circle cx="40" cy="40" r="5" fill={color} fillOpacity="0.4" />
-        </svg>
-      );
-  }
-}
-
-function RoofCrown({
-  style,
-  slateColor,
+/** Decorative architectural side window pair flanking the main book cover */
+function FlankingWindows({
+  archetypeId,
   trimColor,
-  primaryColor,
+  windowGlowColor,
+  isHighlighted,
 }: {
-  style: BookCatalogItem["architecture"]["roofStyle"];
-  slateColor: string;
+  archetypeId: HouseArchetypeId;
   trimColor: string;
-  primaryColor: string;
+  windowGlowColor: string;
+  isHighlighted: boolean;
 }) {
-  switch (style) {
-    case "gable-steep":
-      return (
-        <svg viewBox="0 0 240 66" className="w-full h-[58px] block overflow-visible" preserveAspectRatio="none">
-          {/* Chimney */}
-          <rect x="34" y="10" width="18" height="36" fill={slateColor} stroke={trimColor} strokeWidth="1" strokeOpacity="0.45" />
-          <rect x="31" y="7" width="24" height="5" rx="1" fill={trimColor} fillOpacity="0.65" />
-          {/* Steep Gable Pediment */}
-          <polygon
-            points="4,65 120,6 236,65"
-            fill={slateColor}
-            stroke={trimColor}
-            strokeWidth="1.8"
-          />
-          <polygon
-            points="22,65 120,16 218,65"
-            fill={primaryColor}
-            stroke={trimColor}
-            strokeWidth="1"
-            strokeOpacity="0.65"
-          />
-          {/* Attic roundel window */}
-          <circle cx="120" cy="44" r="10" fill="#FFE39F" fillOpacity="0.85" stroke={trimColor} strokeWidth="1.5" />
-          <path d="M110 44H130M120 34V54" stroke={slateColor} strokeWidth="1.2" />
-          {/* Finial */}
-          <path d="M120 0V8M116 4H124" stroke={trimColor} strokeWidth="1.6" strokeLinecap="round" />
-        </svg>
-      );
-    case "stepped-flemish":
-      return (
-        <svg viewBox="0 0 240 66" className="w-full h-[58px] block overflow-visible" preserveAspectRatio="none">
-          <path
-            d="M6 65V50H32V38H58V26H86V14H154V26H182V38H208V50H234V65Z"
-            fill={slateColor}
-            stroke={trimColor}
-            strokeWidth="1.6"
-          />
-          <path
-            d="M22 65V54H48V42H76V30H164V42H192V54H218V65Z"
-            fill={primaryColor}
-            stroke={trimColor}
-            strokeWidth="1"
-            strokeOpacity="0.6"
-          />
-          {/* Arched dormer */}
-          <path d="M108 58V40C108 33 132 33 132 40V58Z" fill="#FFE39F" fillOpacity="0.82" stroke={trimColor} strokeWidth="1.4" />
-          <path d="M120 34V58M108 46H132" stroke={slateColor} strokeWidth="1.1" />
-        </svg>
-      );
-    case "arched-cornice":
-      return (
-        <svg viewBox="0 0 240 66" className="w-full h-[58px] block overflow-visible" preserveAspectRatio="none">
-          <rect x="184" y="10" width="16" height="36" fill={slateColor} stroke={trimColor} strokeWidth="1" strokeOpacity="0.5" />
-          <path
-            d="M4 65V38C4 38 56 8 120 8C184 8 236 38 236 38V65Z"
-            fill={slateColor}
-            stroke={trimColor}
-            strokeWidth="1.8"
-          />
-          <path
-            d="M18 65V44C18 44 62 18 120 18C178 18 222 44 222 44V65Z"
-            fill={primaryColor}
-            stroke={trimColor}
-            strokeWidth="1"
-            strokeOpacity="0.65"
-          />
-          <circle cx="120" cy="42" r="11" fill="#FFE39F" fillOpacity="0.82" stroke={trimColor} strokeWidth="1.4" />
-          <path d="M109 42H131M120 31V53" stroke={slateColor} strokeWidth="1.1" />
-        </svg>
-      );
-    case "turret-crest":
-      return (
-        <svg viewBox="0 0 240 66" className="w-full h-[58px] block overflow-visible" preserveAspectRatio="none">
-          <polygon points="8,65 28,22 212,22 232,65" fill={slateColor} stroke={trimColor} strokeWidth="1.5" />
-          <polygon points="76,65 120,4 164,65" fill={primaryColor} stroke={trimColor} strokeWidth="1.6" />
-          <circle cx="120" cy="43" r="9" fill="#FFE39F" fillOpacity="0.88" stroke={trimColor} strokeWidth="1.4" />
-          <path d="M120 0V6" stroke={trimColor} strokeWidth="1.8" />
-        </svg>
-      );
-    default:
-      // mansard-dormer
-      return (
-        <svg viewBox="0 0 240 66" className="w-full h-[58px] block overflow-visible" preserveAspectRatio="none">
-          <rect x="40" y="8" width="16" height="32" fill={slateColor} stroke={trimColor} strokeWidth="1" strokeOpacity="0.45" />
-          <polygon points="6,65 26,18 214,18 234,65" fill={slateColor} stroke={trimColor} strokeWidth="1.6" />
-          <line x1="26" y1="24" x2="214" y2="24" stroke={trimColor} strokeWidth="1" strokeOpacity="0.6" />
-          {/* Twin dormers */}
-          <path d="M62 62V36L76 26L90 36V62Z" fill={primaryColor} stroke={trimColor} strokeWidth="1.2" />
-          <rect x="69" y="40" width="14" height="16" fill="#FFE39F" fillOpacity="0.82" />
-          <path d="M150 62V36L164 26L178 36V62Z" fill={primaryColor} stroke={trimColor} strokeWidth="1.2" />
-          <rect x="157" y="40" width="14" height="16" fill="#FFE39F" fillOpacity="0.82" />
-        </svg>
-      );
-  }
+  const isGothic = archetypeId === "fantasy" || archetypeId === "mystery" || archetypeId === "dark-academia";
+  const isClassical = archetypeId === "finance-business" || archetypeId === "self-help";
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-3">
+      {/* Upper Window */}
+      <div className="flex flex-col items-center">
+        <div
+          className={`w-[44px] h-[72px] ${
+            isGothic ? "rounded-t-full" : isClassical ? "rounded-t-[6px]" : "rounded-t-[12px]"
+          } border relative overflow-hidden transition-all duration-500`}
+          style={{
+            borderColor: trimColor,
+            background: `radial-gradient(circle at 50% 65%, #FFF6DF 0%, ${windowGlowColor} 55%, #A85A18 100%)`,
+            boxShadow: isHighlighted
+              ? `0 0 18px ${windowGlowColor}BB`
+              : `0 0 8px ${windowGlowColor}44`,
+          }}
+        >
+          {/* Subtle interior book spines silhouette */}
+          <div className="absolute bottom-0 inset-x-0 h-4 bg-[#21140E]/30" />
+          {/* Window Mullions */}
+          <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1.5px] bg-[#1A100A]/85" />
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-[#1A100A]/85" />
+          <div className="absolute inset-x-0 top-[26%] h-[1px] bg-[#1A100A]/70" />
+        </div>
+        {/* Stone Window Sill */}
+        <div
+          className="w-[50px] h-[5px] rounded-[1px] shadow-sm"
+          style={{ backgroundColor: trimColor }}
+        />
+      </div>
+
+      {/* Lower Window */}
+      <div className="flex flex-col items-center">
+        <div
+          className="w-[44px] h-[58px] rounded-t-[4px] border relative overflow-hidden transition-all duration-500"
+          style={{
+            borderColor: `${trimColor}CC`,
+            background: `radial-gradient(circle at 50% 60%, #FFF3D6 0%, ${windowGlowColor} 60%, #8A4612 100%)`,
+            boxShadow: isHighlighted
+              ? `0 0 14px ${windowGlowColor}99`
+              : `0 0 6px ${windowGlowColor}33`,
+          }}
+        >
+          <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1.5px] bg-[#1A100A]/80" />
+          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-[#1A100A]/80" />
+        </div>
+        <div
+          className="w-[50px] h-[4px] rounded-[1px]"
+          style={{ backgroundColor: trimColor }}
+        />
+      </div>
+    </div>
+  );
 }
 
 export default function BookHouseFacade({
@@ -221,6 +99,10 @@ export default function BookHouseFacade({
 }: BookHouseFacadeProps) {
   const [imgFailed, setImgFailed] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+
+  // Identify archetype configuration (either from book.archetypeId or classified)
+  const archetypeId = (book.archetypeId as HouseArchetypeId) || classifyBookArchetype(book);
+  const config = ARCHETYPES[archetypeId] || ARCHETYPES["fantasy"];
 
   const { architecture, cover } = book;
   const activeCoverUrl =
@@ -235,403 +117,324 @@ export default function BookHouseFacade({
     <div
       className="relative flex flex-col items-center select-none group shrink-0"
       style={{
-        width: `${architecture.widthPx}px`,
+        width: `${architecture.widthPx || 380}px`,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Floating Street Address / Status Pill on Hover or Active */}
+      {/* 1. TOP STYLE BADGE (From Reference Image: e.g. "01 ROMANCE", "02 FANTASY", etc.) */}
       <div
-        className={`mb-2 px-2.5 py-0.5 rounded-full text-[10px] tracking-[0.18em] uppercase font-medium transition-all duration-300 border backdrop-blur-md ${
+        className={`mb-2 px-3 py-1 rounded-full flex items-center gap-2 border transition-all duration-300 backdrop-blur-md shadow-lg ${
           isSelected
-            ? "bg-[#F3D393]/25 border-[#F3D393] text-[#FFF4D4] opacity-100 -translate-y-0.5 shadow-[0_0_18px_rgba(243,211,147,0.45)]"
+            ? "border-[#FFE59E] scale-105 shadow-[0_0_24px_rgba(255,229,158,0.55)]"
             : isHighlighted
-            ? "bg-[#121629]/85 border-[#D8AE68]/60 text-[#F3D393] opacity-100"
-            : "bg-[#0D1021]/60 border-white/10 text-white/55 opacity-70"
+            ? "border-white/40 scale-102"
+            : "border-white/20 opacity-90"
         }`}
+        style={{
+          background: config.badgeBg,
+          borderColor: isSelected ? config.accentColor : config.badgeBorder,
+        }}
       >
-        <span>No. {houseNumber}</span>
+        <span
+          className="w-4 h-4 flex items-center justify-center shrink-0"
+          style={{ color: config.badgeBorder }}
+        >
+          <ArchetypeBadgeIcon archetypeId={archetypeId} className="w-3.5 h-3.5" />
+        </span>
+        <span
+          className="text-[11px] font-serif font-bold tracking-[0.18em] uppercase"
+          style={{ color: config.badgeText }}
+        >
+          {config.number} {config.name}
+        </span>
+        <span className="text-[10px] opacity-60 text-white font-mono">
+          • No. {houseNumber}
+        </span>
         {book.recordStatus === "needs-review" && (
           <span
-            className="ml-1.5 inline-block w-1.5 h-1.5 rounded-full bg-amber-400 align-middle"
-            title="Flagged for review in catalogue report"
+            className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"
+            title="Flagged for catalogue review"
           />
         )}
       </div>
 
-      {/* Interactive Book-Spine Townhouse Button */}
+      {/* 2. INTERACTIVE BOOK-SPINE TOWNHOUSE BUTTON */}
       <button
         type="button"
         onClick={() => onSelect(book)}
-        aria-label={`Enter House No. ${houseNumber}: ${book.title}${
-          book.author ? ` by ${book.author}` : " (author unlisted)"
+        aria-label={`Enter House ${config.number}: ${book.title}${
+          book.author ? ` by ${book.author}` : ""
         }`}
         className={`relative w-full text-left transition-transform duration-500 ease-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#F3D393] ${
-          isSelected
-            ? "z-20 -translate-y-1.5"
-            : "hover:-translate-y-1"
+          isSelected ? "z-20 -translate-y-2" : "hover:-translate-y-1.5"
         }`}
         style={{
-          height: `${architecture.heightPx}px`,
+          height: `${architecture.heightPx || 580}px`,
         }}
       >
-        {/* 1. Architectural Roofline / Crown */}
+        {/* A. ARCHITECTURAL ROOF CROWN */}
         <div className="relative w-full z-10">
-          <RoofCrown
-            style={architecture.roofStyle}
-            slateColor={architecture.roofSlateColor}
-            trimColor={architecture.trimColor}
-            primaryColor={architecture.primaryColor}
-          />
-
-          {/* Draped Silk Bookmark Ribbon hanging from upper cornice */}
-          <div
-            className="absolute top-[46px] right-4 w-3.5 h-12 z-20 pointer-events-none transition-transform duration-500 origin-top group-hover:rotate-3"
-            style={{
-              backgroundColor: architecture.ribbonColor,
-              clipPath: "polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%)",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.45)",
-            }}
+          <ArchetypeRoofCrown
+            archetypeId={archetypeId}
+            primaryColor={config.primaryColor}
+            secondaryColor={config.secondaryColor}
+            trimColor={config.trimColor}
+            accentColor={config.accentColor}
+            roofSlateColor={config.roofSlateColor}
+            windowGlowColor={config.windowGlowColor}
           />
         </div>
 
-        {/* 2. Main Upright Book-Spine Façade Body */}
+        {/* B. MAIN UP-RIGHT FACADE BODY (380px wide) */}
         <div
-          className="relative w-full flex-1 flex flex-col justify-between overflow-hidden rounded-t-[3px] border-x-2 border-t transition-shadow duration-500"
+          className="relative w-full flex-1 flex flex-col justify-between overflow-hidden rounded-t-[4px] border-x-2 border-t transition-all duration-500"
           style={{
-            height: `${architecture.heightPx - 58}px`,
+            height: `${(architecture.heightPx || 580) - 96}px`,
             background: `linear-gradient(90deg, 
-              ${architecture.secondaryColor} 0%, 
-              ${architecture.primaryColor} 12%, 
-              ${architecture.primaryColor} 88%, 
-              ${architecture.secondaryColor} 100%)`,
+              ${config.secondaryColor} 0%, 
+              ${config.primaryColor} 14%, 
+              ${config.primaryColor} 86%, 
+              ${config.secondaryColor} 100%)`,
             borderColor: isSelected
-              ? architecture.accentColor
-              : `${architecture.trimColor}88`,
+              ? config.accentColor
+              : `${config.trimColor}99`,
             boxShadow: isSelected
-              ? `0 0 42px ${architecture.windowGlowColor}44, inset 0 0 28px rgba(0,0,0,0.65)`
+              ? `0 0 50px ${config.windowGlowColor}55, inset 0 0 35px rgba(0,0,0,0.65)`
               : isHighlighted
-              ? `0 12px 32px rgba(0,0,0,0.7), 0 0 22px ${architecture.windowGlowColor}26, inset 0 0 24px rgba(0,0,0,0.65)`
-              : "0 10px 26px rgba(0,0,0,0.75), inset 0 0 26px rgba(0,0,0,0.7)",
+              ? `0 16px 40px rgba(0,0,0,0.75), 0 0 28px ${config.windowGlowColor}33, inset 0 0 28px rgba(0,0,0,0.6)`
+              : "0 12px 30px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.7)",
           }}
         >
-          {/* Bookbinding French-joint vertical grooves on left and right spine margins */}
+          {/* Architectural Pilasters / Rustication Lines along left and right building margins */}
           <div
-            className="pointer-events-none absolute inset-y-0 left-[10px] w-[2px] opacity-45"
+            className="pointer-events-none absolute inset-y-0 left-[14px] w-[3px] opacity-45"
             style={{
-              background: `linear-gradient(180deg, transparent, ${architecture.trimColor}, transparent)`,
+              background: `linear-gradient(180deg, ${config.trimColor}, transparent, ${config.trimColor})`,
             }}
           />
           <div
-            className="pointer-events-none absolute inset-y-0 right-[10px] w-[2px] opacity-45"
+            className="pointer-events-none absolute inset-y-0 right-[14px] w-[3px] opacity-45"
             style={{
-              background: `linear-gradient(180deg, transparent, ${architecture.trimColor}, transparent)`,
+              background: `linear-gradient(180deg, ${config.trimColor}, transparent, ${config.trimColor})`,
             }}
           />
 
-          {/* Subtle gold-tooled inner border frame */}
+          {/* Upper Cornice Belt */}
           <div
-            className="pointer-events-none absolute inset-x-[15px] top-2 bottom-0 border-x border-t opacity-30"
-            style={{ borderColor: architecture.trimColor }}
-          />
-
-          {/* Raised Horizontal Spine Hubs (Architectural Cornice Bands) */}
-          <div
-            className="w-full h-[7px] border-y shrink-0"
+            className="w-full h-[8px] border-y shrink-0"
             style={{
-              background: `linear-gradient(90deg, ${architecture.secondaryColor}, ${architecture.trimColor}66, ${architecture.secondaryColor})`,
-              borderColor: `${architecture.trimColor}99`,
-              boxShadow: "0 2px 5px rgba(0,0,0,0.5)",
+              background: `linear-gradient(90deg, ${config.secondaryColor}, ${config.trimColor}88, ${config.secondaryColor})`,
+              borderColor: `${config.trimColor}BB`,
+              boxShadow: "0 3px 6px rgba(0,0,0,0.5)",
             }}
           />
 
-          {/* SECTION A: Embossed Spine Title & Author Cartouche */}
-          <div className="relative px-4 pt-2 pb-1.5 z-10">
+          {/* SECTION 1: EMBOSSED TITLE & AUTHOR CARTOUCHE PLAQUE */}
+          <div className="relative px-5 pt-2 pb-1.5 z-10">
             <div
-              className="relative rounded-[4px] px-2.5 py-2 border text-center"
+              className="relative rounded-[5px] px-3.5 py-2.5 border text-center"
               style={{
-                background: `linear-gradient(180deg, ${architecture.secondaryColor}E6 0%, #0B0B12D9 100%)`,
-                borderColor: `${architecture.trimColor}AA`,
-                boxShadow: "inset 0 0 10px rgba(0,0,0,0.6)",
+                background: `linear-gradient(180deg, ${config.secondaryColor}F0 0%, #0A0B14E6 100%)`,
+                borderColor: `${config.trimColor}CC`,
+                boxShadow: "inset 0 0 12px rgba(0,0,0,0.7), 0 3px 8px rgba(0,0,0,0.45)",
               }}
             >
               {book.series && (
                 <div
-                  className="text-[9px] uppercase tracking-[0.16em] line-clamp-1 mb-0.5 font-medium"
-                  style={{ color: architecture.trimColor }}
+                  className="text-[9.5px] uppercase tracking-[0.18em] line-clamp-1 mb-0.5 font-medium"
+                  style={{ color: config.trimColor }}
                 >
                   {book.series}
                 </div>
               )}
 
               <h3
-                className="font-serif font-semibold leading-[1.18] tracking-wide line-clamp-2 text-[13.5px] sm:text-[14px]"
+                className="font-serif font-bold leading-[1.22] tracking-wide line-clamp-2 text-[14.5px] sm:text-[15.5px]"
                 style={{
-                  color: architecture.accentColor,
-                  textShadow: "0 1px 3px rgba(0,0,0,0.9)",
+                  color: config.accentColor,
+                  textShadow: "0 2px 5px rgba(0,0,0,0.95)",
                 }}
                 title={book.title}
               >
                 {book.title}
               </h3>
 
-              <div className="mt-1 flex items-center justify-center gap-1.5">
+              <div className="mt-1 flex items-center justify-center gap-2">
                 <span
-                  className="h-[1px] w-3 opacity-50"
-                  style={{ backgroundColor: architecture.trimColor }}
+                  className="h-[1px] w-4 opacity-60"
+                  style={{ backgroundColor: config.trimColor }}
                 />
                 <p
-                  className="text-[10.5px] tracking-[0.08em] uppercase line-clamp-1 font-medium"
+                  className="text-[11px] tracking-[0.1em] uppercase line-clamp-1 font-serif font-medium"
                   style={{
-                    color: book.author ? "#E8DFD1" : "#FBBF24",
+                    color: book.author ? "#F5EFE6" : "#FBBF24",
                   }}
                 >
                   {book.author || "Author Unlisted"}
                 </p>
                 <span
-                  className="h-[1px] w-3 opacity-50"
-                  style={{ backgroundColor: architecture.trimColor }}
+                  className="h-[1px] w-4 opacity-60"
+                  style={{ backgroundColor: config.trimColor }}
                 />
               </div>
             </div>
           </div>
 
-          {/* Raised Spine Hub #2 */}
+          {/* Middle Cornice Belt */}
           <div
             className="w-full h-[6px] border-y shrink-0"
             style={{
-              background: `linear-gradient(90deg, ${architecture.secondaryColor}, ${architecture.trimColor}55, ${architecture.secondaryColor})`,
-              borderColor: `${architecture.trimColor}88`,
+              background: `linear-gradient(90deg, ${config.secondaryColor}, ${config.trimColor}66, ${config.secondaryColor})`,
+              borderColor: `${config.trimColor}99`,
             }}
           />
 
-          {/* SECTION B: Cover-Inspired Architectural Rose Medallion & Flanking Casement Windows */}
-          <div className="relative px-4 py-1.5 flex items-center justify-between gap-2 z-10">
-            {/* Left Arched Casement Window */}
-            <div className="flex flex-col items-center">
-              <div
-                className="w-[32px] h-[54px] rounded-t-full border relative overflow-hidden transition-all duration-500"
-                style={{
-                  borderColor: architecture.trimColor,
-                  background: `radial-gradient(circle at 50% 60%, ${architecture.windowGlowColor} 0%, #D9822B 72%, #5C2C0C 100%)`,
-                  boxShadow: isHighlighted
-                    ? `0 0 16px ${architecture.windowGlowColor}99`
-                    : `0 0 8px ${architecture.windowGlowColor}44`,
-                }}
-              >
-                {/* Window mullions */}
-                <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1.5px] bg-[#1E1410]/80" />
-                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-[#1E1410]/80" />
-                <div className="absolute inset-x-0 top-[28%] h-[1px] bg-[#1E1410]/65" />
-              </div>
-              <div
-                className="w-[38px] h-[4px] rounded-[1px]"
-                style={{ backgroundColor: architecture.trimColor }}
-              />
-            </div>
+          {/* SECTION 2: PROMINENT 2:3 PORTRAIT BOOK COVER & FLANKING ARCHITECTURAL WINDOWS */}
+          <div className="relative px-4 py-2 flex items-center justify-between gap-3 z-10">
+            {/* Left Windows */}
+            <FlankingWindows
+              archetypeId={archetypeId}
+              trimColor={config.trimColor}
+              windowGlowColor={config.windowGlowColor}
+              isHighlighted={isHighlighted}
+            />
 
-            {/* Central Architectural Cover Medallion / Frontispiece Niche */}
+            {/* Central Dedicated 2:3 Portrait Book Gallery Frame (~170px × 255px) */}
             <div
-              className="relative w-[84px] h-[94px] rounded-t-full rounded-b-[6px] p-[3px] border shadow-inner flex items-center justify-center overflow-hidden shrink-0"
+              className="relative w-[172px] h-[252px] rounded-[6px] p-[5px] border shadow-2xl flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-102 transition-transform duration-500"
               style={{
-                borderColor: architecture.trimColor,
-                background: `linear-gradient(180deg, ${architecture.trimColor}44, ${architecture.secondaryColor})`,
-                boxShadow: "0 4px 12px rgba(0,0,0,0.65)",
+                borderColor: config.trimColor,
+                background: `linear-gradient(180deg, ${config.trimColor}55, ${config.secondaryColor})`,
+                boxShadow: isHighlighted
+                  ? `0 10px 28px rgba(0,0,0,0.85), 0 0 20px ${config.accentColor}44`
+                  : "0 8px 22px rgba(0,0,0,0.8)",
               }}
             >
+              {/* Outer Gilded Chamfer Border */}
+              <div
+                className="pointer-events-none absolute inset-[2px] rounded-[4px] border opacity-60"
+                style={{ borderColor: config.accentColor }}
+              />
+
               {activeCoverUrl ? (
-                <div className="relative w-full h-full rounded-t-full rounded-b-[4px] overflow-hidden bg-[#12131F]">
+                <div className="relative w-full h-full rounded-[3px] overflow-hidden bg-[#0D0F18] shadow-inner">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={activeCoverUrl}
-                    alt={`Cover artwork motif for ${book.title}`}
-                    loading={book.streetOrder <= 6 ? "eager" : "lazy"}
+                    alt={`Cover artwork for ${book.title}`}
+                    loading={book.streetOrder <= 8 ? "eager" : "lazy"}
                     decoding="async"
                     onError={() => setImgFailed(true)}
-                    className="w-full h-full object-cover object-center filter contrast-105 saturate-95 transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-cover object-center filter contrast-105 saturate-105 transition-transform duration-700 group-hover:scale-105"
                   />
-                  {/* Subtle leaded-glass architectural overlay so cover integrates into the façade */}
+                  {/* Subtle gallery lighting highlight */}
                   <div
                     className="pointer-events-none absolute inset-0"
                     style={{
                       background:
-                        "radial-gradient(circle at 50% 45%, transparent 52%, rgba(10,10,18,0.55) 100%)",
-                      boxShadow: "inset 0 0 10px rgba(0,0,0,0.7)",
+                        "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 45%, rgba(0,0,0,0.4) 100%)",
+                      boxShadow: "inset 0 0 12px rgba(0,0,0,0.7)",
                     }}
                   />
                 </div>
               ) : (
+                /* Fallback architectural medallion if cover is missing */
                 <div
-                  className="w-full h-full rounded-t-full rounded-b-[4px] flex flex-col items-center justify-center p-2"
+                  className="w-full h-full rounded-[3px] flex flex-col items-center justify-between p-3 text-center"
                   style={{
-                    background: `radial-gradient(circle at 50% 40%, ${architecture.primaryColor}, ${architecture.secondaryColor})`,
+                    background: `linear-gradient(180deg, ${config.primaryColor}, ${config.secondaryColor})`,
                   }}
                 >
-                  <OrnamentCrest
-                    style={architecture.ornamentStyle}
-                    color={architecture.trimColor}
-                  />
+                  <span
+                    className="w-8 h-8 flex items-center justify-center"
+                    style={{ color: config.accentColor }}
+                  >
+                    <ArchetypeBadgeIcon archetypeId={archetypeId} className="w-7 h-7" />
+                  </span>
+                  <div className="font-serif text-[13px] font-bold text-white leading-tight">
+                    {book.title}
+                  </div>
+                  <div className="text-[10px] text-white/70 uppercase font-mono">
+                    {book.author || "Folio Edition"}
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Right Arched Casement Window */}
-            <div className="flex flex-col items-center">
-              <div
-                className="w-[32px] h-[54px] rounded-t-full border relative overflow-hidden transition-all duration-500"
-                style={{
-                  borderColor: architecture.trimColor,
-                  background: `radial-gradient(circle at 50% 60%, ${architecture.windowGlowColor} 0%, #D9822B 72%, #5C2C0C 100%)`,
-                  boxShadow: isHighlighted
-                    ? `0 0 16px ${architecture.windowGlowColor}99`
-                    : `0 0 8px ${architecture.windowGlowColor}44`,
-                }}
-              >
-                <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1.5px] bg-[#1E1410]/80" />
-                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-[#1E1410]/80" />
-                <div className="absolute inset-x-0 top-[28%] h-[1px] bg-[#1E1410]/65" />
-              </div>
-              <div
-                className="w-[38px] h-[4px] rounded-[1px]"
-                style={{ backgroundColor: architecture.trimColor }}
-              />
-            </div>
+            {/* Right Windows */}
+            <FlankingWindows
+              archetypeId={archetypeId}
+              trimColor={config.trimColor}
+              windowGlowColor={config.windowGlowColor}
+              isHighlighted={isHighlighted}
+            />
           </div>
 
-          {/* SECTION C: Second-Story Reading Room Windows with wrought-iron Juliette balcony */}
-          <div className="relative px-5 py-1 flex items-center justify-around gap-2 z-10">
-            {[0, 1, 2].map((winIdx) => (
-              <div key={winIdx} className="flex flex-col items-center">
-                <div
-                  className="w-[40px] h-[46px] rounded-t-[6px] border relative overflow-hidden transition-all duration-500"
-                  style={{
-                    borderColor: `${architecture.trimColor}CC`,
-                    background: `linear-gradient(180deg, #FFF0BE 0%, ${architecture.windowGlowColor} 55%, #C86D24 100%)`,
-                    boxShadow: isHighlighted
-                      ? `0 0 14px ${architecture.windowGlowColor}88`
-                      : `0 0 6px ${architecture.windowGlowColor}33`,
-                  }}
-                >
-                  {/* Subtle interior bookshelf / drape silhouette */}
-                  <div
-                    className="absolute bottom-0 inset-x-0 h-3 opacity-35"
-                    style={{ backgroundColor: architecture.secondaryColor }}
-                  />
-                  {/* Mullion grid */}
-                  <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-[1.5px] bg-[#1C130E]/80" />
-                  <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-[1.5px] bg-[#1C130E]/80" />
-                </div>
-                {/* Wrought iron window box / sill */}
-                <div
-                  className="w-[46px] h-[5px] border-t flex items-center justify-around"
-                  style={{
-                    backgroundColor: architecture.secondaryColor,
-                    borderColor: architecture.trimColor,
-                  }}
-                />
-              </div>
-            ))}
-          </div>
-
-          {/* Raised Spine Hub #3 */}
+          {/* Lower Cornice Belt */}
           <div
             className="w-full h-[6px] border-y shrink-0"
             style={{
-              background: `linear-gradient(90deg, ${architecture.secondaryColor}, ${architecture.trimColor}66, ${architecture.secondaryColor})`,
-              borderColor: `${architecture.trimColor}88`,
+              background: `linear-gradient(90deg, ${config.secondaryColor}, ${config.trimColor}77, ${config.secondaryColor})`,
+              borderColor: `${config.trimColor}AA`,
             }}
           />
 
-          {/* SECTION D: Ground-Floor Townhouse Entrance, Parlor Window, Lanterns & 3D Hinged Door */}
-          <div className="relative px-4 pt-2 pb-0 flex items-end justify-between z-10">
-            {/* Ground-floor parlor window & Review Plaque */}
-            <div className="flex flex-col items-center pb-3 gap-1.5">
-              <div
-                className="w-[56px] h-[64px] rounded-t-[8px] border relative overflow-hidden"
-                style={{
-                  borderColor: architecture.trimColor,
-                  background: `radial-gradient(circle at 50% 55%, #FFF2C2 0%, ${architecture.windowGlowColor} 65%, #B85D19 100%)`,
-                  boxShadow: `0 0 12px ${architecture.windowGlowColor}55`,
-                }}
-              >
-                {/* Warm table lamp silhouette inside parlor */}
-                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-5 h-4 rounded-t-full bg-[#3A1D12]/45" />
-                <div className="absolute inset-y-0 left-1/3 w-[1.2px] bg-[#1C130E]/75" />
-                <div className="absolute inset-y-0 left-2/3 w-[1.2px] bg-[#1C130E]/75" />
-                <div className="absolute inset-x-0 top-1/2 h-[1.2px] bg-[#1C130E]/75" />
-              </div>
-              <div
-                className="w-[62px] h-[5px] rounded-[1px]"
-                style={{ backgroundColor: architecture.trimColor }}
+          {/* SECTION 3: GROUND FLOOR ENTRANCE, 3D DOUBLE DOORS, LANTERNS & GROUND PROPS */}
+          <div className="relative px-6 pt-1 pb-0 flex items-end justify-between z-10">
+            {/* Left: Archetype Ground Prop (Bistro table, Stone Urns, Lions, Astrolabe, etc.) */}
+            <div className="relative w-20 h-16 flex items-end">
+              <ArchetypeGroundProps
+                archetypeId={archetypeId}
+                trimColor={config.trimColor}
+                accentColor={config.accentColor}
               />
-
-              {/* Publisher / Edition Brass Footplate */}
-              <div
-                className="px-1.5 py-0.5 rounded-[2px] border text-[8.5px] uppercase tracking-[0.14em] font-mono"
-                style={{
-                  borderColor:
-                    book.recordStatus === "needs-review"
-                      ? "#F59E0B"
-                      : `${architecture.trimColor}88`,
-                  backgroundColor: "#0D0E17CC",
-                  color:
-                    book.recordStatus === "needs-review"
-                      ? "#FCD34D"
-                      : architecture.accentColor,
-                }}
-              >
-                {book.recordStatus === "needs-review"
-                  ? "Verify Ed."
-                  : cover.firstPublishYear
-                  ? `Ed. ${cover.firstPublishYear}`
-                  : "Folio Ed."}
-              </div>
             </div>
 
-            {/* Interactive 3D Hinged Doorway Assembly */}
-            <div className="relative flex flex-col items-center">
+            {/* Center: Interactive 3D Hinged Double Doorway */}
+            <div className="relative flex flex-col items-center pb-0">
               {/* Left & Right Carriage Lanterns */}
               <div
-                className={`w-2.5 h-3.5 rounded-full absolute -left-3.5 top-8 transition-all duration-300 ${
+                className={`w-3 h-4 rounded-full absolute -left-4 top-7 transition-all duration-300 ${
                   isHighlighted ? "scale-110" : "opacity-85"
                 }`}
                 style={{
-                  backgroundColor: "#FFF2C6",
+                  backgroundColor: "#FFF4CE",
                   boxShadow: isHighlighted
-                    ? "0 0 16px 5px rgba(255, 224, 130, 0.85)"
-                    : "0 0 8px 2px rgba(255, 214, 110, 0.45)",
+                    ? "0 0 18px 6px rgba(255, 226, 140, 0.9)"
+                    : "0 0 10px 2px rgba(255, 218, 120, 0.5)",
                 }}
               />
               <div
-                className={`w-2.5 h-3.5 rounded-full absolute -right-3.5 top-8 transition-all duration-300 ${
+                className={`w-3 h-4 rounded-full absolute -right-4 top-7 transition-all duration-300 ${
                   isHighlighted ? "scale-110" : "opacity-85"
                 }`}
                 style={{
-                  backgroundColor: "#FFF2C6",
+                  backgroundColor: "#FFF4CE",
                   boxShadow: isHighlighted
-                    ? "0 0 16px 5px rgba(255, 224, 130, 0.85)"
-                    : "0 0 8px 2px rgba(255, 214, 110, 0.45)",
+                    ? "0 0 18px 6px rgba(255, 226, 140, 0.9)"
+                    : "0 0 10px 2px rgba(255, 218, 120, 0.5)",
                 }}
               />
 
-              {/* Stone & Brass Door Surround with Arched Fanlight */}
+              {/* Stone & Brass Portal Surround with Fanlight */}
               <div
-                className="relative w-[78px] h-[108px] rounded-t-[38px] p-[4px] pb-0 flex flex-col"
+                className="relative w-[88px] h-[106px] rounded-t-[44px] p-[4px] pb-0 flex flex-col"
                 style={{
-                  background: `linear-gradient(180deg, ${architecture.trimColor}, ${architecture.secondaryColor})`,
-                  boxShadow: "0 -2px 12px rgba(0,0,0,0.55)",
+                  background: `linear-gradient(180deg, ${config.trimColor}, ${config.secondaryColor})`,
+                  boxShadow: "0 -2px 14px rgba(0,0,0,0.6)",
                 }}
               >
                 {/* Arched Fanlight Transom showing House Number */}
                 <div
-                  className="w-full h-[24px] rounded-t-[34px] border-b flex items-center justify-center relative overflow-hidden"
+                  className="w-full h-[24px] rounded-t-[40px] border-b flex items-center justify-center relative overflow-hidden"
                   style={{
-                    borderColor: architecture.trimColor,
+                    borderColor: config.trimColor,
                     background:
                       "radial-gradient(circle at 50% 100%, #FFF5D1 0%, #F3B95F 75%, #8C4A15 100%)",
                   }}
                 >
-                  <span className="text-[9px] font-serif font-bold tracking-widest text-[#231208] z-10">
+                  <span className="text-[10px] font-serif font-bold tracking-widest text-[#231208] z-10">
                     {houseNumber}
                   </span>
                 </div>
@@ -641,14 +444,14 @@ export default function BookHouseFacade({
                   className="relative w-full flex-1 overflow-visible flex"
                   style={{ perspective: "480px" }}
                 >
-                  {/* Warm Glowing Book-Lined Interior Vestibule visible when doors swing open */}
+                  {/* Warm Glowing Interior Library visible when doors open */}
                   <div
                     className="absolute inset-0 overflow-hidden flex flex-col justify-between p-1.5"
                     style={{
                       background:
                         "radial-gradient(circle at 50% 45%, #FFF8DE 0%, #FFD27D 45%, #B85B14 85%, #4A1C07 100%)",
                       boxShadow: isDoorOpen
-                        ? "0 0 38px 14px rgba(255, 220, 135, 0.9)"
+                        ? "0 0 42px 16px rgba(255, 220, 135, 0.95)"
                         : "inset 0 0 10px rgba(0,0,0,0.5)",
                     }}
                   >
@@ -662,27 +465,27 @@ export default function BookHouseFacade({
                     />
                   </div>
 
-                  {/* LEFT DOUBLE-DOOR LEAF */}
+                  {/* LEFT DOOR LEAF */}
                   <div
                     className="relative w-1/2 h-full border-y border-l border-r-[0.5px] flex flex-col justify-between p-1 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
                     style={{
-                      backgroundColor: architecture.doorWoodColor,
-                      borderColor: `${architecture.trimColor}AA`,
+                      backgroundColor: config.doorWoodColor,
+                      borderColor: `${config.trimColor}BB`,
                       transformOrigin: "left center",
                       transform: isDoorOpen
-                        ? "rotateY(98deg)"
+                        ? "rotateY(100deg)"
                         : isHighlighted
-                        ? "rotateY(8deg)"
+                        ? "rotateY(10deg)"
                         : "rotateY(0deg)",
                       boxShadow: isDoorOpen
-                        ? "6px 0 16px rgba(0,0,0,0.7)"
+                        ? "6px 0 18px rgba(0,0,0,0.7)"
                         : "inset 0 0 6px rgba(0,0,0,0.65)",
                     }}
                   >
                     <div
                       className="w-full h-[26px] rounded-[1.5px] border"
                       style={{
-                        borderColor: `${architecture.trimColor}99`,
+                        borderColor: `${config.trimColor}99`,
                         background:
                           "linear-gradient(180deg, rgba(255,232,163,0.45), rgba(214,132,48,0.25))",
                       }}
@@ -691,7 +494,7 @@ export default function BookHouseFacade({
                       <span
                         className="w-1.5 h-1.5 rounded-full"
                         style={{
-                          backgroundColor: architecture.accentColor,
+                          backgroundColor: config.accentColor,
                           boxShadow: "0 0 4px rgba(255,215,128,0.8)",
                         }}
                       />
@@ -699,33 +502,33 @@ export default function BookHouseFacade({
                     <div
                       className="w-full h-[24px] rounded-[1.5px] border"
                       style={{
-                        borderColor: `${architecture.trimColor}77`,
+                        borderColor: `${config.trimColor}77`,
                         backgroundColor: "rgba(0,0,0,0.28)",
                       }}
                     />
                   </div>
 
-                  {/* RIGHT DOUBLE-DOOR LEAF */}
+                  {/* RIGHT DOOR LEAF */}
                   <div
                     className="relative w-1/2 h-full border-y border-r border-l-[0.5px] flex flex-col justify-between p-1 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]"
                     style={{
-                      backgroundColor: architecture.doorWoodColor,
-                      borderColor: `${architecture.trimColor}AA`,
+                      backgroundColor: config.doorWoodColor,
+                      borderColor: `${config.trimColor}BB`,
                       transformOrigin: "right center",
                       transform: isDoorOpen
-                        ? "rotateY(-98deg)"
+                        ? "rotateY(-100deg)"
                         : isHighlighted
-                        ? "rotateY(-8deg)"
+                        ? "rotateY(-10deg)"
                         : "rotateY(0deg)",
                       boxShadow: isDoorOpen
-                        ? "-6px 0 16px rgba(0,0,0,0.7)"
+                        ? "-6px 0 18px rgba(0,0,0,0.7)"
                         : "inset 0 0 6px rgba(0,0,0,0.65)",
                     }}
                   >
                     <div
                       className="w-full h-[26px] rounded-[1.5px] border"
                       style={{
-                        borderColor: `${architecture.trimColor}99`,
+                        borderColor: `${config.trimColor}99`,
                         background:
                           "linear-gradient(180deg, rgba(255,232,163,0.45), rgba(214,132,48,0.25))",
                       }}
@@ -734,7 +537,7 @@ export default function BookHouseFacade({
                       <span
                         className="w-1.5 h-1.5 rounded-full"
                         style={{
-                          backgroundColor: architecture.accentColor,
+                          backgroundColor: config.accentColor,
                           boxShadow: "0 0 4px rgba(255,215,128,0.8)",
                         }}
                       />
@@ -742,7 +545,7 @@ export default function BookHouseFacade({
                     <div
                       className="w-full h-[24px] rounded-[1.5px] border"
                       style={{
-                        borderColor: `${architecture.trimColor}77`,
+                        borderColor: `${config.trimColor}77`,
                         backgroundColor: "rgba(0,0,0,0.28)",
                       }}
                     />
@@ -750,21 +553,45 @@ export default function BookHouseFacade({
                 </div>
               </div>
 
-              {/* Two Stone Threshold Steps */}
+              {/* Stone Steps */}
               <div
-                className="w-[88px] h-[5px] border-t"
+                className="w-[98px] h-[5px] border-t"
                 style={{
                   backgroundColor: "#2C2B38",
-                  borderColor: `${architecture.trimColor}77`,
+                  borderColor: `${config.trimColor}88`,
                 }}
               />
               <div
-                className="w-[96px] h-[5px] border-t"
+                className="w-[108px] h-[5px] border-t"
                 style={{
                   backgroundColor: "#1F1E29",
-                  borderColor: `${architecture.trimColor}55`,
+                  borderColor: `${config.trimColor}66`,
                 }}
               />
+            </div>
+
+            {/* Right: Brass Edition Plaque */}
+            <div className="pb-3 flex flex-col items-end">
+              <div
+                className="px-2 py-1 rounded-[3px] border text-[9.5px] uppercase tracking-[0.14em] font-mono shadow-md"
+                style={{
+                  borderColor:
+                    book.recordStatus === "needs-review"
+                      ? "#F59E0B"
+                      : `${config.trimColor}AA`,
+                  backgroundColor: "#0D0E17DD",
+                  color:
+                    book.recordStatus === "needs-review"
+                      ? "#FCD34D"
+                      : config.accentColor,
+                }}
+              >
+                {book.recordStatus === "needs-review"
+                  ? "Verify Ed."
+                  : cover.firstPublishYear
+                  ? `Ed. ${cover.firstPublishYear}`
+                  : "Folio Ed."}
+              </div>
             </div>
           </div>
         </div>
@@ -772,4 +599,3 @@ export default function BookHouseFacade({
     </div>
   );
 }
-
