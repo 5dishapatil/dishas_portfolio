@@ -71,10 +71,14 @@ export const MIND_CARDS: MindCardItem[] = [
     title: "Systems",
     subtitle: "Cybernetics, Feedback Loops & Emergence",
     description:
-      "Complex adaptive networks, self-organizing dynamics, nonlinear feedback loops, and systemic leverage points under chaotic environments.",
+      "Complex adaptive networks, self-organizing dynamics, nonlinear feedback loops, and systemic leverage points under chaotic environments. Real-time 3D bioluminescent immersion.",
     accent: "#a855f7",
-    glow: "rgba(168, 85, 247, 0.35)",
+    glow: "rgba(168, 85, 247, 0.45)",
     tags: ["Cybernetics", "Networks", "Emergence", "Complexity"],
+    href: "/mind/systems",
+    isSpecial: true,
+    badgeText: "3D Immersion Zen",
+    ctaText: "Launch Systems Thinking ↗",
   },
 ];
 

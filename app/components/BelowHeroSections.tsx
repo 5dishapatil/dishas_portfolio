@@ -5,7 +5,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import EnchantedForestPlayground from "./playground/EnchantedForestPlayground";
 import MindCardsShowcase from "./mind/MindCardsShowcase";
 
 interface CarouselCard {
@@ -191,6 +190,7 @@ const BENTO_WORLDS: BentoWorldItem[] = [
     title: "Playground",
     icon: "playground",
     image: "/assets/bento-6.jpg",
+    href: "/playground",
     lines: ["A FOREST TO WANDER", "A DRAGON TO MEET", "A LITTLE MAGIC."],
   },
 ];
@@ -879,26 +879,17 @@ export default function BelowHeroSections() {
           }`}
         >
           {filteredWorlds.map((world) => {
-            if (selectedFilter === "Playground" && world.title === "Playground") {
-              return (
-                <div key={world.num} id="playground" className="col-span-full scroll-mt-8">
-                  <EnchantedForestPlayground />
-                </div>
-              );
-            }
-
             const isActivelyFiltered = selectedFilter !== "All";
 
             return (
               <article
                 key={world.num}
+                id={world.title === "Playground" ? "playground" : undefined}
                 onClick={() => {
                   if (world.title === "Mind & More") {
                     setIsMindModalOpen(true);
                   } else if (world.href) {
                     router.push(world.href);
-                  } else if (world.title === "Playground") {
-                    setSelectedFilter("Playground");
                   }
                 }}
                 className={`group relative flex min-h-[480px] sm:min-h-[520px] xl:min-h-[550px] flex-col justify-between overflow-hidden rounded-[4px] border bg-gradient-to-b from-[#140E08] via-[#0C0805] to-[#080503] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] cursor-pointer ${
@@ -1031,7 +1022,7 @@ export default function BelowHeroSections() {
                     Worlds Inside <span className="italic font-serif text-[#46d3db]">My Head</span>
                   </h2>
                   <p className="text-xs sm:text-sm text-zinc-400 max-w-md mx-auto">
-                    Select a pillar below. Click Brain &amp; Biology to enter the real-time 3D DNA simulation.
+                    Select a pillar below to enter its specialized interactive immersion experience.
                   </p>
                 </div>
 
