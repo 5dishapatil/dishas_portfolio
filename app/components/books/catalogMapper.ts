@@ -138,6 +138,7 @@ export function classifyBookArchetype(book: BookCatalogItem): HouseArchetypeId {
   // 01 ROMANCE
   if (
     g.includes("romance") ||
+    t.includes("powerless") ||
     t.includes("love hypothesis") ||
     t.includes("beach read") ||
     t.includes("book lovers") ||
@@ -171,7 +172,7 @@ export function classifyBookArchetype(book: BookCatalogItem): HouseArchetypeId {
 
 /** Preferred showcase titles for the opening 10 houses */
 const SHOWCASE_ORDER: { archetype: HouseArchetypeId; preferredTitlePart: string }[] = [
-  { archetype: "romance", preferredTitlePart: "love hypothesis" },
+  { archetype: "romance", preferredTitlePart: "powerless" },
   { archetype: "fantasy", preferredTitlePart: "cruel prince" },
   { archetype: "mystery", preferredTitlePart: "never lie" },
   { archetype: "peaceful-reads", preferredTitlePart: "seagull" },
@@ -230,6 +231,16 @@ export function buildShowcaseBoulevard(rawBooks: BookCatalogItem[]): MappedBookH
         },
       });
     }
+  }
+
+  // Position "The Love Hypothesis" as Book 57 (index 46 in remaining array: 10 showcase + 46 = 56 index -> streetOrder 57)
+  const loveIdx = remaining.findIndex((b) =>
+    b.title.toLowerCase().includes("love hypothesis")
+  );
+  if (loveIdx !== -1) {
+    const [loveBook] = remaining.splice(loveIdx, 1);
+    const targetRemainingIndex = Math.min(46, remaining.length);
+    remaining.splice(targetRemainingIndex, 0, loveBook);
   }
 
   // 2. Map all remaining books (11 to 86)
