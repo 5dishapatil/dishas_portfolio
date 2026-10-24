@@ -8,6 +8,10 @@
   --gold-muted: #b9975e;
   --cream: #faf6f0;
   --cream-soft: #eae0d0;
+  --font-cormorant: 'Cormorant Garamond', Georgia, serif;
+  --font-playfair: 'Playfair Display', Georgia, serif;
+  --font-jost: 'Jost', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-caveat: 'Caveat', cursive;
 }
 
 @theme inline {
