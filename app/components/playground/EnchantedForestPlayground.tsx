@@ -3,11 +3,15 @@
 import * as THREE from "three";
 import * as BufferGeometryUtils from "three/addons/utils/BufferGeometryUtils.js";
 import { useEffect, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
+import Link from "next/link";
 
 type ForestControls = {
   magic: () => void;
+  dance: () => void;
   reset: () => void;
+  zoom: (direction: number) => void;
   press: (key: string, down: boolean) => void;
+  pressDragon: (key: string, down: boolean) => void;
 };
 
 type Firefly = {
@@ -29,6 +33,7 @@ type ForestObjects = {
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
   renderer: THREE.WebGLRenderer;
+  skyDome: THREE.Mesh;
   dragon: THREE.Group;
   head: THREE.Group;
   torso: THREE.Mesh;
@@ -39,7 +44,6 @@ type ForestObjects = {
   leftLeg: THREE.Group;
   rightLeg: THREE.Group;
   tail: THREE.Group;
-  eyeLids: THREE.Mesh[];
   pupils: THREE.Mesh[];
   fireflies: Firefly[];
   flowers: THREE.Group[];
@@ -357,6 +361,75 @@ function makeWaterTexture() {
   texture.wrapS = THREE.RepeatWrapping;
   texture.wrapT = THREE.RepeatWrapping;
   texture.repeat.set(2, 9);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  return texture;
+}
+
+function makeSunsetSkyTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 1024;
+  canvas.height = 512;
+  const context = canvas.getContext("2d");
+  if (!context) return null;
+
+  const sky = context.createLinearGradient(0, 0, 0, canvas.height);
+  sky.addColorStop(0, "#273847");
+  sky.addColorStop(0.3, "#485058");
+  sky.addColorStop(0.42, "#777066");
+  sky.addColorStop(0.5, "#d3894c");
+  sky.addColorStop(0.59, "#ffc45e");
+  sky.addColorStop(0.7, "#bd5d32");
+  sky.addColorStop(1, "#433b3a");
+  context.fillStyle = sky;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+
+  const glow = context.createRadialGradient(290, 286, 8, 290, 286, 360);
+  glow.addColorStop(0, "rgba(255,225,139,0.7)");
+  glow.addColorStop(0.24, "rgba(255,169,72,0.38)");
+  glow.addColorStop(1, "rgba(255,121,45,0)");
+  context.fillStyle = glow;
+  context.fillRect(0, 30, canvas.width, 450);
+
+  let seed = 9821;
+  const random = () => {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
+  };
+  const drawCloudPuff = (x: number, y: number, radiusX: number, radiusY: number, color: string, alpha: number) => {
+    const cloud = context.createRadialGradient(x, y - radiusY * 0.2, 1, x, y, Math.max(radiusX, radiusY));
+    cloud.addColorStop(0, color.replace("ALPHA", String(alpha)));
+    cloud.addColorStop(0.58, color.replace("ALPHA", String(alpha * 0.62)));
+    cloud.addColorStop(1, color.replace("ALPHA", "0"));
+    context.fillStyle = cloud;
+    context.beginPath();
+    context.ellipse(x, y, radiusX, radiusY, (random() - 0.5) * 0.14, 0, Math.PI * 2);
+    context.fill();
+  };
+
+  // Smoky high clouds keep the upper sky dimensional while the low cloudbank catches sunset light.
+  for (let i = 0; i < 42; i += 1) {
+    const x = random() * 1160 - 60;
+    const y = 90 + random() * 178;
+    drawCloudPuff(x, y, 24 + random() * 90, 5 + random() * 16, "rgba(119,104,91,ALPHA)", 0.3 + random() * 0.22);
+    if (i % 3 === 0) drawCloudPuff(x + 18, y + 7, 26 + random() * 78, 5 + random() * 13, "rgba(221,143,91,ALPHA)", 0.2 + random() * 0.24);
+  }
+  for (let i = 0; i < 70; i += 1) {
+    const x = random() * 1160 - 80;
+    const y = 222 + random() * 128;
+    const width = 26 + random() * 112;
+    const height = 12 + random() * 44;
+    drawCloudPuff(x, y, width, height, "rgba(255,170,71,ALPHA)", 0.36 + random() * 0.36);
+    if (i % 2 === 0) {
+      drawCloudPuff(x + (random() - 0.5) * width, y - height * 0.45, width * 0.56, height * 0.82, "rgba(255,210,112,ALPHA)", 0.26 + random() * 0.36);
+    }
+  }
+  for (let i = 0; i < 24; i += 1) {
+    const x = random() * 1160 - 80;
+    const y = 322 + random() * 112;
+    drawCloudPuff(x, y, 34 + random() * 90, 20 + random() * 45, "rgba(91,57,48,ALPHA)", 0.28 + random() * 0.2);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
   return texture;
 }
@@ -798,7 +871,6 @@ function makeDragon() {
   addSphere(head, "Dragon Cheek Left", [-0.79, 0.1, 0.59], [0.25, 0.19, 0.2], mint, 24);
   addSphere(head, "Dragon Cheek Right", [0.79, 0.1, 0.59], [0.25, 0.19, 0.2], mint, 24);
 
-  const eyeLids: THREE.Mesh[] = [];
   const pupils: THREE.Mesh[] = [];
   for (const side of [-1, 1]) {
     addSphere(head, `Dragon Eye Socket ${side}`, [side * 0.55, 0.61, 0.67], [0.31, 0.39, 0.17], eyeRim, 30);
@@ -808,9 +880,6 @@ function makeDragon() {
     pupils.push(pupilMesh);
     addSphere(head, `Dragon Eye Shine ${side}`, [side * 0.55 - 0.055, 0.72, 0.978], [0.052, 0.07, 0.035], shine, 16);
     addSphere(head, `Dragon Eye Glint ${side}`, [side * 0.55 + 0.055, 0.54, 0.975], [0.025, 0.034, 0.022], shine, 12);
-    const lid = addSphere(head, `Dragon Blink Lid ${side}`, [side * 0.55, 0.61, 0.96], [0.252, 0.345, 0.025], lightMint, 24);
-    lid.scale.y = 0.025;
-    eyeLids.push(lid);
     addSphere(head, `Dragon Nostril ${side}`, [side * 0.18, 0.15, 1.105], [0.055, 0.045, 0.034], darkMint, 12);
   }
 
@@ -960,7 +1029,7 @@ function makeDragon() {
     dragon.add(spike);
   }
 
-  return { dragon, head, torso, leftWing, rightWing, leftArm, rightArm, leftLeg, rightLeg, tail, eyeLids, pupils };
+  return { dragon, head, torso, leftWing, rightWing, leftArm, rightArm, leftLeg, rightLeg, tail, pupils };
 }
 
 function makeFirefly(scene: THREE.Scene, x: number, y: number, z: number, phase: number): Firefly {
@@ -988,8 +1057,8 @@ function makeFirefly(scene: THREE.Scene, x: number, y: number, z: number, phase:
 
 function buildForest(canvas: HTMLCanvasElement): ForestObjects {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color("#64786a");
-  scene.fog = new THREE.Fog("#64786a", 22, 78);
+  scene.background = new THREE.Color("#354451");
+  scene.fog = new THREE.Fog("#71695c", 26, 92);
 
   const camera = new THREE.PerspectiveCamera(51, 1, 0.1, 120);
   camera.position.set(0, 2.75, 13.5);
@@ -1002,10 +1071,26 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-  const hemisphere = new THREE.HemisphereLight("#eaf0dc", "#43533c", 1.7);
+  const sunsetTexture = makeSunsetSkyTexture();
+  const skyDome = new THREE.Mesh(
+    new THREE.SphereGeometry(100, 40, 28),
+    new THREE.MeshBasicMaterial({
+      color: "#d78b4b",
+      map: sunsetTexture,
+      side: THREE.BackSide,
+      depthWrite: false,
+      fog: false,
+    }),
+  );
+  skyDome.name = "Warm Sunset Sky";
+  skyDome.position.copy(camera.position);
+  skyDome.renderOrder = -100;
+  scene.add(skyDome);
+
+  const hemisphere = new THREE.HemisphereLight("#f4d5a5", "#43533c", 1.55);
   scene.add(hemisphere);
-  scene.add(new THREE.AmbientLight("#dce6d4", 0.28));
-  const sun = new THREE.DirectionalLight("#ffe8bb", 2.05);
+  scene.add(new THREE.AmbientLight("#edcfaa", 0.3));
+  const sun = new THREE.DirectionalLight("#ffc77d", 2.0);
   sun.position.set(-16, 27, -12);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1536, 1536);
@@ -1190,6 +1275,65 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
   canopyMesh.computeBoundingSphere();
   scene.add(canopyMesh);
 
+  const leafShape = new THREE.Shape();
+  leafShape.moveTo(0, -0.5);
+  leafShape.quadraticCurveTo(0.33, -0.17, 0, 0.5);
+  leafShape.quadraticCurveTo(-0.33, -0.17, 0, -0.5);
+  const leafGeometry = new THREE.ShapeGeometry(leafShape, 5);
+  const leafMaterial = new THREE.MeshStandardMaterial({
+    color: "#ffffff",
+    roughness: 0.88,
+    side: THREE.DoubleSide,
+  });
+  const leavesPerCluster = 12;
+  const canopyLeaves = new THREE.InstancedMesh(
+    leafGeometry,
+    leafMaterial,
+    canopyInstances.length * leavesPerCluster,
+  );
+  canopyLeaves.name = "Canopy Leaf Detail";
+  const leafTransform = new THREE.Object3D();
+  const leafNormal = new THREE.Vector3(0, 0, 1);
+  let leafSeed = 247;
+  const leafRandom = () => {
+    leafSeed = (leafSeed * 1664525 + 1013904223) % 4294967296;
+    return leafSeed / 4294967296;
+  };
+  let leafIndex = 0;
+  canopyInstances.forEach((cluster) => {
+    for (let i = 0; i < leavesPerCluster; i += 1) {
+      const angle = leafRandom() * Math.PI * 2;
+      const vertical = leafRandom() * 1.55 - 0.35;
+      const horizontal = Math.sqrt(Math.max(0, 1 - vertical * vertical));
+      const normal = new THREE.Vector3(
+        Math.cos(angle) * horizontal,
+        vertical,
+        Math.sin(angle) * horizontal,
+      ).normalize();
+      leafTransform.position.set(
+        cluster.position.x + normal.x * cluster.scale.x * 0.91,
+        cluster.position.y + normal.y * cluster.scale.y * 0.91,
+        cluster.position.z + normal.z * cluster.scale.z * 0.91,
+      );
+      leafTransform.quaternion.setFromUnitVectors(leafNormal, normal);
+      leafTransform.rotateZ(leafRandom() * Math.PI);
+      const size = 0.12 + leafRandom() * 0.12;
+      leafTransform.scale.set(size * 0.58, size * 1.75, 1);
+      leafTransform.updateMatrix();
+      canopyLeaves.setMatrixAt(leafIndex, leafTransform.matrix);
+      const leafColor = new THREE.Color(cluster.color);
+      leafColor.offsetHSL((leafRandom() - 0.5) * 0.035, 0.025, (leafRandom() - 0.5) * 0.12);
+      canopyLeaves.setColorAt(leafIndex, leafColor);
+      leafIndex += 1;
+    }
+  });
+  canopyLeaves.instanceMatrix.needsUpdate = true;
+  if (canopyLeaves.instanceColor) canopyLeaves.instanceColor.needsUpdate = true;
+  canopyLeaves.castShadow = false;
+  canopyLeaves.receiveShadow = false;
+  canopyLeaves.computeBoundingSphere();
+  scene.add(canopyLeaves);
+
   const shrubs = [
     [-15, 13, 1.4], [-10, 8, 1.1], [8, 10, 1.3], [17, 6, 1.25],
     [-12, -11, 1.2], [7, -20, 1.4], [19, -25, 1.3], [-18, -28, 1.35],
@@ -1331,6 +1475,7 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
     scene,
     camera,
     renderer,
+    skyDome,
     dragon: dragonParts.dragon,
     head: dragonParts.head,
     torso: dragonParts.torso,
@@ -1341,7 +1486,6 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
     leftLeg: dragonParts.leftLeg,
     rightLeg: dragonParts.rightLeg,
     tail: dragonParts.tail,
-    eyeLids: dragonParts.eyeLids,
     pupils: dragonParts.pupils,
     fireflies,
     flowers,
@@ -1360,8 +1504,11 @@ function buildForest(canvas: HTMLCanvasElement): ForestObjects {
 export default function EnchantedForestPlayground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const controlsRef = useRef<ForestControls | null>(null);
+  const greetingShown = useRef(false);
   const [status, setStatus] = useState("A quiet clearing, and a curious little friend.");
   const [isRoaming, setIsRoaming] = useState(false);
+  const [dialogue, setDialogue] = useState<"greeting" | "yes" | "no" | null>(null);
+  const [isDancing, setIsDancing] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1380,26 +1527,33 @@ export default function EnchantedForestPlayground() {
     let elapsed = 0;
     let yaw = 0;
     let pitch = -0.055;
-    let dragging = false;
+    let draggingView = false;
+    let draggingDragon = false;
     let movedPointer = false;
     let lastPointer = { x: 0, y: 0 };
     let downAt = { x: 0, y: 0 };
-    let blinkStart = -1;
-    let nextBlink = 3.2 + Math.random() * 3.2;
     let magicStart = -1;
     let magicOrigin: THREE.Vector3 | null = null;
     let lastNear = false;
-    let nextWander = 15;
-    let destinationIndex = 0;
+    let nextWander = 20;
+    let manualControlUntil = 0;
+    let destinationIndex = 3;
+    let danceStart = -1;
     let sparkleGroup: THREE.Group | null = null;
     let sparkleMaterials: THREE.MeshBasicMaterial[] = [];
     let sparkleVelocities: THREE.Vector3[] = [];
     const raycaster = new THREE.Raycaster();
     const pointer = new THREE.Vector2();
+    const dragonHeld = new Set<string>();
+    const cameraArrowHeld = new Set<string>();
     const velocity = new THREE.Vector3();
     const movement = new THREE.Vector3();
     const forward = new THREE.Vector3();
     const right = new THREE.Vector3();
+    const dragPlane = new THREE.Plane();
+    const dragIntersection = new THREE.Vector3();
+    const dragOffset = new THREE.Vector3();
+    const cameraNormal = new THREE.Vector3();
     const destinations = [
       new THREE.Vector3(-6.4, 0.12, 6.5),
       new THREE.Vector3(8.3, 0.12, -8.5),
@@ -1427,19 +1581,54 @@ export default function EnchantedForestPlayground() {
       forest.leftWing.rotation.z = 0;
       setStatus("A tiny breath of golden magic!");
     };
+    const startDance = () => {
+      danceStart = elapsed;
+      nextWander = elapsed + 7;
+      manualControlUntil = elapsed + 7;
+      setIsDancing(true);
+      triggerMagic();
+      setStatus("Your dragon is doing a happy little dance!");
+    };
     const resetView = () => {
       forest.camera.position.set(0, 2.75, 13.5);
+      forest.camera.fov = 51;
+      forest.camera.updateProjectionMatrix();
       yaw = 0;
       pitch = -0.055;
       velocity.set(0, 0, 0);
       forest.camera.lookAt(0, 2.1, -2.8);
+    };
+    const zoomView = (direction: number) => {
+      forest.camera.fov = clamp(forest.camera.fov + direction * 6, 38, 78);
+      forest.camera.updateProjectionMatrix();
     };
     const press = (key: string, down: boolean) => {
       const normalized = key.toLowerCase();
       if (down) forest.held.add(normalized);
       else forest.held.delete(normalized);
     };
-    controlsRef.current = { magic: triggerMagic, reset: resetView, press };
+    const pressDragon = (key: string, down: boolean) => {
+      const normalized = key.toLowerCase();
+      if (down) {
+        dragonHeld.add(normalized);
+        manualControlUntil = elapsed + 8;
+      } else {
+        dragonHeld.delete(normalized);
+        manualControlUntil = elapsed + 7;
+      }
+    };
+    controlsRef.current = { magic: triggerMagic, dance: startDance, reset: resetView, zoom: zoomView, press, pressDragon };
+    const showGreetingOnce = () => {
+      if (greetingShown.current) return;
+      greetingShown.current = true;
+      setDialogue("greeting");
+    };
+    const cameraKeyByArrow: Record<string, string> = {
+      arrowup: "w",
+      arrowleft: "a",
+      arrowdown: "s",
+      arrowright: "d",
+    };
 
     const updatePointer = (event: PointerEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -1453,16 +1642,40 @@ export default function EnchantedForestPlayground() {
     };
     const onPointerDown = (event: PointerEvent) => {
       if (event.button !== 0) return;
-      dragging = true;
+      updatePointer(event);
+      raycaster.setFromCamera(pointer, forest.camera);
+      const initialHit = raycaster.intersectObjects(forest.hitTargets, true)[0];
+      draggingDragon = findInteraction(initialHit?.object ?? null) === "dragon";
+      draggingView = !draggingDragon;
       movedPointer = false;
       lastPointer = { x: event.clientX, y: event.clientY };
       downAt = { x: event.clientX, y: event.clientY };
+      if (draggingDragon) {
+        forest.camera.getWorldDirection(cameraNormal);
+        dragPlane.setFromNormalAndCoplanarPoint(cameraNormal, new THREE.Vector3(0, forest.dragon.position.y + 0.85, 0));
+        if (raycaster.ray.intersectPlane(dragPlane, dragIntersection)) {
+          dragOffset.set(forest.dragon.position.x - dragIntersection.x, 0, forest.dragon.position.z - dragIntersection.z);
+        }
+        canvas.style.cursor = "grabbing";
+      }
       canvas.setPointerCapture(event.pointerId);
       canvas.focus();
     };
     const onPointerMove = (event: PointerEvent) => {
       updatePointer(event);
-      if (dragging) {
+      if (draggingDragon) {
+        raycaster.setFromCamera(pointer, forest.camera);
+        if (raycaster.ray.intersectPlane(dragPlane, dragIntersection)) {
+          if (Math.abs(event.clientX - downAt.x) + Math.abs(event.clientY - downAt.y) > 4) movedPointer = true;
+          forest.dragon.position.x = clamp(dragIntersection.x + dragOffset.x, -32, 32);
+          forest.dragon.position.z = clamp(dragIntersection.z + dragOffset.z, -38, 28);
+          const isOverLog = Math.hypot(forest.dragon.position.x, forest.dragon.position.z + 2.9) < 1.2;
+          forest.dragon.position.y = isOverLog ? 0.68 : groundHeight(forest.dragon.position.x, forest.dragon.position.z) + 0.12;
+          destinations[destinationIndex].set(forest.dragon.position.x, forest.dragon.position.y, forest.dragon.position.z);
+          nextWander = elapsed + 18;
+          manualControlUntil = elapsed + 18;
+        }
+      } else if (draggingView) {
         const dx = event.clientX - lastPointer.x;
         const dy = event.clientY - lastPointer.y;
         if (Math.abs(event.clientX - downAt.x) + Math.abs(event.clientY - downAt.y) > 4) movedPointer = true;
@@ -1472,19 +1685,33 @@ export default function EnchantedForestPlayground() {
       }
       raycaster.setFromCamera(pointer, forest.camera);
       const hit = raycaster.intersectObjects(forest.hitTargets, true)[0];
-      canvas.style.cursor = hit && findInteraction(hit.object) ? "pointer" : dragging ? "grabbing" : "grab";
+      const interaction = findInteraction(hit?.object ?? null);
+      const hoveringDragon = interaction === "dragon";
+      if (hoveringDragon && !draggingDragon) {
+        showGreetingOnce();
+      }
+      canvas.style.cursor = draggingDragon ? "grabbing" : draggingView ? "grabbing" : hoveringDragon ? "grab" : interaction ? "pointer" : "grab";
     };
     const onPointerUp = (event: PointerEvent) => {
-      if (!dragging) return;
-      dragging = false;
+      if (!draggingView && !draggingDragon) return;
+      const wasDraggingDragon = draggingDragon;
+      draggingView = false;
+      draggingDragon = false;
       if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
       const distance = Math.abs(event.clientX - downAt.x) + Math.abs(event.clientY - downAt.y);
+      if (wasDraggingDragon && (distance > 8 || movedPointer)) {
+        setStatus("The dragon has found a new spot to explore.");
+        return;
+      }
       if (distance > 8 || movedPointer) return;
       updatePointer(event);
       raycaster.setFromCamera(pointer, forest.camera);
       const hit = raycaster.intersectObjects(forest.hitTargets, true)[0];
       const interaction = hit ? findInteraction(hit.object) : undefined;
-      if (interaction === "dragon") triggerMagic();
+      if (interaction === "dragon") {
+        triggerMagic();
+        showGreetingOnce();
+      }
       if (interaction === "mushroom") {
         triggerMagic(hit?.point);
         setStatus("The mushrooms scatter a few little lights.");
@@ -1492,14 +1719,34 @@ export default function EnchantedForestPlayground() {
     };
     const onKeyDown = (event: KeyboardEvent) => {
       const key = event.key.toLowerCase();
-      if (["w", "a", "s", "d", "arrowup", "arrowleft", "arrowdown", "arrowright"].includes(key)) {
+      const cameraKey = cameraKeyByArrow[key];
+      if (cameraKey && event.shiftKey) {
+        event.preventDefault();
+        cameraArrowHeld.add(key);
+        press(cameraKey, true);
+        setIsRoaming(true);
+      } else if (["arrowup", "arrowleft", "arrowdown", "arrowright"].includes(key)) {
+        event.preventDefault();
+        pressDragon(key, true);
+        setIsRoaming(true);
+      } else if (["w", "a", "s", "d"].includes(key)) {
         event.preventDefault();
         press(key, true);
         setIsRoaming(true);
       }
     };
-    const onKeyUp = (event: KeyboardEvent) => press(event.key, false);
-    const onBlur = () => forest.held.clear();
+    const onKeyUp = (event: KeyboardEvent) => {
+      const key = event.key.toLowerCase();
+      const cameraKey = cameraKeyByArrow[key];
+      if (cameraKey && cameraArrowHeld.delete(key)) press(cameraKey, false);
+      else if (["arrowup", "arrowleft", "arrowdown", "arrowright"].includes(key)) pressDragon(key, false);
+      else press(key, false);
+    };
+    const onBlur = () => {
+      forest.held.clear();
+      dragonHeld.clear();
+      cameraArrowHeld.clear();
+    };
     const onMagicEvent = () => triggerMagic();
 
     canvas.addEventListener("pointerdown", onPointerDown);
@@ -1538,10 +1785,10 @@ export default function EnchantedForestPlayground() {
       movement.set(0, 0, 0);
       forward.set(Math.sin(yaw), 0, -Math.cos(yaw));
       right.set(Math.cos(yaw), 0, Math.sin(yaw));
-      if (forest.held.has("w") || forest.held.has("arrowup")) movement.add(forward);
-      if (forest.held.has("s") || forest.held.has("arrowdown")) movement.sub(forward);
-      if (forest.held.has("d") || forest.held.has("arrowright")) movement.add(right);
-      if (forest.held.has("a") || forest.held.has("arrowleft")) movement.sub(right);
+      if (forest.held.has("w")) movement.add(forward);
+      if (forest.held.has("s")) movement.sub(forward);
+      if (forest.held.has("d")) movement.add(right);
+      if (forest.held.has("a")) movement.sub(right);
       if (movement.lengthSq() > 0) movement.normalize().multiplyScalar(5.5);
       velocity.lerp(movement, 1 - damping);
 
@@ -1571,21 +1818,54 @@ export default function EnchantedForestPlayground() {
       cameraTarget.copy(forest.camera.position).add(clockForward);
       forest.camera.lookAt(cameraTarget);
 
-      if (elapsed > nextWander && magicStart < 0) {
+      if (dragonHeld.size > 0) {
+        manualControlUntil = elapsed + 8;
+        nextWander = elapsed + 18;
+        destinations[destinationIndex].set(forest.dragon.position.x, forest.dragon.position.y, forest.dragon.position.z);
+      }
+      const turn = (dragonHeld.has("arrowright") ? 1 : 0) - (dragonHeld.has("arrowleft") ? 1 : 0);
+      const manualDirection = (dragonHeld.has("arrowup") ? 1 : 0) - (dragonHeld.has("arrowdown") ? 1 : 0);
+      if (!draggingDragon && turn !== 0) forest.dragon.rotation.y += turn * dt * 1.9;
+
+      let manualWalking = false;
+      if (!draggingDragon && manualDirection !== 0) {
+        const step = dt * 3.2 * manualDirection;
+        const candidateX = clamp(forest.dragon.position.x + Math.sin(forest.dragon.rotation.y) * step, -32, 32);
+        const candidateZ = clamp(forest.dragon.position.z + Math.cos(forest.dragon.rotation.y) * step, -38, 28);
+        const blocked = forest.obstacles.some(([ox, oz, radius]) => Math.hypot(candidateX - ox, candidateZ - oz) < radius + 0.7);
+        if (!blocked) {
+          forest.dragon.position.x = candidateX;
+          forest.dragon.position.z = candidateZ;
+          manualWalking = true;
+        }
+      }
+
+      if (elapsed > nextWander && elapsed > manualControlUntil && magicStart < 0 && danceStart < 0 && !draggingDragon) {
         destinationIndex = (destinationIndex + 1) % destinations.length;
         nextWander = elapsed + 13 + Math.random() * 8;
       }
       wanderTarget.copy(destinations[destinationIndex]);
       const toDestination = new THREE.Vector3(wanderTarget.x - forest.dragon.position.x, 0, wanderTarget.z - forest.dragon.position.z);
       const distanceToDestination = toDestination.length();
-      const walking = distanceToDestination > 0.28 && elapsed > 9 && magicStart < 0;
-      if (walking) {
+      const walkingAuto = distanceToDestination > 0.28 && elapsed > manualControlUntil && magicStart < 0 && danceStart < 0 && !draggingDragon;
+      if (walkingAuto) {
         toDestination.normalize();
         forest.dragon.position.addScaledVector(toDestination, Math.min(dt * 0.85, distanceToDestination));
         forest.dragon.rotation.y += (Math.atan2(toDestination.x, toDestination.z) - forest.dragon.rotation.y) * (1 - Math.exp(-2.4 * dt));
       }
-      const restY = destinationIndex === 3 && distanceToDestination < 0.5 ? 0.68 : 0.12;
-      forest.dragon.position.y += (restY - forest.dragon.position.y) * (1 - Math.exp(-3.6 * dt));
+      const walking = manualWalking || walkingAuto;
+      const atLog = Math.hypot(forest.dragon.position.x, forest.dragon.position.z + 2.9) < 1.1;
+      const restY = atLog ? 0.68 : groundHeight(forest.dragon.position.x, forest.dragon.position.z) + 0.12;
+      const danceAge = danceStart < 0 ? -1 : elapsed - danceStart;
+      const dancing = danceAge >= 0 && danceAge < 4.8;
+      if (danceStart >= 0 && !dancing) {
+        danceStart = -1;
+        nextWander = elapsed + 8;
+        setIsDancing(false);
+        setStatus("That was fun! The dragon is ready to roam again.");
+      }
+      const jump = dancing ? Math.pow(Math.max(0, Math.sin(danceAge * 6.2)), 1.5) * 0.62 : 0;
+      forest.dragon.position.y += (restY + jump - forest.dragon.position.y) * (1 - Math.exp(-(dancing ? 11 : 3.6) * dt));
       const curiousDistance = forest.dragon.position.distanceTo(forest.camera.position);
       const curious = clamp(1 - (curiousDistance - 3.8) / 8, 0, 1);
       forest.head.rotation.y = Math.sin(elapsed * 0.43) * 0.09 + curious * Math.atan2(
@@ -1593,32 +1873,23 @@ export default function EnchantedForestPlayground() {
         forest.camera.position.z - forest.dragon.position.z,
       ) * 0.22;
       forest.head.rotation.z = Math.sin(elapsed * 0.72) * 0.035 + curious * Math.sin(elapsed * 0.8) * 0.055;
-      forest.torso.scale.y = 1 + Math.sin(elapsed * 1.7) * 0.018;
+      forest.torso.scale.y = 1 + Math.sin(elapsed * 1.7) * 0.018 + (dancing ? Math.sin(danceAge * 12) * 0.055 : 0);
+      forest.dragon.rotation.z += ((dancing ? Math.sin(danceAge * 9) * 0.13 : 0) - forest.dragon.rotation.z) * (1 - Math.exp(-8 * dt));
+      forest.dragon.rotation.x += ((dancing ? Math.sin(danceAge * 6) * 0.055 : 0) - forest.dragon.rotation.x) * (1 - Math.exp(-7 * dt));
       const reaction = magicStart >= 0 ? Math.max(0, 1 - (elapsed - magicStart) / 1.8) : 0;
-      const flap = Math.sin(elapsed * (walking ? 7.5 : 2.2)) * (walking ? 0.23 : 0.065);
+      const flap = Math.sin(elapsed * (dancing ? 10 : walking ? 7.5 : 2.2)) * (dancing ? 0.46 : walking ? 0.23 : 0.065);
       forest.leftWing.rotation.z = 0.05 + flap + reaction * 0.32;
       forest.rightWing.rotation.z = -0.05 - flap - reaction * 0.32;
-      forest.leftArm.rotation.x = Math.sin(elapsed * 6) * (walking ? 0.16 : 0.025) + reaction * 0.14;
-      forest.rightArm.rotation.x = -Math.sin(elapsed * 6) * (walking ? 0.16 : 0.025) + reaction * 0.14;
-      forest.leftLeg.rotation.x = Math.sin(elapsed * 6 + Math.PI) * (walking ? 0.2 : 0.012);
-      forest.rightLeg.rotation.x = Math.sin(elapsed * 6) * (walking ? 0.2 : 0.012);
-      forest.tail.rotation.y = Math.sin(elapsed * 1.4) * (0.12 + curious * 0.1 + reaction * 0.18);
-      forest.tail.rotation.z = Math.sin(elapsed * 1.1 + 1.2) * 0.07;
+      forest.leftArm.rotation.x = Math.sin(elapsed * (dancing ? 10 : 6)) * (dancing ? 0.34 : walking ? 0.16 : 0.025) + reaction * 0.14;
+      forest.rightArm.rotation.x = -Math.sin(elapsed * (dancing ? 10 : 6)) * (dancing ? 0.34 : walking ? 0.16 : 0.025) + reaction * 0.14;
+      forest.leftLeg.rotation.x = Math.sin(elapsed * (dancing ? 10 : 6) + Math.PI) * (dancing ? 0.29 : walking ? 0.2 : 0.012);
+      forest.rightLeg.rotation.x = Math.sin(elapsed * (dancing ? 10 : 6)) * (dancing ? 0.29 : walking ? 0.2 : 0.012);
+      forest.tail.rotation.y = Math.sin(elapsed * (dancing ? 5.8 : 1.4)) * (0.12 + curious * 0.1 + reaction * 0.18 + (dancing ? 0.24 : 0));
+      forest.tail.rotation.z = Math.sin(elapsed * (dancing ? 7 : 1.1) + 1.2) * (dancing ? 0.18 : 0.07);
       const gaze = Math.sin(elapsed * 0.38) * 0.11 + curious * Math.sin(elapsed * 0.7) * 0.08;
       forest.pupils.forEach((pupil, i) => {
         const side = i === 0 ? -1 : 1;
         pupil.position.x = side * 0.55 + gaze;
-      });
-
-      if (elapsed > nextBlink && blinkStart < 0) {
-        blinkStart = elapsed;
-        nextBlink = elapsed + 3.2 + Math.random() * 4.5;
-      }
-      const blinkProgress = blinkStart < 0 ? 0 : elapsed - blinkStart;
-      const blink = blinkProgress < 0.16 ? Math.sin((blinkProgress / 0.16) * Math.PI) : 0;
-      if (blinkProgress > 0.19) blinkStart = -1;
-      forest.eyeLids.forEach((lid) => {
-        lid.scale.y = 0.025 + blink * 0.97;
       });
 
       if (sparkleGroup && magicStart >= 0) {
@@ -1680,6 +1951,7 @@ export default function EnchantedForestPlayground() {
       waterPositions.needsUpdate = true;
       if (forest.waterTexture) forest.waterTexture.offset.y = (elapsed * 0.035) % 1;
 
+      forest.skyDome.position.copy(forest.camera.position);
       forest.renderer.render(forest.scene, forest.camera);
       frame = requestAnimationFrame(tick);
     };
@@ -1697,11 +1969,24 @@ export default function EnchantedForestPlayground() {
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("blur", onBlur);
       window.removeEventListener("forest-magic", onMagicEvent);
+      const disposedTextures = new Set<THREE.Texture>();
       forest.scene.traverse((object) => {
         if (object instanceof THREE.Mesh) {
           object.geometry.dispose();
           const materials = Array.isArray(object.material) ? object.material : [object.material];
-          materials.forEach((material) => material.dispose());
+          materials.forEach((material) => {
+            const mappedMaterial = material as THREE.Material & {
+              map?: THREE.Texture | null;
+              bumpMap?: THREE.Texture | null;
+            };
+            [mappedMaterial.map, mappedMaterial.bumpMap].forEach((texture) => {
+              if (texture && !disposedTextures.has(texture)) {
+                disposedTextures.add(texture);
+                texture.dispose();
+              }
+            });
+            material.dispose();
+          });
         }
       });
       forest.renderer.dispose();
@@ -1718,6 +2003,16 @@ export default function EnchantedForestPlayground() {
     event.preventDefault();
     controlsRef.current?.press(key, false);
   };
+  const holdDragonKey = (key: string) => (event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    controlsRef.current?.pressDragon(key, true);
+    setIsRoaming(true);
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+  const releaseDragonKey = (key: string) => (event: ReactPointerEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    controlsRef.current?.pressDragon(key, false);
+  };
 
   return (
     <section className="relative overflow-hidden rounded-[8px] border border-[#D8B77E]/35 bg-[#10140f] shadow-[0_30px_100px_rgba(0,0,0,0.55)]">
@@ -1730,20 +2025,105 @@ export default function EnchantedForestPlayground() {
         />
 
         <div className="pointer-events-none absolute inset-x-0 top-0 z-10 flex items-start justify-between p-4 sm:p-6">
-          <div className="rounded-full border border-white/15 bg-[#10170f]/55 px-3.5 py-2 backdrop-blur-md sm:px-4">
-            <p className="font-sans text-[9px] uppercase tracking-[0.25em] text-[#e7d5ad] sm:text-[10px]">A small world to wander</p>
-          </div>
+          <Link
+            href="/#worlds"
+            className="pointer-events-auto inline-flex h-10 min-w-[222px] items-center justify-center gap-3 rounded-full border border-[#8f7144]/75 bg-[#0c0a07]/90 px-5 font-sans text-[11px] font-medium uppercase tracking-[0.2em] text-[#f4ebdd] backdrop-blur-md transition-colors hover:border-[#d8b77e] hover:bg-[#18120b] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d8b77e]"
+          >
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              className="h-4 w-4 shrink-0"
+              aria-hidden="true"
+            >
+              <path
+                d="M16 10H4m0 0 5-5m-5 5 5 5"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span>Back to Worlds</span>
+          </Link>
           <div className="rounded-full border border-[#e0c895]/30 bg-[#10170f]/55 px-3.5 py-2 font-sans text-[9px] uppercase tracking-[0.18em] text-[#f1e8d6]/80 backdrop-blur-md sm:px-4 sm:text-[10px]">
-            Playground · 06
+            Playground / 06
           </div>
         </div>
 
+        {dialogue && (
+          <div
+            role="dialog"
+            aria-labelledby="dragon-dialogue-title"
+            className="absolute right-4 top-16 z-30 w-[min(88%,390px)] rounded-2xl border border-[#f2cf91]/35 bg-[#17150f]/90 p-4 text-[#fff7e8] shadow-[0_18px_60px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:right-6 sm:top-20 sm:p-5"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="font-sans text-[9px] uppercase tracking-[0.22em] text-[#e4b86c]">A little visitor</p>
+                <h4 id="dragon-dialogue-title" className="mt-1 font-display text-[23px] leading-tight text-[#fff6e3]">
+                  {dialogue === "greeting" ? "The dragon says hello" : dialogue === "yes" ? "Adventure accepted!" : "Maybe next time"}
+                </h4>
+              </div>
+              <button
+                type="button"
+                aria-label="Close dragon dialogue"
+                onClick={() => {
+                  setDialogue(null);
+                }}
+                className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-white/15 text-lg leading-none text-white/70 transition hover:border-white/40 hover:text-white"
+              >
+                x
+              </button>
+            </div>
+            <p className="mt-2 font-serif text-[15px] leading-relaxed text-[#f0e5d2]/85">
+              {dialogue === "greeting"
+                ? "Hello there! I see you came to visit me. I get so bored roaming the same path every day. Would you like to do something fun?"
+                : dialogue === "yes"
+                  ? "Wonderful! Let's jump, wiggle, and dance together!"
+                  : "Sorry you don't want to play with a majestic beast. I hope you'll join me next time!"}
+            </p>
+            {dialogue === "greeting" ? (
+              <div className="mt-4 flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDialogue("yes");
+                    controlsRef.current?.dance();
+                  }}
+                  className="rounded-full border border-[#f0c875]/70 bg-[#a96b34]/70 px-4 py-2 font-sans text-[10px] uppercase tracking-[0.15em] text-[#fff4d7] transition hover:bg-[#c17d3d]"
+                >
+                  Yes, let's play!
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDialogue("no");
+                    setStatus("The dragon hopes you'll play together next time.");
+                  }}
+                  className="rounded-full border border-white/20 bg-white/[0.06] px-4 py-2 font-sans text-[10px] uppercase tracking-[0.15em] text-[#f3eadb]/85 transition hover:border-white/40 hover:bg-white/10"
+                >
+                  Not now
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setDialogue(null);
+                }}
+                className="mt-4 rounded-full border border-white/20 bg-white/[0.06] px-4 py-2 font-sans text-[10px] uppercase tracking-[0.15em] text-[#f3eadb]/85 transition hover:border-white/40 hover:bg-white/10"
+              >
+                Back to the forest
+              </button>
+            )}
+          </div>
+        )}
+
         <div className="pointer-events-none absolute bottom-4 left-4 z-10 max-w-[min(70%,420px)] rounded-[5px] border border-white/10 bg-[#10170f]/55 px-3.5 py-2.5 backdrop-blur-md sm:bottom-6 sm:left-6 sm:px-4">
           <p aria-live="polite" className="font-sans text-[9px] uppercase tracking-[0.12em] text-[#e8d9bd]/80 sm:text-[10px]">
-            {status}
+            {isDancing ? "The dragon is dancing!" : status}
           </p>
           <p className="mt-1 font-sans text-[8px] tracking-[0.04em] text-[#e8d9bd]/55 sm:text-[9px]">
-            Drag to look · WASD or arrows to walk · click the dragon
+            Left pad or WASD / Shift+arrows explore / arrows move dragon
           </p>
         </div>
 
@@ -1760,17 +2140,58 @@ export default function EnchantedForestPlayground() {
             onClick={() => controlsRef.current?.magic()}
             className="rounded-full border border-[#e0c48d]/55 bg-[#453e25]/75 px-3.5 py-2 font-sans text-[9px] uppercase tracking-[0.12em] text-[#fff2d5] shadow-[0_0_28px_rgba(224,196,141,0.12)] backdrop-blur-md transition hover:border-[#f2d99f] hover:bg-[#5a4c2d]/90 sm:px-4 sm:text-[10px]"
           >
-            ✧ Tiny magic
+            Tiny magic
+          </button>
+          <button
+            type="button"
+            aria-label="Make the dragon jump and dance"
+            onClick={() => controlsRef.current?.dance()}
+            className="rounded-full border border-[#f0c875]/65 bg-[#69442c]/80 px-3 py-2 font-sans text-[9px] uppercase tracking-[0.12em] text-[#fff2d5] shadow-[0_0_24px_rgba(224,170,91,0.16)] backdrop-blur-md transition hover:border-[#f2d99f] hover:bg-[#825431] sm:px-4 sm:text-[10px]"
+          >
+            Dance!
           </button>
         </div>
 
-        <div className="absolute right-4 top-1/2 z-20 grid -translate-y-1/2 grid-cols-3 gap-1.5 opacity-80 sm:hidden">
-          <span />
-          <button aria-label="Walk forward" onPointerDown={holdKey("w")} onPointerUp={releaseKey("w")} onPointerLeave={releaseKey("w")} className="forest-pad">↑</button>
-          <span />
-          <button aria-label="Walk left" onPointerDown={holdKey("a")} onPointerUp={releaseKey("a")} onPointerLeave={releaseKey("a")} className="forest-pad">←</button>
-          <button aria-label="Walk backward" onPointerDown={holdKey("s")} onPointerUp={releaseKey("s")} onPointerLeave={releaseKey("s")} className="forest-pad">↓</button>
-          <button aria-label="Walk right" onPointerDown={holdKey("d")} onPointerUp={releaseKey("d")} onPointerLeave={releaseKey("d")} className="forest-pad">→</button>
+        <div role="group" aria-label="View zoom controls" className="absolute bottom-20 right-4 z-20 flex flex-col gap-1.5 sm:bottom-24 sm:right-6">
+          <button
+            type="button"
+            aria-label="Zoom out to see more of the forest"
+            onClick={() => controlsRef.current?.zoom(1)}
+            className="rounded-full border border-white/20 bg-[#10170f]/75 px-3 py-2 font-sans text-[9px] uppercase tracking-[0.12em] text-[#f4ead7]/90 backdrop-blur-md transition hover:border-[#e5c992]/70 hover:text-white"
+          >
+            - Zoom out
+          </button>
+          <button
+            type="button"
+            aria-label="Zoom in on the forest"
+            onClick={() => controlsRef.current?.zoom(-1)}
+            className="rounded-full border border-white/20 bg-[#10170f]/75 px-3 py-2 font-sans text-[9px] uppercase tracking-[0.12em] text-[#f4ead7]/90 backdrop-blur-md transition hover:border-[#e5c992]/70 hover:text-white"
+          >
+            + Zoom in
+          </button>
+        </div>
+
+        <div className="absolute left-3 top-1/2 z-20 -translate-y-1/2">
+          <p className="mb-1 text-center font-sans text-[7px] uppercase tracking-[0.16em] text-[#e8d9bd]/65">Forest</p>
+          <div role="group" aria-label="Forest movement controls" className="grid grid-cols-3 gap-1.5 opacity-90">
+            <span />
+            <button aria-label="Explore forward" onPointerDown={holdKey("w")} onPointerUp={releaseKey("w")} onPointerLeave={releaseKey("w")} className="forest-pad">&#8593;</button>
+            <span />
+            <button aria-label="Explore left" onPointerDown={holdKey("a")} onPointerUp={releaseKey("a")} onPointerLeave={releaseKey("a")} className="forest-pad">&#8592;</button>
+            <button aria-label="Explore backward" onPointerDown={holdKey("s")} onPointerUp={releaseKey("s")} onPointerLeave={releaseKey("s")} className="forest-pad">&#8595;</button>
+            <button aria-label="Explore right" onPointerDown={holdKey("d")} onPointerUp={releaseKey("d")} onPointerLeave={releaseKey("d")} className="forest-pad">&#8594;</button>
+          </div>
+        </div>
+        <div className="absolute right-3 top-1/2 z-20 -translate-y-1/2 sm:hidden">
+          <p className="mb-1 text-center font-sans text-[7px] uppercase tracking-[0.16em] text-[#e8d9bd]/65">Dragon</p>
+          <div role="group" aria-label="Dragon movement controls" className="grid grid-cols-3 gap-1.5 opacity-90">
+            <span />
+            <button aria-label="Move dragon forward" onPointerDown={holdDragonKey("arrowup")} onPointerUp={releaseDragonKey("arrowup")} onPointerLeave={releaseDragonKey("arrowup")} className="forest-pad">&#8593;</button>
+            <span />
+            <button aria-label="Turn dragon left" onPointerDown={holdDragonKey("arrowleft")} onPointerUp={releaseDragonKey("arrowleft")} onPointerLeave={releaseDragonKey("arrowleft")} className="forest-pad">&#8592;</button>
+            <button aria-label="Move dragon backward" onPointerDown={holdDragonKey("arrowdown")} onPointerUp={releaseDragonKey("arrowdown")} onPointerLeave={releaseDragonKey("arrowdown")} className="forest-pad">&#8595;</button>
+            <button aria-label="Turn dragon right" onPointerDown={holdDragonKey("arrowright")} onPointerUp={releaseDragonKey("arrowright")} onPointerLeave={releaseDragonKey("arrowright")} className="forest-pad">&#8594;</button>
+          </div>
         </div>
       </div>
 
@@ -1783,7 +2204,7 @@ export default function EnchantedForestPlayground() {
           </p>
         </div>
         <p className="font-sans text-[9px] uppercase tracking-[0.2em] text-[#d9c8a6]/45 sm:pb-1">
-          {isRoaming ? "Free roam is ready" : "Take your time · the forest is yours"}
+          {isRoaming ? "Dragon controls are ready" : "Take your time / the forest is yours"}
         </p>
       </div>
 

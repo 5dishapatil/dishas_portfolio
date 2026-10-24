@@ -223,15 +223,15 @@ export default function VisualPlaygroundPage() {
       <section className="fixed inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none z-10 select-none">
         <div className="max-w-xl mx-auto flex flex-col items-center">
           <span className="text-xs text-white/50 uppercase tracking-[0.3em] font-mono mb-4">
-            EXPLORATIONS
+            Ideation
           </span>
 
           <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-white font-light mb-4 leading-none">
-            Visual <span className="font-instrument font-normal">playground</span>
+            Ideas <span className="font-instrument font-normal">that Matter!</span>
           </h1>
 
           <p className="text-sm sm:text-base text-white/60 max-w-md leading-relaxed font-light">
-            Unconstrained lab experiments in generative shaders, kinetic letterforms, and procedural physics.
+            These are some ideas that I have been exploring and experimenting with. They are a mix of technology, design, and social impact concepts that I find intriguing and worth pursuing further. Each idea is a starting point for potential projects, collaborations, or research.
           </p>
         </div>
       </section>

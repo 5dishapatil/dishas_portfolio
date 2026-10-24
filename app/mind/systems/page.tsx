@@ -11,3 +11,4 @@ import SystemsThinkingViewer from "@/app/components/mind/SystemsThinkingViewer";
 export default function SystemsThinkingPage() {
   return <SystemsThinkingViewer />;
 }
+

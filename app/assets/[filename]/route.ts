@@ -18,60 +18,99 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ filename: string }> }
 ) {
-  // Access request.url so Next.js treats this route as request-time dynamic
-  // and always reads the latest image files from the root `assets/` folder.
-  const _url = request.url;
-  void _url;
-
   const { filename } = await context.params;
-  const safeName = path.basename(filename);
-  const assetsDir = path.join(process.cwd(), "assets");
+  const safeName = decodeURIComponent(path.basename(filename));
 
-  let targetPath = path.join(assetsDir, safeName);
+  const searchDirs = [
+    path.join(process.cwd(), "public", "assets"),
+    path.join(process.cwd(), "assets"),
+  ];
+
+  let targetPath = "";
   let exists = false;
 
-  try {
-    const stat = await fs.stat(targetPath);
-    exists = stat.isFile();
-  } catch {
-    exists = false;
-  }
-
-  // Fallback: if the user placed the same filename with a different image extension (e.g. .jpg/.webp instead of .png)
-  if (!exists) {
+  for (const dir of searchDirs) {
     try {
-      const parsed = path.parse(safeName);
-      const files = await fs.readdir(assetsDir);
-      const match = files.find(
-        (f) => path.parse(f).name.toLowerCase() === parsed.name.toLowerCase()
-      );
-      if (match) {
-        targetPath = path.join(assetsDir, match);
+      const p = path.join(dir, safeName);
+      const stat = await fs.stat(p);
+      if (stat.isFile()) {
+        targetPath = p;
         exists = true;
+        break;
       }
     } catch {
-      exists = false;
+      // Continue to next directory or fallback search
     }
   }
 
+  // Fallback: Case-insensitive search or alternative extension match
   if (!exists) {
+    const parsed = path.parse(safeName);
+    for (const dir of searchDirs) {
+      try {
+        const files = await fs.readdir(dir);
+        const match = files.find(
+          (f) =>
+            f.toLowerCase() === safeName.toLowerCase() ||
+            path.parse(f).name.toLowerCase() === parsed.name.toLowerCase()
+        );
+        if (match) {
+          targetPath = path.join(dir, match);
+          exists = true;
+          break;
+        }
+      } catch {
+        // Continue
+      }
+    }
+  }
+
+  if (!exists || !targetPath) {
     return new Response("Asset not found", { status: 404 });
   }
 
   try {
-    const fileBuffer = await fs.readFile(targetPath);
+    const stat = await fs.stat(targetPath);
+    const fileSize = stat.size;
     const ext = path.extname(targetPath).toLowerCase();
     const contentType = MIME_TYPES[ext] || "application/octet-stream";
 
+    // Handle HTTP Range header for smooth video seeking & streaming
+    const rangeHeader = request.headers.get("range");
+    if (rangeHeader && ext === ".mp4") {
+      const parts = rangeHeader.replace(/bytes=/, "").split("-");
+      const start = parseInt(parts[0], 10);
+      const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+      const chunkSize = end - start + 1;
+
+      const fileHandle = await fs.open(targetPath, "r");
+      const buffer = Buffer.alloc(chunkSize);
+      await fileHandle.read(buffer, 0, chunkSize, start);
+      await fileHandle.close();
+
+      return new Response(buffer, {
+        status: 206,
+        headers: {
+          "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+          "Accept-Ranges": "bytes",
+          "Content-Length": chunkSize.toString(),
+          "Content-Type": contentType,
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    }
+
+    const fileBuffer = await fs.readFile(targetPath);
     return new Response(fileBuffer, {
       status: 200,
       headers: {
         "Content-Type": contentType,
-        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Content-Length": fileSize.toString(),
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "public, max-age=31536000, immutable",
       },
     });
   } catch {
     return new Response("Failed to read asset", { status: 500 });
   }
 }
-

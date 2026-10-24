@@ -170,7 +170,7 @@ export default function TechPage() {
 
           {/* Subtitle */}
           <p className="text-zinc-300 text-base sm:text-lg md:text-xl max-w-xl mx-auto mb-10 leading-relaxed font-normal">
-            Ideas can turn into actions only when they are prepared to be executed.
+            Ideas can be turned into reality with the right technology. 
           </p>
 
           {/* Action Buttons: View Tech Stack & View Projects */}
